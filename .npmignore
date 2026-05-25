@@ -1,0 +1,30 @@
+# Source files (not needed in packaged app)
+src/
+electron/
+e2e/
+docs/
+build/
+public/
+
+# Config files
+*.config.ts
+*.config.js
+tsconfig*.json
+.eslintrc*
+.prettierrc*
+.husky/
+.gitignore
+
+# Development files
+*.md
+.env*
+.DS_Store
+Thumbs.db
+*.log
+
+# Test artifacts
+test-results/
+playwright-report/
+
+# Electron builder output
+release/

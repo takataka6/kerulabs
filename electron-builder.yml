@@ -1,0 +1,38 @@
+appId: com.kerulabs.app
+productName: KeruLabs
+directories:
+  output: release
+  buildResources: build
+files:
+  - from: "."
+    to: "."
+    filter:
+      - package.json
+  - from: "dist"
+    to: "dist"
+    filter:
+      - "**/*"
+  - from: "dist-electron"
+    to: "dist-electron"
+    filter:
+      - "**/*"
+mac:
+  icon: build/icon.png
+  target:
+    - dmg
+    - zip
+  category: public.app-category.sports
+win:
+  icon: build/icon.png
+  target:
+    - nsis
+    - portable
+linux:
+  icon: build/icon.png
+  target:
+    - AppImage
+    - deb
+  category: Sports
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true

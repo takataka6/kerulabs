@@ -1,0 +1,139 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to publish, for example v0.2.0"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  web:
+    name: Build web bundle
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate release metadata
+        run: node scripts/extract-release-notes.mjs "${RELEASE_TAG}" RELEASE_NOTES.md
+        env:
+          RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Type check
+        run: pnpm type-check
+
+      - name: Unit tests with coverage
+        run: pnpm test:coverage
+
+      - name: Build web app
+        run: pnpm build
+
+      - name: Package web bundle
+        run: zip -r "kerulabs-web-${RELEASE_TAG}.zip" dist
+        env:
+          RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-release
+          path: |
+            RELEASE_NOTES.md
+            kerulabs-web-*.zip
+          retention-days: 7
+
+  desktop:
+    name: Build desktop app (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Electron app
+        run: |
+          pnpm exec tsc
+          pnpm exec vite build --mode electron
+          pnpm exec electron-builder --publish never
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-release-${{ matrix.os }}
+          path: |
+            release/*.AppImage
+            release/*.deb
+            release/*.dmg
+            release/*.exe
+            release/*.zip
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: Publish GitHub Release
+    runs-on: ubuntu-latest
+    needs: [web, desktop]
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          name: KeruLabs ${{ github.event.inputs.tag || github.ref_name }}
+          body_path: artifacts/web-release/RELEASE_NOTES.md
+          prerelease: ${{ contains(github.event.inputs.tag || github.ref_name, '-') }}
+          files: |
+            artifacts/**/*.AppImage
+            artifacts/**/*.deb
+            artifacts/**/*.dmg
+            artifacts/**/*.exe
+            artifacts/**/*.zip

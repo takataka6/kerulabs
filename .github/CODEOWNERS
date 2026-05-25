@@ -1,0 +1,22 @@
+# CODEOWNERS — KeruLab
+# https://docs.github.com/ja/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# プルリクエストが作成されると、該当するコードオーナーが自動的にレビュアーとして割り当てられます。
+
+# デフォルト: すべてのファイル
+* @takataka6
+
+# ドメイン層 — ビジネスロジックの変更は慎重にレビュー
+/src/domain/ @takataka6
+
+# インフラ層 — 永続化やデータアクセスの変更
+/src/infrastructure/ @takataka6
+
+# CI/CD — ワークフローやビルド設定の変更
+/.github/ @takataka6
+/electron/ @takataka6
+/vite.config.ts @takataka6
+/tsconfig*.json @takataka6
+
+# セキュリティ関連
+/SECURITY.md @takataka6

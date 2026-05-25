@@ -1,0 +1,3 @@
+# CORS headers for static assets (Vite adds crossorigin attribute to module scripts)
+/assets/*
+  Access-Control-Allow-Origin: *
