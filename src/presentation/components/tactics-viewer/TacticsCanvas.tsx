@@ -114,7 +114,8 @@ interface TacticsCanvasProps {
   touchlineLocked: boolean;
   sceneBackground: SceneBackgroundPreferenceV1;
   sceneBackgroundImageUrl?: string;
-  sceneBackgroundImageBlur?: number;
+  sceneBackgroundImageSaturation?: number;
+  sceneBackgroundImageBrightness?: number;
   pitchColor: string;
   pitchOpacity: number;
   cameraAction: "topDown" | "sideView" | "sideViewReverse" | "reset" | null;
@@ -207,7 +208,8 @@ export const TacticsCanvas = memo(function TacticsCanvas(
     touchlineLocked,
     sceneBackground,
     sceneBackgroundImageUrl,
-    sceneBackgroundImageBlur,
+    sceneBackgroundImageSaturation,
+    sceneBackgroundImageBrightness,
     pitchColor,
     pitchOpacity,
     cameraAction,
@@ -418,7 +420,8 @@ export const TacticsCanvas = memo(function TacticsCanvas(
           touchlineLocked={touchlineLocked}
           sceneBackground={sceneBackground}
           sceneBackgroundImageUrl={sceneBackgroundImageUrl}
-          sceneBackgroundImageBlur={sceneBackgroundImageBlur}
+          sceneBackgroundImageSaturation={sceneBackgroundImageSaturation}
+          sceneBackgroundImageBrightness={sceneBackgroundImageBrightness}
           pitchColor={pitchColor}
           pitchOpacity={pitchOpacity}
           cameraAction={cameraAction}

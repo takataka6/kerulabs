@@ -13,7 +13,8 @@ export interface PreferenceMap {
   language: "ja" | "en";
   sceneBackground: SceneBackgroundPreferenceV1;
   sceneBackgroundImageUrl: string;
-  sceneBackgroundImageBlur: number;
+  sceneBackgroundImageSaturation: number;
+  sceneBackgroundImageBrightness: number;
   pitchColor: string;
   pitchOpacity: number;
 }

@@ -106,8 +106,10 @@ export interface SceneProps {
   sceneBackground?: SceneBackgroundPreferenceV1;
   /** シーン背景画像 (base64 Data URL, mode === "image" 時に使用) */
   sceneBackgroundImageUrl?: string;
-  /** シーン背景画像のぼかし量 (px, 0 = なし) */
-  sceneBackgroundImageBlur?: number;
+  /** シーン背景画像の彩度 (%, 100 = 標準) */
+  sceneBackgroundImageSaturation?: number;
+  /** シーン背景画像の明度 (%, 100 = 標準) */
+  sceneBackgroundImageBrightness?: number;
   /** フィールド（芝生）背景色 */
   pitchColor?: string;
   /** フィールド（芝生）透明度 0-1 */
