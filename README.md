@@ -1,8 +1,8 @@
 # KeruLabs
 
-[![CI](https://github.com/takataka6/kerulabss/actions/workflows/ci.yml/badge.svg)](https://github.com/takataka6/kerulabss/actions/workflows/ci.yml)
-[![Release](https://github.com/takataka6/kerulabss/actions/workflows/release.yml/badge.svg)](https://github.com/takataka6/kerulabss/actions/workflows/release.yml)
-[![Latest Release](https://img.shields.io/github/v/release/takataka6/kerulabss?label=release)](https://github.com/takataka6/kerulabss/releases)
+[![CI](https://github.com/takataka6/kerulabs/actions/workflows/ci.yml/badge.svg)](https://github.com/takataka6/kerulabs/actions/workflows/ci.yml)
+[![Release](https://github.com/takataka6/kerulabs/actions/workflows/release.yml/badge.svg)](https://github.com/takataka6/kerulabs/actions/workflows/release.yml)
+[![Latest Release](https://img.shields.io/github/v/release/takataka6/kerulabs?label=release)](https://github.com/takataka6/kerulabs/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ![KeruLabs icon](public/icon.png)
@@ -115,7 +115,7 @@ open /Applications/KeruLabs.app
 
 ```bash
 git clone https://github.com/takataka6/kerulabs.git
-cd kerulab
+cd kerulabs
 pnpm install
 ```
 
