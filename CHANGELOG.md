@@ -7,6 +7,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- **背景画像フィルター**: 背景画像のぼかし（blur）を廃止し、彩度（0–100%）と明度（0–150%）のスライダーに変更。ぼかしは `CanvasRenderingContext2D.filter` の挙動が環境によって不安定なため、より安定した CSS フィルター（`saturate` / `brightness`）へ置き換えた
+
 ### Removed
 
 - **マッチプレビュー**: 試合の対戦カードを SNS 向け画像として生成する機能を現行アプリから削除

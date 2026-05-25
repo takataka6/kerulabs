@@ -79,7 +79,8 @@ export const Scene = memo(function Scene({
   touchlineLocked = false,
   sceneBackground,
   sceneBackgroundImageUrl,
-  sceneBackgroundImageBlur = 0,
+  sceneBackgroundImageSaturation = 100,
+  sceneBackgroundImageBrightness = 100,
   pitchColor,
   pitchOpacity,
   cameraAction,
@@ -257,21 +258,14 @@ export const Scene = memo(function Scene({
         canvas.height = img.naturalHeight;
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
-        if (sceneBackgroundImageBlur > 0) {
-          // エッジのにじみを防ぐため、ぼかし量の2倍だけ画像を拡大して描画する
-          const pad = sceneBackgroundImageBlur * 2;
-          ctx.filter = `blur(${sceneBackgroundImageBlur}px)`;
-          ctx.drawImage(
-            img,
-            -pad,
-            -pad,
-            img.naturalWidth + pad * 2,
-            img.naturalHeight + pad * 2,
-          );
-          ctx.filter = "none";
-        } else {
-          ctx.drawImage(img, 0, 0);
+        const needsFilter =
+          sceneBackgroundImageSaturation !== 100 ||
+          sceneBackgroundImageBrightness !== 100;
+        if (needsFilter) {
+          ctx.filter = `saturate(${sceneBackgroundImageSaturation}%) brightness(${sceneBackgroundImageBrightness}%)`;
         }
+        ctx.drawImage(img, 0, 0);
+        ctx.filter = "none";
         const tex = new CanvasTexture(canvas);
         tex.colorSpace = SRGBColorSpace;
         scene.background = tex;
@@ -288,7 +282,8 @@ export const Scene = memo(function Scene({
     bgColor,
     sceneBackground,
     sceneBackgroundImageUrl,
-    sceneBackgroundImageBlur,
+    sceneBackgroundImageSaturation,
+    sceneBackgroundImageBrightness,
     scene,
   ]);
 

@@ -512,20 +512,42 @@ function ImageSection({
         </div>
         <div>
           <div className="mb-1 flex items-center justify-between text-[10px] text-slate-400 font-bold tracking-wide">
-            <span>{t("tactics.sceneBackground.image.blur")}</span>
-            <span>{bgSettings.sceneBackgroundImageBlur}px</span>
+            <span>{t("tactics.sceneBackground.image.saturation")}</span>
+            <span>{bgSettings.sceneBackgroundImageSaturation}%</span>
           </div>
           <input
             type="range"
             min="0"
-            max="80"
+            max="100"
             step="1"
-            value={bgSettings.sceneBackgroundImageBlur}
+            value={bgSettings.sceneBackgroundImageSaturation}
             onChange={(e) =>
-              bgSettings.setSceneBackgroundImageBlur(Number(e.target.value))
+              bgSettings.setSceneBackgroundImageSaturation(
+                Number(e.target.value),
+              )
             }
             className="h-1 w-full cursor-pointer accent-blue-500"
-            aria-label={t("tactics.sceneBackground.image.blur")}
+            aria-label={t("tactics.sceneBackground.image.saturation")}
+          />
+        </div>
+        <div>
+          <div className="mb-1 flex items-center justify-between text-[10px] text-slate-400 font-bold tracking-wide">
+            <span>{t("tactics.sceneBackground.image.brightness")}</span>
+            <span>{bgSettings.sceneBackgroundImageBrightness}%</span>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="150"
+            step="1"
+            value={bgSettings.sceneBackgroundImageBrightness}
+            onChange={(e) =>
+              bgSettings.setSceneBackgroundImageBrightness(
+                Number(e.target.value),
+              )
+            }
+            className="h-1 w-full cursor-pointer accent-blue-500"
+            aria-label={t("tactics.sceneBackground.image.brightness")}
           />
         </div>
       </div>

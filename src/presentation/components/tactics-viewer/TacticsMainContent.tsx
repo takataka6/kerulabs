@@ -302,7 +302,12 @@ export function TacticsMainContent() {
           touchlineLocked={ui.touchlineLocked}
           sceneBackground={bgSettings.sceneBackground}
           sceneBackgroundImageUrl={bgSettings.sceneBackgroundImageUrl}
-          sceneBackgroundImageBlur={bgSettings.sceneBackgroundImageBlur}
+          sceneBackgroundImageSaturation={
+            bgSettings.sceneBackgroundImageSaturation
+          }
+          sceneBackgroundImageBrightness={
+            bgSettings.sceneBackgroundImageBrightness
+          }
           pitchColor={bgSettings.pitchColor}
           pitchOpacity={bgSettings.pitchOpacity}
           cameraAction={ui.cameraAction}

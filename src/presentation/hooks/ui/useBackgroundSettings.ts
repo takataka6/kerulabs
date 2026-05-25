@@ -102,10 +102,18 @@ export function useBackgroundSettings() {
     useState<string>(() => {
       return prefs.get("sceneBackgroundImageUrl");
     });
-  const [sceneBackgroundImageBlur, setSceneBackgroundImageBlurState] =
-    useState<number>(() => {
-      return prefs.get("sceneBackgroundImageBlur");
-    });
+  const [
+    sceneBackgroundImageSaturation,
+    setSceneBackgroundImageSaturationState,
+  ] = useState<number>(() => {
+    return prefs.get("sceneBackgroundImageSaturation");
+  });
+  const [
+    sceneBackgroundImageBrightness,
+    setSceneBackgroundImageBrightnessState,
+  ] = useState<number>(() => {
+    return prefs.get("sceneBackgroundImageBrightness");
+  });
 
   const [pitchColor, setPitchColor] = useState<string>(() => {
     return prefs.get("pitchColor");
@@ -123,17 +131,31 @@ export function useBackgroundSettings() {
   }, [prefs, sceneBackgroundImageUrl]);
 
   useEffect(() => {
-    prefs.set("sceneBackgroundImageBlur", sceneBackgroundImageBlur);
-  }, [prefs, sceneBackgroundImageBlur]);
+    prefs.set("sceneBackgroundImageSaturation", sceneBackgroundImageSaturation);
+  }, [prefs, sceneBackgroundImageSaturation]);
+
+  useEffect(() => {
+    prefs.set("sceneBackgroundImageBrightness", sceneBackgroundImageBrightness);
+  }, [prefs, sceneBackgroundImageBrightness]);
 
   const setSceneBackgroundImageUrl = useCallback((url: string) => {
     setSceneBackgroundImageUrlState(url);
     setSceneBackground({ version: 1, mode: "image" });
   }, []);
 
-  const setSceneBackgroundImageBlur = useCallback((blur: number) => {
-    setSceneBackgroundImageBlurState(blur);
-  }, []);
+  const setSceneBackgroundImageSaturation = useCallback(
+    (saturation: number) => {
+      setSceneBackgroundImageSaturationState(saturation);
+    },
+    [],
+  );
+
+  const setSceneBackgroundImageBrightness = useCallback(
+    (brightness: number) => {
+      setSceneBackgroundImageBrightnessState(brightness);
+    },
+    [],
+  );
 
   useEffect(() => {
     prefs.set("pitchColor", pitchColor);
@@ -297,7 +319,8 @@ export function useBackgroundSettings() {
   const handleResetAllBgSettings = useCallback(() => {
     setSceneBackground(DEFAULT_SCENE_BACKGROUND);
     setSceneBackgroundImageUrlState("");
-    setSceneBackgroundImageBlurState(0);
+    setSceneBackgroundImageSaturationState(100);
+    setSceneBackgroundImageBrightnessState(100);
     setPitchColor(DEFAULT_PITCH_COLOR);
     setPitchOpacity(1);
   }, []);
@@ -306,8 +329,10 @@ export function useBackgroundSettings() {
     sceneBackground,
     sceneBackgroundImageUrl,
     setSceneBackgroundImageUrl,
-    sceneBackgroundImageBlur,
-    setSceneBackgroundImageBlur,
+    sceneBackgroundImageSaturation,
+    setSceneBackgroundImageSaturation,
+    sceneBackgroundImageBrightness,
+    setSceneBackgroundImageBrightness,
     showSceneBgSettings,
     setShowSceneBgSettings,
     setSceneBackgroundMode,

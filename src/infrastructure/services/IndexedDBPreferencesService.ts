@@ -52,7 +52,8 @@ const DEFAULTS: PreferenceMap = {
   language: "ja",
   sceneBackground: DEFAULT_SCENE_BACKGROUND,
   sceneBackgroundImageUrl: "",
-  sceneBackgroundImageBlur: 0,
+  sceneBackgroundImageSaturation: 100,
+  sceneBackgroundImageBrightness: 100,
   pitchColor: DEFAULT_PITCH_COLOR,
   pitchOpacity: 1,
 };
