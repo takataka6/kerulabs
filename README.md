@@ -1,8 +1,8 @@
 # KeruLabs
 
-[![CI](https://github.com/takataka6/kerulab/actions/workflows/ci.yml/badge.svg)](https://github.com/takataka6/kerulab/actions/workflows/ci.yml)
-[![Release](https://github.com/takataka6/kerulab/actions/workflows/release.yml/badge.svg)](https://github.com/takataka6/kerulab/actions/workflows/release.yml)
-[![Latest Release](https://img.shields.io/github/v/release/takataka6/kerulab)](https://github.com/takataka6/kerulab/releases)
+[![CI](https://github.com/takataka6/kerulabss/actions/workflows/ci.yml/badge.svg)](https://github.com/takataka6/kerulabss/actions/workflows/ci.yml)
+[![Release](https://github.com/takataka6/kerulabss/actions/workflows/release.yml/badge.svg)](https://github.com/takataka6/kerulabss/actions/workflows/release.yml)
+[![Latest Release](https://img.shields.io/github/v/release/takataka6/kerulabss?label=release)](https://github.com/takataka6/kerulabss/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ![KeruLabs icon](public/icon.png)
@@ -55,7 +55,7 @@ Football Tactics & Code Lab
 
 ## Downloads
 
-最新の配布物は [GitHub Releases](https://github.com/takataka6/kerulab/releases) から取得できます。
+最新の配布物は [GitHub Releases](https://github.com/takataka6/kerulabs/releases) から取得できます。
 
 - 配布物の種類、リリースチャネル、運用ポリシーの詳細は [docs/release.md](docs/release.md) を参照してください
 
@@ -114,7 +114,7 @@ open /Applications/KeruLabs.app
 ### セットアップ
 
 ```bash
-git clone https://github.com/takataka6/kerulab.git
+git clone https://github.com/takataka6/kerulabs.git
 cd kerulab
 pnpm install
 ```
