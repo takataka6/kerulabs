@@ -29,6 +29,30 @@ import { PlayerCameraController } from "./PlayerCameraController";
 import type { GroupDragState, SceneProps } from "./SceneTypes";
 export type { GroupDragState } from "./SceneTypes";
 
+// ctx.filter はSafari < iOS 18 で未対応のため、ピクセル操作で彩度・明度を適用する
+function applyColorAdjustment(
+  ctx: CanvasRenderingContext2D,
+  saturation: number,
+  brightness: number,
+): void {
+  if (saturation === 100 && brightness === 100) return;
+  const { width, height } = ctx.canvas;
+  const imageData = ctx.getImageData(0, 0, width, height);
+  const data = imageData.data;
+  const sat = saturation / 100;
+  const bright = brightness / 100;
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i] * bright;
+    const g = data[i + 1] * bright;
+    const b = data[i + 2] * bright;
+    const gray = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    data[i] = Math.min(255, Math.max(0, gray + sat * (r - gray)));
+    data[i + 1] = Math.min(255, Math.max(0, gray + sat * (g - gray)));
+    data[i + 2] = Math.min(255, Math.max(0, gray + sat * (b - gray)));
+  }
+  ctx.putImageData(imageData, 0, 0);
+}
+
 export const Scene = memo(function Scene({
   players,
   colors,
@@ -258,14 +282,12 @@ export const Scene = memo(function Scene({
         canvas.height = img.naturalHeight;
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
-        const needsFilter =
-          sceneBackgroundImageSaturation !== 100 ||
-          sceneBackgroundImageBrightness !== 100;
-        if (needsFilter) {
-          ctx.filter = `saturate(${sceneBackgroundImageSaturation}%) brightness(${sceneBackgroundImageBrightness}%)`;
-        }
         ctx.drawImage(img, 0, 0);
-        ctx.filter = "none";
+        applyColorAdjustment(
+          ctx,
+          sceneBackgroundImageSaturation,
+          sceneBackgroundImageBrightness,
+        );
         const tex = new CanvasTexture(canvas);
         tex.colorSpace = SRGBColorSpace;
         scene.background = tex;
