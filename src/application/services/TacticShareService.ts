@@ -92,9 +92,6 @@ export class TacticShareService {
         phase: tactic.phase.value,
         movements,
         ...(Object.keys(ballPasses).length > 0 ? { ballPasses } : {}),
-        ...(tactic.stepBoundaries
-          ? { stepBoundaries: [...tactic.stepBoundaries] }
-          : {}),
       };
     });
 
@@ -191,7 +188,6 @@ export class TacticShareService {
         phase: Phase.fromString(record.phase),
         movements,
         ballPasses,
-        stepBoundaries: record.stepBoundaries,
       });
     });
   }

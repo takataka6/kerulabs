@@ -326,53 +326,23 @@ export function TacticsMainContent() {
       </Suspense>
 
       {/* 実行フェーズラベル */}
-      {!ui.captureMode &&
-        (tOrch.isExecuting || tOrch.stepExecution.isStepMode) &&
-        tOrch.executionPhase &&
-        (() => {
-          const step = tOrch.stepExecution;
-          const hasSetupStep =
-            step.isStepMode && step.tactic?.stepBoundaries?.[0] === 0;
-          const isSetupStep = hasSetupStep && step.currentStep === 0;
-          const displayCurrent = hasSetupStep
-            ? step.currentStep
-            : step.currentStep + 1;
-          const displayTotal = hasSetupStep
-            ? step.totalSteps - 1
-            : step.totalSteps;
-
-          return (
-            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
-              <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/60 backdrop-blur-sm border border-white/10">
-                {step.isStepMode && !isSetupStep && (
-                  <span className="text-xs font-bold text-amber-400">
-                    {t("tactics.stepExecution.progress")
-                      .replace("{current}", String(displayCurrent))
-                      .replace("{total}", String(displayTotal))}
-                  </span>
-                )}
-                {(!step.isStepMode || step.isStepRunning || isSetupStep) && (
-                  <span
-                    className={`text-xs font-semibold ${
-                      tOrch.executionPhase === "highlight"
-                        ? "text-yellow-300"
-                        : tOrch.executionPhase === "set"
-                          ? "text-sky-300"
-                          : "text-emerald-300"
-                    }`}
-                  >
-                    {tDynamic(
-                      `tactics.execution.phase.${tOrch.executionPhase}`,
-                    )}
-                  </span>
-                )}
-                {step.isStepRunning && (
-                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                )}
-              </div>
-            </div>
-          );
-        })()}
+      {!ui.captureMode && tOrch.isExecuting && tOrch.executionPhase && (
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
+          <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/60 backdrop-blur-sm border border-white/10">
+            <span
+              className={`text-xs font-semibold ${
+                tOrch.executionPhase === "highlight"
+                  ? "text-yellow-300"
+                  : tOrch.executionPhase === "set"
+                    ? "text-sky-300"
+                    : "text-emerald-300"
+              }`}
+            >
+              {tDynamic(`tactics.execution.phase.${tOrch.executionPhase}`)}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* スケッチオーバーレイ */}
       <SketchOverlay

@@ -33,7 +33,6 @@ export const tacticRecordSchema = z.object({
   movements: z.record(z.string(), z.array(movementRecordSchema)),
   ballPasses: z.record(z.string(), z.array(ballPassRecordSchema)).optional(),
   ballPosition: z.object({ x: z.number(), z: z.number() }).optional(),
-  stepBoundaries: z.array(z.number().min(0)).optional(),
   isCustom: z.boolean(),
   createdAt: z.number(),
   updatedAt: z.number(),

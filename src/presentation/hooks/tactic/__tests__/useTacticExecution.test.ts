@@ -26,8 +26,6 @@ import {
   TacticCompletedEvent,
   TacticCancelledEvent,
   ExecutionPhaseChangedEvent,
-  StepExecutionStartedEvent,
-  StepCompletedEvent,
 } from "@domain/events/TacticEvent";
 import { useTacticExecution } from "../useTacticExecution";
 
@@ -36,14 +34,12 @@ import { useTacticExecution } from "../useTacticExecution";
 const mockExecute = vi.fn();
 const mockCancel = vi.fn();
 const mockDestroy = vi.fn();
-const mockExecuteStep = vi.fn();
 
 vi.mock("@application/services/TacticExecutor", () => ({
   TacticExecutor: vi.fn().mockImplementation(() => ({
     execute: mockExecute,
     cancel: mockCancel,
     destroy: mockDestroy,
-    executeStep: mockExecuteStep,
     isExecuting: vi.fn().mockReturnValue(false),
     getCurrentExecutionId: vi.fn().mockReturnValue(null),
   })),
@@ -101,7 +97,6 @@ function createTestFormation(): Formation {
 function createTestTactic(overrides?: {
   id?: string;
   ballPosition?: { x: number; z: number };
-  stepBoundaries?: number[];
 }): Tactic {
   const movements = new Map<string, Movement[]>();
   movements.set("4-3-3", [Movement.create("CB1", 3, 4, 0, "#3b82f6")]);
@@ -113,7 +108,6 @@ function createTestTactic(overrides?: {
     movements,
     ballPasses: new Map(),
     ballPosition: overrides?.ballPosition,
-    stepBoundaries: overrides?.stepBoundaries,
   });
 
   if (overrides?.id) {
@@ -837,199 +831,6 @@ describe("useTacticExecution", () => {
   // ==========================================================================
   // ステップ実行
   // ==========================================================================
-  describe("ステップ実行", () => {
-    it("startStepExecution でステップ実行モードを開始し executeStep を呼ぶ", () => {
-      const formation = createTestFormation();
-      const tactic = createTestTactic({
-        id: "step-tac",
-        stepBoundaries: [1, 2],
-        ballPosition: { x: 5, z: 5 },
-      });
-
-      const { result } = renderHook(() => useTacticExecution(formation));
-
-      act(() => {
-        result.current.startStepExecution(tactic, formation);
-      });
-
-      expect(result.current.stepExecution.isStepMode).toBe(true);
-      expect(result.current.stepExecution.totalSteps).toBe(2);
-      expect(result.current.stepExecution.tactic).toBe(tactic);
-      expect(result.current.activeTacticId).toBe("step-tac");
-      expect(result.current.executingBallPosition).toEqual({ x: 5, z: 5 });
-      expect(mockExecuteStep).toHaveBeenCalledWith(
-        tactic,
-        formation,
-        expect.any(Object),
-        0,
-      );
-    });
-
-    it("supportsStepExecution が false のとき startStepExecution は何もしない", () => {
-      const formation = createTestFormation();
-      const tactic = createTestTactic(); // stepBoundaries なし → totalSteps=1
-
-      const { result } = renderHook(() => useTacticExecution(formation));
-
-      act(() => {
-        result.current.startStepExecution(tactic, formation);
-      });
-
-      expect(result.current.stepExecution.isStepMode).toBe(false);
-      expect(mockExecuteStep).not.toHaveBeenCalled();
-    });
-
-    it("STEP_EXECUTION_STARTED イベントで stepExecution を更新する", () => {
-      const { result } = renderHook(() => useTacticExecution(undefined));
-
-      act(() => {
-        eventBus.publish(new StepExecutionStartedEvent("tac-1", 0, 3));
-      });
-
-      expect(result.current.stepExecution.currentStep).toBe(0);
-      expect(result.current.stepExecution.totalSteps).toBe(3);
-      expect(result.current.stepExecution.isStepRunning).toBe(true);
-    });
-
-    it("STEP_COMPLETED イベントで isStepRunning が false になる", () => {
-      const { result } = renderHook(() => useTacticExecution(undefined));
-
-      // ステップ開始
-      act(() => {
-        eventBus.publish(new StepExecutionStartedEvent("tac-1", 0, 3));
-      });
-      expect(result.current.stepExecution.isStepRunning).toBe(true);
-
-      // ステップ完了（まだ次がある）
-      act(() => {
-        eventBus.publish(new StepCompletedEvent("tac-1", 0, 3));
-      });
-      expect(result.current.stepExecution.isStepRunning).toBe(false);
-      expect(result.current.isExecuting).toBe(false);
-    });
-
-    it("最終ステップの STEP_COMPLETED では isExecuting を false に変更しない（TACTIC_COMPLETED に委譲）", () => {
-      const { result } = renderHook(() => useTacticExecution(undefined));
-
-      act(() => {
-        eventBus.publish(new TacticStartedEvent("tac-1", "Test"));
-      });
-
-      // 最終ステップ完了（stepIndex === totalSteps - 1）
-      act(() => {
-        eventBus.publish(new StepCompletedEvent("tac-1", 2, 3));
-      });
-
-      expect(result.current.stepExecution.isStepRunning).toBe(false);
-    });
-
-    it("TACTIC_COMPLETED でステップ実行モードは保持され、ユーザーが終了するまで維持する", () => {
-      const formation = createTestFormation();
-      const tactic = createTestTactic({ stepBoundaries: [1, 2] });
-
-      const { result } = renderHook(() => useTacticExecution(formation));
-
-      // ステップ実行モード開始
-      act(() => {
-        result.current.startStepExecution(tactic, formation);
-      });
-
-      // 戦術完了
-      act(() => {
-        eventBus.publish(new TacticCompletedEvent("tac-1", 3000));
-      });
-
-      expect(result.current.stepExecution.isStepMode).toBe(true);
-      expect(result.current.stepExecution.isStepRunning).toBe(false);
-    });
-
-    it("exitStepMode でステップ実行モードを終了しリセットする", () => {
-      const formation = createTestFormation();
-      const tactic = createTestTactic({
-        stepBoundaries: [1, 2],
-      });
-
-      const { result } = renderHook(() => useTacticExecution(formation));
-
-      act(() => {
-        result.current.startStepExecution(tactic, formation);
-      });
-
-      act(() => {
-        result.current.exitStepMode();
-      });
-
-      expect(result.current.stepExecution.isStepMode).toBe(false);
-      expect(result.current.stepExecution.tactic).toBeNull();
-      expect(result.current.executionPhase).toBeNull();
-      expect(result.current.executingBallPosition).toBeNull();
-      expect(mockCancel).toHaveBeenCalledWith("Step mode exited by user");
-    });
-
-    it("executeNextStep で次のステップを実行する", () => {
-      const formation = createTestFormation();
-      const tactic = createTestTactic({
-        stepBoundaries: [1, 2, 3],
-      });
-
-      const { result } = renderHook(() => useTacticExecution(formation));
-
-      // ステップ実行開始
-      act(() => {
-        result.current.startStepExecution(tactic, formation);
-      });
-
-      // ステップ完了イベント（ステップ0完了）
-      act(() => {
-        eventBus.publish(new StepCompletedEvent("tac-1", 0, 3));
-      });
-
-      mockExecuteStep.mockClear();
-
-      // 次のステップ実行
-      act(() => {
-        result.current.executeNextStep();
-      });
-
-      expect(mockExecuteStep).toHaveBeenCalledWith(
-        tactic,
-        formation,
-        expect.any(Object),
-        1,
-      );
-    });
-
-    it("executeNextStep はステップ実行モードでないとき何もしない", () => {
-      const formation = createTestFormation();
-      const { result } = renderHook(() => useTacticExecution(formation));
-
-      mockExecuteStep.mockClear();
-
-      act(() => {
-        result.current.executeNextStep();
-      });
-
-      expect(mockExecuteStep).not.toHaveBeenCalled();
-    });
-
-    it("TACTIC_CANCELLED でステップ実行状態がリセットされる", () => {
-      const formation = createTestFormation();
-      const tactic = createTestTactic({ stepBoundaries: [1, 2] });
-
-      const { result } = renderHook(() => useTacticExecution(formation));
-
-      act(() => {
-        result.current.startStepExecution(tactic, formation);
-      });
-
-      act(() => {
-        eventBus.publish(new TacticCancelledEvent("tac-1", "cancelled"));
-      });
-
-      expect(result.current.stepExecution.isStepMode).toBe(false);
-      expect(result.current.stepExecution.tactic).toBeNull();
-    });
-  });
 
   // ==========================================================================
   // destroy

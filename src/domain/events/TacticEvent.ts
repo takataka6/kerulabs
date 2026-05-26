@@ -105,32 +105,6 @@ export class ExecutionPhaseChangedEvent extends TacticEvent {
   }
 }
 
-/** ステップ実行が開始されたことを通知するイベント */
-export class StepExecutionStartedEvent extends TacticEvent {
-  readonly type = "STEP_EXECUTION_STARTED";
-
-  constructor(
-    public readonly tacticId: string,
-    public readonly stepIndex: number,
-    public readonly totalSteps: number,
-  ) {
-    super();
-  }
-}
-
-/** ステップ実行が完了したことを通知するイベント（次のステップ待ち状態） */
-export class StepCompletedEvent extends TacticEvent {
-  readonly type = "STEP_COMPLETED";
-
-  constructor(
-    public readonly tacticId: string,
-    public readonly stepIndex: number,
-    public readonly totalSteps: number,
-  ) {
-    super();
-  }
-}
-
 /** 戦術の実行がキャンセルされたことを通知するイベント */
 export class TacticCancelledEvent extends TacticEvent {
   readonly type = "TACTIC_CANCELLED";

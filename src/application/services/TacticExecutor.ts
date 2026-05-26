@@ -18,8 +18,6 @@ import {
   TacticCompletedEvent,
   TacticCancelledEvent,
   ExecutionPhaseChangedEvent,
-  StepExecutionStartedEvent,
-  StepCompletedEvent,
 } from "@domain/events/TacticEvent";
 
 /** 1回の移動アニメーションにかかる時間 (ms) */
@@ -100,7 +98,6 @@ export class TacticExecutor {
       runMovements,
       ballPasses,
       highlightCondition: true,
-      baseDelayOffset: 0,
     });
 
     // 各動きとボールパスをスケジュール
@@ -133,186 +130,6 @@ export class TacticExecutor {
         );
         this.currentExecutionId = null;
         this.currentTacticId = null;
-      },
-      this.scaleDelay(maxDelay + COMPLETION_BUFFER_MS),
-    );
-
-    this.timeouts.add(completionTimeoutId);
-  }
-
-  /**
-   * 戦術の指定ステップのみを実行する（ステップごとの実行モード用）
-   * @param tactic - 実行する戦術
-   * @param formation - 使用するフォーメーション
-   * @param initialPositions - 各選手の初期位置（前ステップの結果を反映済み）
-   * @param stepIndex - 実行するステップインデックス（0始まり）
-   */
-  executeStep(
-    tactic: Tactic,
-    formation: Formation,
-    initialPositions: Record<number, { x: number; z: number }>,
-    stepIndex: number,
-  ): void {
-    const boundaries = tactic.stepBoundaries;
-    if (!boundaries || boundaries.length <= 1) {
-      // stepBoundaries が無い場合は通常実行にフォールバック
-      this.execute(tactic, formation, initialPositions);
-      return;
-    }
-
-    // 既に実行中の戦術をキャンセル
-    if (this.currentExecutionId) {
-      this.cancel("Superseded by step execution");
-    }
-
-    const executionId = `${tactic.id.value}-step${stepIndex}-${Date.now()}`;
-    this.currentExecutionId = executionId;
-    this.currentTacticId = tactic.id.value;
-
-    const totalSteps = boundaries.length;
-
-    // ステップ開始イベント
-    if (stepIndex === 0) {
-      this.eventBus.publish(
-        new TacticStartedEvent(tactic.id.value, tactic.getDisplayName("en")),
-      );
-    }
-    this.eventBus.publish(
-      new StepExecutionStartedEvent(tactic.id.value, stepIndex, totalSteps),
-    );
-
-    // フォーメーションに対応する動きを取得
-    const allMovements = tactic.getMovementsForFormation(formation.name);
-    const allBallPasses = tactic.getBallPassesForFormation(formation.name);
-
-    // ステップ範囲のディレイを算出
-    const stepStartDelay = boundaries[stepIndex];
-    const stepEndDelay =
-      stepIndex < boundaries.length - 1 ? boundaries[stepIndex + 1] : Infinity;
-
-    // セットアップ境界の検出（boundaries[0] === 0 は新しいセットアップステップ構造）
-    const hasSetupBoundary = boundaries[0] === 0;
-
-    // このステップに属する移動とボールパスをフィルタ
-    // セットアップ境界がある場合: 全移動（セットポジション含む）をdelay範囲でフィルタ
-    // セットアップ境界がない場合（レガシー）: セットポジション移動は別途ステップ0に追加
-    const stepMovements = allMovements.filter((m) => {
-      if (!hasSetupBoundary && m.arrowColor === SET_POSITION_ARROW_COLOR)
-        return false;
-      return m.delay >= stepStartDelay && m.delay < stepEndDelay;
-    });
-    const stepBallPasses = allBallPasses.filter(
-      (bp) => bp.delay >= stepStartDelay && bp.delay < stepEndDelay,
-    );
-
-    // レガシー: セットポジション移動はステップ0のみで追加
-    const legacySetPositionMovements =
-      stepIndex === 0 && !hasSetupBoundary
-        ? allMovements.filter((m) => m.arrowColor === SET_POSITION_ARROW_COLOR)
-        : [];
-    const allStepMovements = [...legacySetPositionMovements, ...stepMovements];
-
-    // --- 実行フェーズ検出・遷移 ---
-    const setPositionMovementsInStep = allStepMovements.filter(
-      (m) => m.arrowColor === SET_POSITION_ARROW_COLOR,
-    );
-    const runMovementsInStep = allStepMovements.filter(
-      (m) => m.arrowColor !== SET_POSITION_ARROW_COLOR,
-    );
-
-    this.schedulePhaseTransitions({
-      tacticId: tactic.id.value,
-      executionId,
-      setPositionMovements: setPositionMovementsInStep,
-      runMovements: runMovementsInStep,
-      ballPasses: stepBallPasses,
-      highlightCondition: !!tactic.ballPosition,
-      baseDelayOffset: stepStartDelay,
-    });
-
-    if (allStepMovements.length === 0 && stepBallPasses.length === 0) {
-      // このステップに動きが無い場合はステップ完了を即座に発行
-      this.eventBus.publish(
-        new StepCompletedEvent(tactic.id.value, stepIndex, totalSteps),
-      );
-      if (stepIndex >= totalSteps - 1) {
-        this.eventBus.publish(new TacticCompletedEvent(tactic.id.value, 0));
-        this.currentExecutionId = null;
-        this.currentTacticId = null;
-      }
-      return;
-    }
-
-    // delay をステップの baseDelay からのオフセットに変換してスケジュール
-    const offsetMovements = allStepMovements.map((m) => ({
-      ...m,
-      get role() {
-        return m.role;
-      },
-      get targetX() {
-        return m.targetX;
-      },
-      get targetZ() {
-        return m.targetZ;
-      },
-      get arrowColor() {
-        return m.arrowColor;
-      },
-      delay: Math.max(0, m.delay - stepStartDelay),
-    }));
-
-    this.scheduleMovements(
-      offsetMovements,
-      formation,
-      initialPositions,
-      executionId,
-    );
-
-    // ボールパスもオフセット
-    const offsetBallPasses = stepBallPasses.map((bp) => ({
-      ...bp,
-      delay: Math.max(0, bp.delay - stepStartDelay),
-      hasCustomStart: () => bp.hasCustomStart(),
-      hasCustomEnd: () => bp.hasCustomEnd(),
-    }));
-    this.scheduleBallPasses(
-      offsetBallPasses,
-      formation,
-      initialPositions,
-      executionId,
-    );
-
-    // ステップ完了イベントをスケジュール
-    const movementMaxDelay =
-      offsetMovements.length > 0
-        ? Math.max(...offsetMovements.map((m) => m.delay))
-        : 0;
-    const ballPassMaxDelay =
-      offsetBallPasses.length > 0
-        ? Math.max(...offsetBallPasses.map((bp) => bp.delay))
-        : 0;
-    const maxDelay = Math.max(movementMaxDelay, ballPassMaxDelay, 0);
-
-    const completionTimeoutId = window.setTimeout(
-      () => {
-        if (this.currentExecutionId !== executionId) return;
-
-        this.timeouts.forEach((id) => window.clearTimeout(id));
-        this.timeouts.clear();
-
-        this.eventBus.publish(
-          new StepCompletedEvent(tactic.id.value, stepIndex, totalSteps),
-        );
-
-        // 最終ステップなら戦術完了
-        if (stepIndex >= totalSteps - 1) {
-          this.eventBus.publish(new TacticCompletedEvent(tactic.id.value, 0));
-          this.currentExecutionId = null;
-          this.currentTacticId = null;
-        } else {
-          // 次のステップ待ちなので実行IDはクリアするがtacticIdは保持
-          this.currentExecutionId = null;
-        }
       },
       this.scaleDelay(maxDelay + COMPLETION_BUFFER_MS),
     );
@@ -368,15 +185,6 @@ export class TacticExecutor {
 
   /**
    * セットポジション / 実行フェーズの遷移イベントをスケジュールする。
-   * execute() と executeStep() の共通ロジックを集約する。
-   *
-   * @param params.tacticId - 戦術ID
-   * @param params.executionId - 実行ID（キャンセル検知用）
-   * @param params.setPositionMovements - セットポジション移動の配列
-   * @param params.runMovements - 実行フェーズ移動の配列
-   * @param params.ballPasses - ボールパスの配列
-   * @param params.highlightCondition - ハイライトフェーズに入る追加条件（execute では常にtrue）
-   * @param params.baseDelayOffset - ステップ実行時のベースディレイオフセット（通常実行では0）
    */
   private schedulePhaseTransitions(params: {
     tacticId: string;
@@ -385,7 +193,6 @@ export class TacticExecutor {
     runMovements: ReadonlyArray<{ readonly delay: number }>;
     ballPasses: ReadonlyArray<{ readonly delay: number }>;
     highlightCondition: boolean;
-    baseDelayOffset: number;
   }): void {
     const {
       tacticId,
@@ -394,7 +201,6 @@ export class TacticExecutor {
       runMovements,
       ballPasses,
       highlightCondition,
-      baseDelayOffset,
     } = params;
 
     const hasSetPositions = setPositionMovements.length > 0;
@@ -408,15 +214,12 @@ export class TacticExecutor {
         this.eventBus.publish(
           new ExecutionPhaseChangedEvent("highlight", tacticId),
         );
-        const setPhaseTimeoutId = window.setTimeout(
-          () => {
-            if (this.currentExecutionId !== executionId) return;
-            this.eventBus.publish(
-              new ExecutionPhaseChangedEvent("set", tacticId),
-            );
-          },
-          this.scaleDelay(setDelay - baseDelayOffset),
-        );
+        const setPhaseTimeoutId = window.setTimeout(() => {
+          if (this.currentExecutionId !== executionId) return;
+          this.eventBus.publish(
+            new ExecutionPhaseChangedEvent("set", tacticId),
+          );
+        }, this.scaleDelay(setDelay));
         this.timeouts.add(setPhaseTimeoutId);
       } else {
         // セット → 実行 の2フェーズ
@@ -427,9 +230,9 @@ export class TacticExecutor {
       const runDelays = [
         ...runMovements.map((m) => m.delay),
         ...ballPasses.map((bp) => bp.delay),
-      ].filter((d) => d > baseDelayOffset);
+      ];
       if (runDelays.length > 0) {
-        const firstRunDelay = Math.min(...runDelays) - baseDelayOffset;
+        const firstRunDelay = Math.min(...runDelays);
         const runPhaseTimeoutId = window.setTimeout(() => {
           if (this.currentExecutionId !== executionId) return;
           this.eventBus.publish(
@@ -445,15 +248,12 @@ export class TacticExecutor {
         this.eventBus.publish(
           new ExecutionPhaseChangedEvent("highlight", tacticId),
         );
-        const setPhaseTimeoutId = window.setTimeout(
-          () => {
-            if (this.currentExecutionId !== executionId) return;
-            this.eventBus.publish(
-              new ExecutionPhaseChangedEvent("set", tacticId),
-            );
-          },
-          this.scaleDelay(setDelay - baseDelayOffset),
-        );
+        const setPhaseTimeoutId = window.setTimeout(() => {
+          if (this.currentExecutionId !== executionId) return;
+          this.eventBus.publish(
+            new ExecutionPhaseChangedEvent("set", tacticId),
+          );
+        }, this.scaleDelay(setDelay));
         this.timeouts.add(setPhaseTimeoutId);
       } else {
         this.eventBus.publish(new ExecutionPhaseChangedEvent("set", tacticId));

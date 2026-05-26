@@ -74,16 +74,6 @@ function createMockExecutionContext() {
       isExecuting: false,
       hasCustomTactics: false,
       triggerTactic: vi.fn(),
-      triggerStepTactic: vi.fn(),
-      stepExecution: {
-        isStepMode: false,
-        currentStep: 0,
-        totalSteps: 1,
-        isStepRunning: false,
-        tactic: null,
-      },
-      executeNextStep: vi.fn(),
-      exitStepMode: vi.fn(),
       deleteTacticMutation: { mutate: vi.fn() },
       startTacticCreation: vi.fn(),
       cancelTacticCreation: vi.fn(),
@@ -291,38 +281,6 @@ describe("TacticsSidebarSection", () => {
       };
       tactics.onExportTactics();
       expect(mockExecutionContext.tOrch.handleExportTactics).toHaveBeenCalled();
-    });
-
-    it("tactics.onTriggerStepTactic delegates to tOrch.triggerStepTactic", () => {
-      render(<TacticsSidebarSection />);
-
-      const tactics = capturedSidebarPanelProps.tactics as {
-        onTriggerStepTactic: (id: string) => void;
-      };
-      tactics.onTriggerStepTactic("step-t-1");
-      expect(mockExecutionContext.tOrch.triggerStepTactic).toHaveBeenCalledWith(
-        "step-t-1",
-      );
-    });
-
-    it("tactics.onExecuteNextStep delegates to tOrch.executeNextStep", () => {
-      render(<TacticsSidebarSection />);
-
-      const tactics = capturedSidebarPanelProps.tactics as {
-        onExecuteNextStep: () => void;
-      };
-      tactics.onExecuteNextStep();
-      expect(mockExecutionContext.tOrch.executeNextStep).toHaveBeenCalled();
-    });
-
-    it("tactics.onExitStepMode delegates to tOrch.exitStepMode", () => {
-      render(<TacticsSidebarSection />);
-
-      const tactics = capturedSidebarPanelProps.tactics as {
-        onExitStepMode: () => void;
-      };
-      tactics.onExitStepMode();
-      expect(mockExecutionContext.tOrch.exitStepMode).toHaveBeenCalled();
     });
 
     it("capture.onSavePng delegates to handleSavePng", () => {

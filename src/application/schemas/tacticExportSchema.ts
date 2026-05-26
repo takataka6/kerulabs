@@ -31,7 +31,6 @@ const tacticExportRecordSchema = z.object({
   phase: z.string(),
   movements: z.record(z.string(), z.array(movementExportSchema)),
   ballPasses: z.record(z.string(), z.array(ballPassExportSchema)).optional(),
-  stepBoundaries: z.array(z.number().min(0)).optional(),
 });
 
 /** 戦術エクスポートファイル全体のスキーマ */
