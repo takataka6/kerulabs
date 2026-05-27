@@ -23,8 +23,6 @@ export interface TacticProps {
   updatedAt: Date;
   ballPasses?: Map<string, BallPass[]>;
   ballPosition?: { x: number; z: number };
-  /** 各ステップの開始ディレイ（ms）。ステップごとの実行で使用。 */
-  stepBoundaries?: number[];
 }
 
 /** ファクトリ引数（新規作成用） — id/isCustom/createdAt/updatedAt は自動生成 */
@@ -35,8 +33,6 @@ export interface CreateTacticInput {
   movements: Map<string, Movement[]>;
   ballPasses?: Map<string, BallPass[]>;
   ballPosition?: { x: number; z: number };
-  /** 各ステップの開始ディレイ（ms）。ステップごとの実行で使用。 */
-  stepBoundaries?: number[];
 }
 
 /**
@@ -58,7 +54,6 @@ export class Tactic {
   private _updatedAt: Date;
   private _ballPasses: Map<string, BallPass[]>;
   private _ballPosition?: { x: number; z: number };
-  private _stepBoundaries?: number[];
 
   constructor(props: TacticProps) {
     this.id = props.id;
@@ -76,9 +71,6 @@ export class Tactic {
       : new Map();
     this._ballPosition = props.ballPosition
       ? { ...props.ballPosition }
-      : undefined;
-    this._stepBoundaries = props.stepBoundaries
-      ? [...props.stepBoundaries]
       : undefined;
   }
 
@@ -104,19 +96,6 @@ export class Tactic {
   }
   get ballPosition(): Readonly<{ x: number; z: number }> | undefined {
     return this._ballPosition;
-  }
-  get stepBoundaries(): readonly number[] | undefined {
-    return this._stepBoundaries;
-  }
-
-  /** ステップ数を取得する（stepBoundaries 未設定の場合は 1） */
-  get totalSteps(): number {
-    return this._stepBoundaries ? this._stepBoundaries.length : 1;
-  }
-
-  /** ステップごとの実行が可能か（2ステップ以上ある場合） */
-  get supportsStepExecution(): boolean {
-    return this.totalSteps > 1;
   }
 
   // ── Query ───────────────────────────────────────────────
@@ -165,7 +144,6 @@ export class Tactic {
       updatedAt: now,
       ballPasses: input.ballPasses,
       ballPosition: input.ballPosition,
-      stepBoundaries: input.stepBoundaries,
     });
   }
 
@@ -286,15 +264,6 @@ export class Tactic {
    */
   updateBallPosition(ballPosition: { x: number; z: number } | undefined): void {
     this._ballPosition = ballPosition ? { ...ballPosition } : undefined;
-    this._updatedAt = new Date();
-  }
-
-  /**
-   * ステップ境界を更新する
-   * @param stepBoundaries - 新しいステップ境界配列（undefinedで削除）
-   */
-  updateStepBoundaries(stepBoundaries: number[] | undefined): void {
-    this._stepBoundaries = stepBoundaries ? [...stepBoundaries] : undefined;
     this._updatedAt = new Date();
   }
 }

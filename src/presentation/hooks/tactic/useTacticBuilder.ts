@@ -49,7 +49,6 @@ export function useTacticBuilder(
 
       const allMovements: Movement[] = [];
       const allBallPasses: BallPass[] = [];
-      const stepBoundaries: number[] = [];
 
       // ハイライトオフセット: ボール位置が存在する場合、セットポジション前にハイライト一時停止を追加
       const hasBall = !!(creation.ballPosition && creation.ballTrajectory);
@@ -76,14 +75,6 @@ export function useTacticBuilder(
           ? highlightOffset + SET_POSITION_PAUSE_MS
           : highlightOffset;
 
-      // セットアップ境界: ボールセット＋セットポジションのタイミングを保持するため boundary=0 を追加
-      // 表示上はセットアップステップをステップ番号から除外する（オーバーレイ側で処理）
-      const hasSetPositions = creation.setPositions.size > 0;
-      const hasSetupStep = hasSetPositions || hasBall;
-      if (hasSetupStep) {
-        stepBoundaries.push(0);
-      }
-
       // セットプレーのボール軌道: 「走り出し」フェーズ開始時にボールが飛ぶ
       if (hasBall) {
         allBallPasses.push(
@@ -109,19 +100,6 @@ export function useTacticBuilder(
         let baseDelay = setPositionOffset + ballKickOffset;
         for (let j = 0; j < i; j++) {
           baseDelay += creation.steps[j].duration;
-        }
-
-        // ステップ境界を記録
-        // セットアップステップがある場合、境界は setPositionOffset から開始
-        // （ボールキック + 選手移動がこのステップに含まれるように）
-        if (hasSetupStep) {
-          let stepBoundary = setPositionOffset;
-          for (let j = 0; j < i; j++) {
-            stepBoundary += creation.steps[j].duration;
-          }
-          stepBoundaries.push(stepBoundary);
-        } else {
-          stepBoundaries.push(baseDelay);
         }
 
         // 選手移動
@@ -179,7 +157,6 @@ export function useTacticBuilder(
         movements: movementsMap,
         ballPasses: ballPassesMap,
         ballPosition: creation.ballPosition ?? undefined,
-        stepBoundaries: stepBoundaries.length > 1 ? stepBoundaries : undefined,
       });
     },
     [creation],

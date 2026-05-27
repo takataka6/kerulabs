@@ -308,7 +308,6 @@ describe("tacticExportDataSchema", () => {
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.tactics[0].ballPasses).toBeUndefined();
-      expect(result.data.tactics[0].stepBoundaries).toBeUndefined();
     }
   });
 

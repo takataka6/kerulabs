@@ -14,7 +14,6 @@ import type { TranslationKey } from "@shared/i18n/translations";
 import type { Language } from "@presentation/contexts/LanguageContext";
 import type { TrajectoryType } from "@domain/entities/BallPass";
 import type { CreationState, WizardStep } from "@presentation/hooks/tactic";
-import type { StepExecutionState } from "@presentation/hooks/tactic/useTacticExecution";
 import { LINEUP_ANIMATION_PRESETS } from "@presentation/components/lineup-animation";
 import { PhaseDiamond } from "./PhaseDiamond";
 import { SidebarCreationContent } from "./tactic-creation";
@@ -62,11 +61,7 @@ export interface TacticListProps {
   isCreating: boolean;
   hasCustomTactics: boolean;
   onTriggerTactic: (id: string) => void;
-  onTriggerStepTactic: (id: string) => void;
   onDeleteTactic: (id: string) => void;
-  stepExecution: StepExecutionState;
-  onExecuteNextStep: () => void;
-  onExitStepMode: () => void;
   onStartCreation: () => void;
   onImportTactics: () => void;
   onExportTactics: () => void;
@@ -144,92 +139,6 @@ const SIDEBAR_SECONDARY_BUTTON_CLASS =
 
 // ── サブコンポーネント ──────────────────────────────────
 
-/** ステップ実行コントロールパネル */
-function StepExecutionPanel({
-  stepExecution,
-  onExecuteNextStep,
-  onExitStepMode,
-  t,
-}: {
-  stepExecution: StepExecutionState;
-  onExecuteNextStep: () => void;
-  onExitStepMode: () => void;
-  t: (key: TranslationKey) => string;
-}) {
-  const hasSetupStep = stepExecution.tactic?.stepBoundaries?.[0] === 0;
-  const displayCurrent = hasSetupStep
-    ? stepExecution.currentStep
-    : stepExecution.currentStep + 1;
-  const displayTotal = hasSetupStep
-    ? stepExecution.totalSteps - 1
-    : stepExecution.totalSteps;
-
-  return (
-    <div className="mb-2 p-2.5 bg-gradient-to-r from-amber-900/30 to-amber-800/20 rounded-lg border border-amber-700/40">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] text-amber-400 font-bold tracking-widest uppercase">
-          {t("tactics.stepExecution")}
-        </span>
-        <span className="text-[10px] text-amber-300/80 font-medium">
-          {t("tactics.stepExecution.progress")
-            .replace("{current}", String(displayCurrent))
-            .replace("{total}", String(displayTotal))}
-        </span>
-      </div>
-      {/* ステッププログレスバー（セットアップステップを除外） */}
-      <div className="flex gap-1 mb-2">
-        {Array.from({ length: displayTotal }, (_, i) => {
-          const actualIndex = hasSetupStep ? i + 1 : i;
-          return (
-            <div
-              key={i}
-              className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
-                actualIndex < stepExecution.currentStep
-                  ? "bg-amber-400"
-                  : actualIndex === stepExecution.currentStep
-                    ? stepExecution.isStepRunning
-                      ? "bg-amber-400 animate-pulse"
-                      : "bg-amber-500"
-                    : "bg-slate-700"
-              }`}
-            />
-          );
-        })}
-      </div>
-      <div className="flex gap-1.5">
-        <button
-          onClick={onExecuteNextStep}
-          disabled={
-            stepExecution.isStepRunning ||
-            stepExecution.currentStep >= stepExecution.totalSteps - 1
-          }
-          className="flex-1 py-1.5 px-2 bg-amber-600 hover:bg-amber-500 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-lg text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1.5"
-        >
-          {stepExecution.isStepRunning ? (
-            <>
-              <span className="inline-block w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              <span>{t("tactics.stepExecution.running")}</span>
-            </>
-          ) : stepExecution.currentStep >= stepExecution.totalSteps - 1 ? (
-            <span>{t("tactics.stepExecution.completed")}</span>
-          ) : (
-            <>
-              <span>▶</span>
-              <span>{t("tactics.stepExecution.next")}</span>
-            </>
-          )}
-        </button>
-        <button
-          onClick={onExitStepMode}
-          className="py-1.5 px-2.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg text-xs font-medium transition-all duration-200"
-        >
-          {t("tactics.stepExecution.exit")}
-        </button>
-      </div>
-    </div>
-  );
-}
-
 // ── メインコンポーネント ────────────────────────────────
 
 /**
@@ -251,7 +160,7 @@ export const SidebarPanel = memo(function SidebarPanel(
   return (
     <aside
       aria-label={t("a11y.formationSelector")}
-      className={`sidebar-panel custom-scrollbar ${layout.sidebarOpen ? "sidebar-open" : "sidebar-closed"} ${layout.sidebarAnimating ? "sidebar-animating" : ""} transition-opacity duration-300 ${tactics.isExecuting && !tactics.stepExecution.isStepMode ? "opacity-40" : ""}`}
+      className={`sidebar-panel custom-scrollbar ${layout.sidebarOpen ? "sidebar-open" : "sidebar-closed"} ${layout.sidebarAnimating ? "sidebar-animating" : ""} transition-opacity duration-300 ${tactics.isExecuting ? "opacity-40" : ""}`}
       onTransitionEnd={layout.onTransitionEnd}
       style={layout.isActive ? { display: "none" } : undefined}
     >
@@ -524,16 +433,6 @@ export const SidebarPanel = memo(function SidebarPanel(
                   </div>
                 ) : (
                   <div className="space-y-1.5">
-                    {/* ステップ実行コントロールパネル */}
-                    {tactics.stepExecution.isStepMode && (
-                      <StepExecutionPanel
-                        stepExecution={tactics.stepExecution}
-                        onExecuteNextStep={tactics.onExecuteNextStep}
-                        onExitStepMode={tactics.onExitStepMode}
-                        t={t}
-                      />
-                    )}
-
                     {tactics.tacticsForCurrentFormation.map((tactic) => (
                       <div
                         key={tactic.id.value}
@@ -543,15 +442,12 @@ export const SidebarPanel = memo(function SidebarPanel(
                           onClick={() =>
                             tactics.onTriggerTactic(tactic.id.value)
                           }
-                          disabled={
-                            tactics.isExecuting ||
-                            tactics.stepExecution.isStepMode
-                          }
+                          disabled={tactics.isExecuting}
                           className={`flex-1 py-1.5 px-2.5 rounded-xl text-left transition-all duration-300 ${
                             tactics.activeTacticId === tactic.id.value
                               ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/20 scale-[1.01]"
                               : "bg-white/[0.04] text-slate-300 hover:bg-white/[0.07] hover:scale-[1.005] border border-slate-700/35"
-                          } ${(tactics.isExecuting || tactics.stepExecution.isStepMode) && tactics.activeTacticId !== tactic.id.value ? "opacity-40 cursor-not-allowed" : ""}`}
+                          } ${tactics.isExecuting && tactics.activeTacticId !== tactic.id.value ? "opacity-40 cursor-not-allowed" : ""}`}
                         >
                           <div className="flex items-center gap-2">
                             <span className="text-base">{tactic.icon}</span>
@@ -562,46 +458,13 @@ export const SidebarPanel = memo(function SidebarPanel(
                             </span>
                           </div>
                         </button>
-                        {/* ステップ実行ボタン（複数ステップを持つ戦術のみ） */}
-                        {tactic.supportsStepExecution && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              tactics.onTriggerStepTactic(tactic.id.value);
-                            }}
-                            disabled={
-                              tactics.isExecuting ||
-                              tactics.stepExecution.isStepMode
-                            }
-                            className="p-1.5 rounded-lg text-slate-500 hover:text-amber-400 hover:bg-amber-500/10 transition-all duration-200 shrink-0"
-                            title={t("tactics.stepExecution.start")}
-                            aria-label={t("tactics.stepExecution.start")}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="w-3.5 h-3.5"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                              aria-hidden="true"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          </button>
-                        )}
                         {tactic.isCustom && (
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               tactics.onDeleteTactic(tactic.id.value);
                             }}
-                            disabled={
-                              tactics.isExecuting ||
-                              tactics.stepExecution.isStepMode
-                            }
+                            disabled={tactics.isExecuting}
                             className="p-1.5 rounded-lg text-slate-600 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200 shrink-0"
                             title={t("tactics.creation.delete")}
                             aria-label={t("tactics.creation.delete")}

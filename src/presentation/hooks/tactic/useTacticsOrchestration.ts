@@ -116,10 +116,6 @@ export function useTacticsOrchestration(params: {
     playerPositions,
     arrows,
     ballTrajectories,
-    stepExecution,
-    startStepExecution,
-    executeNextStep,
-    exitStepMode,
   } = useTacticExecution(currentFormation ?? undefined);
 
   /** タクティクスIDからタクティクスを検索するユーティリティ */
@@ -314,23 +310,6 @@ export function useTacticsOrchestration(params: {
     ],
   );
 
-  const triggerStepTactic = useCallback(
-    (tacticId: string) => {
-      if (isExecuting || !currentFormation) return;
-      const tactic = findTacticById(tacticId);
-      if (!tactic || !tactic.supportsStepExecution) return;
-      clearManualPositions();
-      startStepExecution(tactic, currentFormation);
-    },
-    [
-      isExecuting,
-      currentFormation,
-      findTacticById,
-      startStepExecution,
-      clearManualPositions,
-    ],
-  );
-
   // ── プレイヤードラッグ終了 ──
   const handlePlayerDragEnd = useCallback(
     (index: number, pos: { x: number; z: number }) => {
@@ -471,12 +450,6 @@ export function useTacticsOrchestration(params: {
     handleImportFromJson,
     handlePlayerDragEnd,
     triggerTactic,
-    triggerStepTactic,
-
-    // ── ステップ実行 ──
-    stepExecution,
-    executeNextStep,
-    exitStepMode,
 
     // ── ツールバーハンドラー ──
     handleWizardStepChange,

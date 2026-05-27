@@ -534,7 +534,6 @@ describe("tacticSchema", () => {
             ],
           },
           ballPosition: { x: 0, z: 0 },
-          stepBoundaries: [0, 100],
         }).success,
       ).toBe(true);
     });
@@ -567,15 +566,6 @@ describe("tacticSchema", () => {
         },
       };
       expect(tacticRecordSchema.safeParse(bad).success).toBe(false);
-    });
-
-    it("stepBoundaries に負の値で失敗", () => {
-      expect(
-        tacticRecordSchema.safeParse({
-          ...validTactic,
-          stepBoundaries: [-1],
-        }).success,
-      ).toBe(false);
     });
   });
 });
