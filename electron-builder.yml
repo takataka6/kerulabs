@@ -22,6 +22,12 @@ mac:
     - dmg
     - zip
   category: public.app-category.sports
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  forceCodeSigning: true
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  notarize: true
 win:
   icon: build/icon.png
   target:
