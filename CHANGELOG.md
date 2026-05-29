@@ -7,39 +7,22 @@
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-05-30
+
 ### Changed
 
-- **背景画像フィルター**: 背景画像のぼかし（blur）を廃止し、彩度（0–100%）と明度（0–150%）のスライダーに変更。ぼかしは `CanvasRenderingContext2D.filter` の挙動が環境によって不安定なため、より安定した CSS フィルター（`saturate` / `brightness`）へ置き換えた
+- **背景画像フィルター**: 背景画像のぼかし（blur）を廃止し、彩度（0–100%）と明度（0–150%）のスライダーに変更。Safari / iPad 互換性のため、`CanvasRenderingContext2D.filter` 依存を避けた実装へ切り替えた
+- **フローチャートパネル UX**: フルハイト表示と外側クリックでのクローズに対応し、閲覧性と操作性を改善
+- **CI**: GitHub Actions で Playwright ブラウザのキャッシュを追加し、CI の安定性を改善
 
 ### Removed
 
-- **マッチプレビュー**: 試合の対戦カードを SNS 向け画像として生成する機能を現行アプリから削除
 - **ステップ実行**: 戦術アニメーションを手動でステップ単位に進める機能を削除。通常の自動再生で十分なため、全アーキテクチャ層（Domain / Application / Infrastructure / Presentation）から関連コード約1,300行を除去
 
 ### Added
 
-- **リリース運用**: タグ push から GitHub Release と Web / Electron アセットを作成する Release workflow、リリースノート抽出スクリプト、運用手順ドキュメントを追加
-- **プラグインシステム**: レッスンプラグインの JSON インポート・管理機能（`PluginInteractor`, `IPluginRepository`, プラグイン管理ページ）
-- **チームマニュアル**: チーム戦術マニュアルの作成・編集・Mermaid 図解対応（`TeamManualInteractor`, `TeamManualPage`）
-- **スケッチオーバーレイ**: 3D フィールド上にペン・直線・矢印で描画できるスケッチ機能（レイヤー対応・IndexedDB 永続化）
-- **アプリバックアップ**: IndexedDB 全データの JSON エクスポート/インポート・アトミックリストア（`AppBackupService`）
-- **ユーザー設定永続化**: 言語・背景色・ピッチ色などの設定を IndexedDB に永続保存（`IPreferencesService`）
-- **構造化ロギング**: IndexedDB ベースのログストア（`IndexedDBLogStore`）、`LogViewer` コンポーネント
-- **エラーハンドリング基盤**: `AppError` 型階層、`handleError` ユーティリティ、`withErrorHandling` ラッパー
-- **タイムラインエディタ**: 戦術アニメーションのタイムライン編集 UI
-- **スケルトンローディング**: ローディング状態の Skeleton UI コンポーネント
-- **画像クロップ**: プロフィール画像のクロップ・リサイズ機能（`ImageCropModal`）
-- **選手一覧ビュー**: 選手視点カメラ切替・HUD 表示（`PlayerViewHUD`）
-- **接続線表示**: フィールド上の選手間接続ライン描画（`PlayerConnectionLines`）
-- **背景カスタマイズ**: 3D シーンの背景色・背景画像設定パネル（`BackgroundSettingsPanel`）
-- **Undo/Redo**: 戦術編集のスナップショットベース Undo/Redo 機能
-- **一括インポート**: チーム・選手の一括インポート機能（`BulkTeamImportModal`, `BulkImportForm`）
-- **用語集インポート**: 用語集データの JSON インポート機能（`GlossaryImportModal`）
-- **プログラミングレッスン**: コードラボの追加レッスン（Git、Markdown、Mermaid、CI、シングルトン、ファクトリ等）
-- **TanStack Query 設定**: 共通クエリ設定の一元管理（`shared/config/tanstackQuery.ts`）
-- **再生速度制御**: アニメーション再生速度のグローバル状態管理（`playbackSpeedStore`）
-- **循環依存チェック**: `madge` による循環依存検出（`pnpm check:circular`）
-- **ライセンスチェック**: GPL 等の非互換ライセンス検出（`pnpm check:licenses`）
+- **macOS 署名・公証**: GitHub Release の macOS 向け Electron 配布物に `Developer ID` 署名と Apple notarization を追加
+- **PR テンプレート**: `UI/UX 改善` の変更種別を追加
 
 ## [0.1.0] - 2026-05-25
 
@@ -69,5 +52,6 @@
 - **Husky + lint-staged**: コミット時の自動リント・フォーマット
 - **GitHub Actions CI**: 型チェック・リント・テストの自動実行
 
-[Unreleased]: https://github.com/takataka6/kerulab/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/takataka6/kerulab/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/takataka6/kerulab/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/takataka6/kerulab/releases/tag/v0.1.0
