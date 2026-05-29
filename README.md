@@ -62,27 +62,17 @@ Football Tactics & Code Lab
 | 配布形態   | 対応環境                           | 取得物                    | 補足                                                          |
 | ---------- | ---------------------------------- | ------------------------- | ------------------------------------------------------------- |
 | Web 版     | 最新の Chromium / Safari / Firefox | `kerulabs-web-vX.Y.Z.zip` | ビルド済み静的ファイル。サーバー配信またはローカル preview 用 |
-| macOS 版   | Apple Silicon Mac を想定           | `.dmg`, `.zip`            | Electron アプリ。現在は未署名・未公証の preview build         |
+| macOS 版   | Apple Silicon Mac を想定           | `.dmg`, `.zip`            | Electron アプリ。Developer ID 署名済み、Apple notarization 済み |
 | Windows 版 | Windows 11 を想定                  | `.exe`, `.zip`            | Electron アプリ。現在は未署名の preview build                 |
 
 ### インストール時の注意
 
 - **最も手軽なのは Web 版** です。まず試すだけなら `pnpm dev` か配布済み Web bundle の利用を推奨します。
-- **macOS 版は未署名・未公証** のため、初回起動時に Gatekeeper 警告が出る場合があります。
 - **Windows 版は未署名** のため、SmartScreen 警告が出る場合があります。
 
 ### macOS の初回起動
 
-`KeruLabs.app` を `Applications` に移動したうえで、必要に応じて以下を実行してください。
-
-```bash
-xattr -dr com.apple.quarantine /Applications/KeruLabs.app
-open /Applications/KeruLabs.app
-```
-
-補足:
-
-- GUI では `Control` + クリックで `開く` を選ぶ方法でも起動できる場合があります。
+`KeruLabs.app` を `Applications` に移動して通常どおり起動できます。
 
 ## Screenshots
 
