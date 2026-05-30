@@ -55,6 +55,12 @@ vi.mock("@shared/constants/countries", () => ({
     japan: "🇯🇵",
     usa: "🇺🇸",
   },
+  getFlagTypeByCountryName: (countryName: string) =>
+    countryName === "アメリカ" || countryName === "United States"
+      ? "usa"
+      : countryName === "日本" || countryName === "Japan"
+        ? "japan"
+        : undefined,
 }));
 
 vi.mock("@shared/constants/formations", () => ({
@@ -279,5 +285,23 @@ describe("TeamEditor", () => {
     fireEvent.click(cancelButton);
 
     expect(mockOnClose).toHaveBeenCalled();
+  });
+
+  it("国を変更して保存すると対応する flagType に更新される", async () => {
+    const team = createMockTeam();
+    render(
+      <TeamEditor team={team} onSave={mockOnSave} onClose={mockOnClose} />,
+    );
+
+    fireEvent.change(screen.getByLabelText("teamCreator.country"), {
+      target: { value: "アメリカ" },
+    });
+    fireEvent.click(screen.getByText("teamEditor.save"));
+
+    await waitFor(() => {
+      expect(mockOnSave).toHaveBeenCalledWith(team);
+    });
+
+    expect(team.flagType).toBe("usa");
   });
 });

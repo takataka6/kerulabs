@@ -35,12 +35,16 @@ describe("countries", () => {
 
   // ── FLAG_EMOJI ──
 
-  it("FLAG_EMOJI に 10 件のフラグが定義されている", () => {
-    expect(Object.keys(FLAG_EMOJI)).toHaveLength(10);
+  it("FLAG_EMOJI に 59 件のフラグが定義されている", () => {
+    expect(Object.keys(FLAG_EMOJI)).toHaveLength(59);
   });
 
   it("FLAG_EMOJI の japan キーが 🇯🇵 を返す", () => {
     expect(FLAG_EMOJI["japan"]).toBe("🇯🇵");
+  });
+
+  it("FLAG_EMOJI の usa キーが 🇺🇸 を返す", () => {
+    expect(FLAG_EMOJI["usa"]).toBe("🇺🇸");
   });
 
   // ── getCountryInfo ──
