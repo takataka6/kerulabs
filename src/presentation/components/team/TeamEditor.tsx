@@ -10,6 +10,7 @@ import {
   getFlagTypeByCountryName,
 } from "@shared/constants/countries";
 import { FORMATION_OPTIONS } from "@shared/constants/formations";
+import type { TranslationKey } from "@shared/i18n/translations";
 import { useLanguage } from "@presentation/contexts/LanguageContext";
 import { AccessibleModal, useConfirm } from "@presentation/components/ui";
 
@@ -19,7 +20,7 @@ interface TeamEditorProps {
   onClose: () => void;
 }
 
-const GRADIENT_OPTIONS = [
+const GRADIENT_OPTIONS: { value: string; labelKey: TranslationKey }[] = [
   { value: "from-blue-600 to-blue-400", labelKey: "teamCreator.color.blue" },
   { value: "from-red-600 to-red-400", labelKey: "teamCreator.color.red" },
   {
