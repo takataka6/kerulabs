@@ -7,8 +7,9 @@
 | countries | COUNTRIES に複数の国が定義されている |
 | countries | 各国に code / nameJa / nameEn / flag が含まれる |
 | countries | 日本（JP）が含まれている |
-| countries | FLAG_EMOJI に 10 件のフラグが定義されている |
+| countries | FLAG_EMOJI に 59 件のフラグが定義されている |
 | countries | FLAG_EMOJI の japan キーが 🇯🇵 を返す |
+| countries | FLAG_EMOJI の usa キーが 🇺🇸 を返す |
 | countries | 日本語名で検索すると対応する国情報を返す |
 | countries | 英語名で検索すると対応する国情報を返す |
 | countries | 日本語名で検索して英語で取得できる |

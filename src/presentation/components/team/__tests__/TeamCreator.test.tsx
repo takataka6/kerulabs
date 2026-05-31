@@ -50,6 +50,12 @@ vi.mock("@shared/constants/countries", () => ({
     japan: "🇯🇵",
     usa: "🇺🇸",
   },
+  getFlagTypeByCountryName: (countryName: string) =>
+    countryName === "アメリカ" || countryName === "United States"
+      ? "usa"
+      : countryName === "日本" || countryName === "Japan"
+        ? "japan"
+        : undefined,
 }));
 
 vi.mock("@shared/constants/formations", () => ({
@@ -203,13 +209,6 @@ describe("TeamCreator", () => {
     expect(defaultProps.onCreateTeam).not.toHaveBeenCalled();
   });
 
-  it("国旗タイプを選択できる", () => {
-    render(<TeamCreator {...defaultProps} />);
-    // Flag optionsから2番目の国旗ボタンをクリック
-    const flagButton = screen.getByText("teamCreator.flag.usa");
-    fireEvent.click(flagButton);
-  });
-
   it("グラデーションカラーを選択できる", () => {
     render(<TeamCreator {...defaultProps} />);
     const colorButton = screen.getByText("teamCreator.color.red");
@@ -262,5 +261,24 @@ describe("TeamCreator", () => {
 
     // 4-3-3 should still be selected since it's the only one
     expect(screen.getAllByText("4-3-3").length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("国を選択して作成すると対応する flagType が保存される", async () => {
+    render(<TeamCreator {...defaultProps} />);
+
+    fireEvent.change(screen.getByLabelText("teamCreator.country"), {
+      target: { value: "アメリカ" },
+    });
+    fireEvent.change(screen.getByLabelText(/teamCreator\.teamName/), {
+      target: { value: "USA Team" },
+    });
+    fireEvent.click(screen.getByText("teamCreator.create"));
+
+    await waitFor(() => {
+      expect(defaultProps.onCreateTeam).toHaveBeenCalledTimes(1);
+    });
+
+    const createdTeam = defaultProps.onCreateTeam.mock.calls[0][0];
+    expect(createdTeam.flagType).toBe("usa");
   });
 });

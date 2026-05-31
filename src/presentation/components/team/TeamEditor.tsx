@@ -4,7 +4,11 @@
  */
 import { useState } from "react";
 import type { Team } from "@domain/entities/Team";
-import { COUNTRIES, FLAG_EMOJI } from "@shared/constants/countries";
+import {
+  COUNTRIES,
+  FLAG_EMOJI,
+  getFlagTypeByCountryName,
+} from "@shared/constants/countries";
 import { FORMATION_OPTIONS } from "@shared/constants/formations";
 import type { TranslationKey } from "@shared/i18n/translations";
 import { useLanguage } from "@presentation/contexts/LanguageContext";
@@ -15,16 +19,6 @@ interface TeamEditorProps {
   onSave: (team: Team) => Promise<void>;
   onClose: () => void;
 }
-
-const FLAG_OPTIONS: {
-  value: string;
-  emoji: string;
-  labelKey: TranslationKey;
-}[] = Object.entries(FLAG_EMOJI).map(([value, emoji]) => ({
-  value,
-  emoji,
-  labelKey: `teamCreator.flag.${value}` as TranslationKey,
-}));
 
 const GRADIENT_OPTIONS: { value: string; labelKey: TranslationKey }[] = [
   { value: "from-blue-600 to-blue-400", labelKey: "teamCreator.color.blue" },
@@ -50,11 +44,20 @@ const GRADIENT_OPTIONS: { value: string; labelKey: TranslationKey }[] = [
     value: "from-orange-600 to-orange-400",
     labelKey: "teamCreator.color.orange",
   },
+  { value: "from-white to-slate-200", labelKey: "teamCreator.color.white" },
 ];
 
 export function TeamEditor({ team, onSave, onClose }: TeamEditorProps) {
   const { language, t } = useLanguage();
   const { alert } = useConfirm();
+  const sortedCountries = [...COUNTRIES].sort((a, b) => {
+    if (language === "ja") {
+      if (a.code === "JP") return -1;
+      if (b.code === "JP") return 1;
+      return a.nameJa.localeCompare(b.nameJa, "ja");
+    }
+    return a.nameEn.localeCompare(b.nameEn, "en");
+  });
   const [teamName, setTeamName] = useState(team.name);
   const [subtitle, setSubtitle] = useState(team.subtitle);
   const [flagType, setFlagType] = useState(team.flagType);
@@ -127,9 +130,7 @@ export function TeamEditor({ team, onSave, onClose }: TeamEditorProps) {
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-4xl">
-              {FLAG_OPTIONS.find((f) => f.value === flagType)?.emoji || "⚽"}
-            </span>
+            <span className="text-4xl">{FLAG_EMOJI[flagType] || "⚽"}</span>
             <div>
               <h2
                 id="team-editor-title"
@@ -204,11 +205,18 @@ export function TeamEditor({ team, onSave, onClose }: TeamEditorProps) {
             <select
               id="edit-team-country"
               value={country}
-              onChange={(e) => setCountry(e.target.value)}
+              onChange={(e) => {
+                const nextCountry = e.target.value;
+                setCountry(nextCountry);
+                const nextFlagType = getFlagTypeByCountryName(nextCountry);
+                if (nextFlagType) {
+                  setFlagType(nextFlagType);
+                }
+              }}
               className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500 transition-colors"
             >
               <option value="">{t("teamCreator.countryNone")}</option>
-              {COUNTRIES.map((c) => (
+              {sortedCountries.map((c) => (
                 <option
                   key={c.code}
                   value={language === "ja" ? c.nameJa : c.nameEn}
@@ -235,31 +243,6 @@ export function TeamEditor({ team, onSave, onClose }: TeamEditorProps) {
               placeholder={t("teamCreator.managerPlaceholder")}
               className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
             />
-          </div>
-
-          {/* 国旗選択 */}
-          <div>
-            <label className="block text-sm font-bold text-slate-300 mb-3 tracking-wide">
-              {t("teamCreator.flag")}
-            </label>
-            <div className="grid grid-cols-5 gap-2">
-              {FLAG_OPTIONS.map((flag) => (
-                <button
-                  key={flag.value}
-                  onClick={() => setFlagType(flag.value)}
-                  className={`p-3 rounded-xl transition-all duration-300 ${
-                    flagType === flag.value
-                      ? "bg-blue-600 scale-105 shadow-lg"
-                      : "bg-slate-800 hover:bg-slate-700"
-                  }`}
-                >
-                  <div className="text-3xl mb-1">{flag.emoji}</div>
-                  <div className="text-xs text-slate-300 font-semibold">
-                    {t(flag.labelKey)}
-                  </div>
-                </button>
-              ))}
-            </div>
           </div>
 
           {/* グラデーション選択 */}
