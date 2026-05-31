@@ -124,6 +124,25 @@ pnpm storybook
 
 Web 版は `http://localhost:5173` で起動します。
 
+## ログ確認
+
+### アプリ内ログビューアー
+
+- `Ctrl + Shift + L` でログビューアーを開閉できます
+- ログビューアーでは renderer 側ログの一覧表示、レベル / カテゴリ / 検索フィルター、クリア、JSON エクスポートができます
+
+### renderer 側ログの保存先
+
+- アプリケーションログはブラウザの IndexedDB に保存されます
+- ログ用 DB 名は `kerulabs_logs` です
+- 開発時に直接確認する場合は、ブラウザ DevTools の Application / Storage から参照できます
+
+### Electron main 側ログ
+
+- Electron main process のログはコンソール出力に加えて `userData/kerulabs-main.log.json` に保存されます
+- `userData` は Electron のアプリデータディレクトリです
+- `pnpm electron:dev` で起動した場合は、起動元ターミナルでも main process のログを確認できます
+
 ## よく使うコマンド
 
 | コマンド              | 説明                             |
