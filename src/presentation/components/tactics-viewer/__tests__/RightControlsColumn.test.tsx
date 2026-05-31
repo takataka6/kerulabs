@@ -445,6 +445,24 @@ describe("RightControlsColumn", () => {
 
       expect(screen.getByLabelText("tactics.playerView")).toBeInTheDocument();
     });
+
+    it("playerViewEnabled=true の場合、プレイヤービューボタンがハイライトされる", () => {
+      render(
+        <RightControlsColumn
+          {...defaultProps({
+            playerView: {
+              playerViewEnabled: true,
+              togglePlayerView: vi.fn(),
+            } as never,
+          })}
+        />,
+      );
+
+      const button = screen.getByLabelText("tactics.playerView");
+      expect(button).toHaveAttribute("aria-pressed", "true");
+      expect(button.className).toContain("!bg-amber-600/18");
+      expect(button.className).toContain("!text-amber-200");
+    });
   });
 
   // ── ボール配置 ────────────────────────────────────────
