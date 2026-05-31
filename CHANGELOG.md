@@ -7,6 +7,27 @@
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-05-31
+
+### Added
+
+- **OGP / Twitter Card**: `kerulabs.dev` 向けに OGP / Twitter Card メタデータを追加し、共有用画像 `ogp-card.png` を公開アセットとして追加
+- **国旗表示**: チーム作成 / 編集で国旗表示に対応し、国選択 UI と国データを拡充
+- **フォーメーション拡充**: 初期データへサッカー用フォーメーションを追加し、戦術ビューで選びやすいコンパクトなセレクタ UI を導入
+- **名前ラベル固定モード**: 選手名ラベルを画面正面へ向け続ける Billboard モードを追加
+- **チームヘッダーグラデーション**: チーム表示に使うヘッダーグラデーション定数を追加
+
+### Changed
+
+- **相手選手配置ワークフロー**: 配置ポップアップの操作フローを改善し、右カラムとポップアップの責務を整理
+- **チーム国選択 UX**: 国入力フローを簡素化し、作成 / 編集画面の操作量を削減
+- **README**: 戦術 UI 画像とデモ GIF を更新し、ログ確認ガイドを追加
+
+### Fixed
+
+- **Player View ボタン表示**: player view モード中に `Player View` ボタンがアクティブ表示されない問題を修正
+- **Semgrep 誤検知**: `canonical` link に対する `missing-integrity` の誤検知を抑止
+
 ## [0.2.0] - 2026-05-30
 
 ### Changed
@@ -52,6 +73,7 @@
 - **Husky + lint-staged**: コミット時の自動リント・フォーマット
 - **GitHub Actions CI**: 型チェック・リント・テストの自動実行
 
-[Unreleased]: https://github.com/takataka6/kerulab/compare/v0.2.0...HEAD
-[0.2.0]: https://github.com/takataka6/kerulab/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/takataka6/kerulab/releases/tag/v0.1.0
+[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/takataka6/kerulabs/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/takataka6/kerulabs/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/takataka6/kerulabs/releases/tag/v0.1.0
