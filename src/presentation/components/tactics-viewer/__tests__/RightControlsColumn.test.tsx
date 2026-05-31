@@ -94,6 +94,8 @@ function defaultProps(
     onToggleNameSettings: vi.fn(),
     hiddenPlayerIndices: new Set<number>(),
     onTogglePlayerHidden: vi.fn(),
+    labelFixed: false,
+    onToggleLabelFixed: vi.fn(),
     playersData: [],
     formationData: [],
     bgSettings: {
