@@ -84,6 +84,8 @@ interface RightControlsColumnProps {
   onToggleNameSettings: () => void;
   hiddenPlayerIndices: Set<number>;
   onTogglePlayerHidden: (index: number) => void;
+  labelFixed: boolean;
+  onToggleLabelFixed: () => void;
   playersData: PlayerData[];
   formationData: FormationDataItem[];
 
@@ -148,6 +150,8 @@ export const RightControlsColumn = memo(function RightControlsColumn({
   onToggleNameSettings,
   hiddenPlayerIndices,
   onTogglePlayerHidden,
+  labelFixed,
+  onToggleLabelFixed,
   playersData,
   formationData,
   bgSettings,
@@ -471,6 +475,19 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                 </div>
                 {showNameSettings && showPlayerNames && (
                   <div className="border-t border-slate-700/50">
+                    {/* ラベル固定 */}
+                    <div className="px-3 py-2 border-b border-slate-700/40">
+                      <button
+                        onClick={onToggleLabelFixed}
+                        className={`w-full text-[10px] font-semibold py-1.5 rounded transition-all duration-150 flex items-center justify-center gap-1.5 ${
+                          labelFixed
+                            ? "bg-blue-500/70 text-white"
+                            : "bg-white/[0.05] text-slate-400 hover:bg-white/[0.10] hover:text-slate-200"
+                        }`}
+                      >
+                        {t("tactics.labelFixed")}
+                      </button>
+                    </div>
                     {playersData.map((player, index) => {
                       const isHidden = hiddenPlayerIndices.has(index);
                       const pos = formationData[index];

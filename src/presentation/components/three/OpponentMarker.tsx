@@ -41,6 +41,7 @@ interface OpponentMarkerProps {
   color?: string; // チームカラー (デフォルト: '#1e1e1e')
   name?: string; // 選手名
   showName?: boolean;
+  labelFixed?: boolean;
   onGroupDragEnd?: (
     positions: Array<{
       type: "player" | "opponent";
@@ -66,6 +67,7 @@ export const OpponentMarker = memo(function OpponentMarker({
   color,
   name,
   showName = true,
+  labelFixed = false,
   onGroupDragEnd,
   groupDragState,
   fieldBounds,
@@ -75,6 +77,11 @@ export const OpponentMarker = memo(function OpponentMarker({
     () => fieldBounds ?? DEFAULT_FIELD_BOUNDS,
     [fieldBounds],
   );
+
+  const labelFixedRef = useRef(labelFixed);
+  labelFixedRef.current = labelFixed;
+  const labelGroupRef = useRef<Group>(null);
+
   const meshRef = useRef<Mesh>(null);
   const groupRef = useRef<Group>(null);
   const selectedRingRef = useRef<Mesh>(null);
@@ -264,6 +271,13 @@ export const OpponentMarker = memo(function OpponentMarker({
       groupRef.current.position.z += dz * ANIMATION.LERP_STANDARD;
     }
 
+    // Billboard ラベルの追従
+    if (labelGroupRef.current && groupRef.current && labelFixedRef.current) {
+      labelGroupRef.current.position.x = groupRef.current.position.x;
+      labelGroupRef.current.position.z = groupRef.current.position.z;
+      labelGroupRef.current.quaternion.copy(state.camera.quaternion);
+    }
+
     // 選択リングのアニメーション
     if (selectedRingRef.current) {
       selectedRingRef.current.rotation.z += ANIMATION.RING_ROTATION_SPEED;
@@ -280,82 +294,125 @@ export const OpponentMarker = memo(function OpponentMarker({
   });
 
   return (
-    <group
-      ref={groupRef}
-      position={[position.x, 0, position.z]}
-      scale={[markerScale, markerScale, markerScale]}
-    >
-      {/* 選択時のハイライトリング */}
-      {isSelected && (
+    <>
+      <group
+        ref={groupRef}
+        position={[position.x, 0, position.z]}
+        scale={[markerScale, markerScale, markerScale]}
+      >
+        {/* 選択時のハイライトリング */}
+        {isSelected && (
+          <mesh
+            ref={selectedRingRef}
+            rotation={[-Math.PI / 2, 0, 0]}
+            position={[0, SELECTION_RING.Y_POSITION, 0]}
+          >
+            <ringGeometry
+              args={[
+                SELECTION_RING.INNER_RADIUS_SMALL,
+                SELECTION_RING.OUTER_RADIUS_SMALL,
+                SELECTION_RING.SEGMENTS,
+              ]}
+            />
+            <meshBasicMaterial
+              color="#fbbf24"
+              transparent
+              opacity={SELECTION_RING.OPACITY}
+              fog={false}
+            />
+          </mesh>
+        )}
+
+        {/* メインディスク */}
         <mesh
-          ref={selectedRingRef}
-          rotation={[-Math.PI / 2, 0, 0]}
-          position={[0, SELECTION_RING.Y_POSITION, 0]}
+          ref={meshRef}
+          position={[0, DISK_GEOMETRY.Y_POSITION, 0]}
+          onPointerDown={handlePointerDown}
+          onClick={onClick ? handleClick : undefined}
+          onContextMenu={handleContextMenu}
+          onPointerOver={handlePointerOver}
+          onPointerOut={handlePointerOut}
         >
-          <ringGeometry
+          <cylinderGeometry
             args={[
-              SELECTION_RING.INNER_RADIUS_SMALL,
-              SELECTION_RING.OUTER_RADIUS_SMALL,
-              SELECTION_RING.SEGMENTS,
+              DISK_GEOMETRY.RADIUS,
+              DISK_GEOMETRY.RADIUS,
+              DISK_GEOMETRY.HEIGHT,
+              DISK_GEOMETRY.SEGMENTS,
             ]}
           />
-          <meshBasicMaterial
-            color="#fbbf24"
-            transparent
-            opacity={SELECTION_RING.OPACITY}
+          <meshStandardMaterial
+            color={colors.disk}
+            emissive={colors.disk}
+            emissiveIntensity={PLAYER_MATERIAL.EMISSIVE_INTENSITY}
+            metalness={PLAYER_MATERIAL.METALNESS}
+            roughness={0.4}
             fog={false}
           />
         </mesh>
-      )}
 
-      {/* メインディスク */}
-      <mesh
-        ref={meshRef}
-        position={[0, DISK_GEOMETRY.Y_POSITION, 0]}
-        onPointerDown={handlePointerDown}
-        onClick={onClick ? handleClick : undefined}
-        onContextMenu={handleContextMenu}
-        onPointerOver={handlePointerOver}
-        onPointerOut={handlePointerOut}
-      >
-        <cylinderGeometry
-          args={[
-            DISK_GEOMETRY.RADIUS,
-            DISK_GEOMETRY.RADIUS,
-            DISK_GEOMETRY.HEIGHT,
-            DISK_GEOMETRY.SEGMENTS,
-          ]}
-        />
-        <meshStandardMaterial
-          color={colors.disk}
-          emissive={colors.disk}
-          emissiveIntensity={PLAYER_MATERIAL.EMISSIVE_INTENSITY}
-          metalness={PLAYER_MATERIAL.METALNESS}
-          roughness={0.4}
-          fog={false}
-        />
-      </mesh>
+        {/* 番号テキスト（相手チームは反転して相手側から読める向き） */}
+        <Text
+          position={[0, OPPONENT_OFFSETS.NUMBER_Y, 0]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          fontSize={TEXT_LABEL.OPPONENT_NUMBER_FONT_SIZE}
+          color={colors.text}
+          anchorX="center"
+          anchorY="middle"
+          fontWeight="bold"
+        >
+          {number.toString()}
+        </Text>
 
-      {/* 番号テキスト（相手チームは反転して相手側から読める向き） */}
-      <Text
-        position={[0, OPPONENT_OFFSETS.NUMBER_Y, 0]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        fontSize={TEXT_LABEL.OPPONENT_NUMBER_FONT_SIZE}
-        color={colors.text}
-        anchorX="center"
-        anchorY="middle"
-        fontWeight="bold"
-      >
-        {number.toString()}
-      </Text>
+        {/* 名前ラベル（フラット表示） */}
+        {name && showName && !labelFixed && (
+          <>
+            <mesh
+              position={[
+                0,
+                OPPONENT_OFFSETS.NAME_BG_Y,
+                OPPONENT_OFFSETS.NAME_Z,
+              ]}
+              rotation={[-Math.PI / 2, 0, 0]}
+            >
+              <planeGeometry
+                args={[
+                  name.length * TEXT_LABEL.NAME_WIDTH_FACTOR +
+                    TEXT_LABEL.NAME_WIDTH_PADDING,
+                  TEXT_LABEL.NAME_HEIGHT,
+                ]}
+              />
+              <meshBasicMaterial
+                color={TEXT_LABEL.NAME_BG_COLOR}
+                transparent={false}
+                fog={true}
+              />
+            </mesh>
+            <Text
+              position={[
+                0,
+                OPPONENT_OFFSETS.NAME_TEXT_Y,
+                OPPONENT_OFFSETS.NAME_Z,
+              ]}
+              rotation={[-Math.PI / 2, 0, 0]}
+              fontSize={TEXT_LABEL.NAME_FONT_SIZE}
+              color="white"
+              anchorX="center"
+              anchorY="middle"
+              fontWeight="bold"
+              outlineWidth={TEXT_LABEL.OUTLINE_WIDTH}
+              outlineColor="#000000"
+            >
+              {name}
+            </Text>
+          </>
+        )}
+      </group>
 
-      {/* 名前ラベル（相手チームは反転） */}
-      {name && showName && (
-        <>
-          <mesh
-            position={[0, OPPONENT_OFFSETS.NAME_BG_Y, OPPONENT_OFFSETS.NAME_Z]}
-            rotation={[-Math.PI / 2, 0, 0]}
-          >
+      {/* 名前ラベル（Billboard: 常にカメラ向き） */}
+      {name && showName && labelFixed && (
+        <group ref={labelGroupRef} position={[position.x, 0.3, position.z]}>
+          <mesh position={[0, -0.18, 0]}>
             <planeGeometry
               args={[
                 name.length * TEXT_LABEL.NAME_WIDTH_FACTOR +
@@ -363,19 +420,10 @@ export const OpponentMarker = memo(function OpponentMarker({
                 TEXT_LABEL.NAME_HEIGHT,
               ]}
             />
-            <meshBasicMaterial
-              color={TEXT_LABEL.NAME_BG_COLOR}
-              transparent={false}
-              fog={true}
-            />
+            <meshBasicMaterial color={TEXT_LABEL.NAME_BG_COLOR} />
           </mesh>
           <Text
-            position={[
-              0,
-              OPPONENT_OFFSETS.NAME_TEXT_Y,
-              OPPONENT_OFFSETS.NAME_Z,
-            ]}
-            rotation={[-Math.PI / 2, 0, 0]}
+            position={[0, -0.18, 0.001]}
             fontSize={TEXT_LABEL.NAME_FONT_SIZE}
             color="white"
             anchorX="center"
@@ -386,8 +434,8 @@ export const OpponentMarker = memo(function OpponentMarker({
           >
             {name}
           </Text>
-        </>
+        </group>
       )}
-    </group>
+    </>
   );
 });

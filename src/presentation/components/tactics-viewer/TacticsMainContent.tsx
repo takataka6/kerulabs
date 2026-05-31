@@ -192,6 +192,8 @@ export function TacticsMainContent() {
           showNameSettings={ui.showNameSettings}
           onToggleNameSettings={() => ui.setShowNameSettings((prev) => !prev)}
           hiddenPlayerIndices={ui.hiddenPlayerIndices}
+          labelFixed={ui.labelFixed}
+          onToggleLabelFixed={() => ui.setLabelFixed((prev) => !prev)}
           onTogglePlayerHidden={(index) => {
             ui.setHiddenPlayerIndices((prev) => {
               const next = new Set(prev);
@@ -265,6 +267,7 @@ export function TacticsMainContent() {
           showPlayerPhotos={!lineupAnimation.isActive}
           showOpponentNames={opponentsHook.showOpponentNames}
           hiddenPlayerIndices={ui.hiddenPlayerIndices}
+          labelFixed={ui.labelFixed}
           playerMarkerScale={ui.playerMarkerScale}
           playerCards={canvasMemo.canvasPlayerCards}
           teamName={selectedTeam.name}

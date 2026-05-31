@@ -11,6 +11,7 @@ import {
   TextureLoader,
   Vector2,
   Vector3,
+  type Group,
   type Mesh,
   type MeshBasicMaterial,
 } from "three";
@@ -42,6 +43,7 @@ interface PlayerProps {
   showName?: boolean;
   showNumber?: boolean;
   showPhoto?: boolean;
+  labelFixed?: boolean;
   index: number;
   card?: CardStatus;
   onClick?: (index: number, event?: MouseEvent) => void;
@@ -71,6 +73,7 @@ export const Player = memo(function Player({
   showName = true,
   showNumber = true,
   showPhoto = true,
+  labelFixed = false,
   index,
   card = "none",
   onClick,
@@ -87,6 +90,11 @@ export const Player = memo(function Player({
     () => fieldBounds ?? DEFAULT_FIELD_BOUNDS,
     [fieldBounds],
   );
+
+  const labelFixedRef = useRef(labelFixed);
+  labelFixedRef.current = labelFixed;
+  const labelGroupRef = useRef<Group>(null);
+
   const photoRef = useRef<Mesh>(null);
 
   const texture = useMemo(() => {
@@ -337,15 +345,25 @@ export const Player = memo(function Player({
 
     // 名前ラベルの追従
     if (meshRef.current) {
-      if (nameBgRef.current) {
-        nameBgRef.current.position.x = meshRef.current.position.x;
-        nameBgRef.current.position.z =
-          meshRef.current.position.z + PLAYER_OFFSETS.NAME_Z;
-      }
-      if (nameTextRef.current) {
-        nameTextRef.current.position.x = meshRef.current.position.x;
-        nameTextRef.current.position.z =
-          meshRef.current.position.z + PLAYER_OFFSETS.NAME_Z;
+      if (labelFixedRef.current) {
+        // Billboard: カメラ方向に向ける
+        if (labelGroupRef.current) {
+          labelGroupRef.current.position.x = meshRef.current.position.x;
+          labelGroupRef.current.position.z = meshRef.current.position.z;
+          labelGroupRef.current.quaternion.copy(state.camera.quaternion);
+        }
+      } else {
+        // Flat: 地面に平行
+        if (nameBgRef.current) {
+          nameBgRef.current.position.x = meshRef.current.position.x;
+          nameBgRef.current.position.z =
+            meshRef.current.position.z + PLAYER_OFFSETS.NAME_Z;
+        }
+        if (nameTextRef.current) {
+          nameTextRef.current.position.x = meshRef.current.position.x;
+          nameTextRef.current.position.z =
+            meshRef.current.position.z + PLAYER_OFFSETS.NAME_Z;
+        }
       }
       // カード表示の追従
       if (cardRef.current) {
@@ -487,10 +505,9 @@ export const Player = memo(function Player({
         </Text>
       )}
 
-      {/* 名前テキスト */}
-      {showName && name && (
+      {/* 名前テキスト（フラット表示） */}
+      {showName && name && !labelFixed && (
         <>
-          {/* 名前の背景 */}
           <mesh
             ref={nameBgRef}
             position={[
@@ -513,8 +530,6 @@ export const Player = memo(function Player({
               fog={true}
             />
           </mesh>
-
-          {/* 名前テキスト */}
           <Text
             ref={nameTextRef}
             position={[
@@ -534,6 +549,34 @@ export const Player = memo(function Player({
             {name}
           </Text>
         </>
+      )}
+
+      {/* 名前テキスト（Billboard: 常にカメラ向き） */}
+      {showName && name && labelFixed && (
+        <group ref={labelGroupRef} position={[position.x, 0.3, position.z]}>
+          <mesh position={[0, -0.18, 0]}>
+            <planeGeometry
+              args={[
+                name.length * TEXT_LABEL.NAME_WIDTH_FACTOR +
+                  TEXT_LABEL.NAME_WIDTH_PADDING,
+                TEXT_LABEL.NAME_HEIGHT,
+              ]}
+            />
+            <meshBasicMaterial color={TEXT_LABEL.NAME_BG_COLOR} />
+          </mesh>
+          <Text
+            position={[0, -0.18, 0.001]}
+            fontSize={TEXT_LABEL.NAME_FONT_SIZE}
+            color="white"
+            anchorX="center"
+            anchorY="middle"
+            fontWeight="bold"
+            outlineWidth={TEXT_LABEL.OUTLINE_WIDTH}
+            outlineColor="#000000"
+          >
+            {name}
+          </Text>
+        </group>
       )}
 
       {/* カード表示（右上） */}

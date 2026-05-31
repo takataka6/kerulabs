@@ -359,6 +359,7 @@
   "tactics.manager.notSet": "未設定",
   "tactics.showNames": "名前表示",
   "tactics.hideNames": "名前非表示",
+  "tactics.labelFixed": "向きを固定",
   "tactics.capture.close": "閉じる",
   "tactics.capture.savePng": "PNG保存",
   "tactics.names.myTeam": "自チーム",

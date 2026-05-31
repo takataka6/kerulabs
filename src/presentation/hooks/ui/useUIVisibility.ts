@@ -25,6 +25,7 @@ export function useUIVisibility() {
   const [hiddenPlayerIndices, setHiddenPlayerIndices] = useState<Set<number>>(
     new Set(),
   );
+  const [labelFixed, setLabelFixed] = useState(false);
 
   // ── 右コントロール ──
   const [showRightControls, setShowRightControls] = useState(true);
@@ -77,6 +78,8 @@ export function useUIVisibility() {
     setShowNameSettings,
     hiddenPlayerIndices,
     setHiddenPlayerIndices,
+    labelFixed,
+    setLabelFixed,
 
     // 右コントロール
     showRightControls,

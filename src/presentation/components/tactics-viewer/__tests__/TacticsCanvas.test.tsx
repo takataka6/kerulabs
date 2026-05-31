@@ -88,6 +88,7 @@ function createDefaultProps(): React.ComponentProps<typeof TacticsCanvas> {
     showPlayerPhotos: false,
     showOpponentNames: false,
     hiddenPlayerIndices: new Set(),
+    labelFixed: false,
     playerMarkerScale: 1,
     playerCards: {},
     teamName: "Home",

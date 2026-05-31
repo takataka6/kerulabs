@@ -359,6 +359,7 @@
   "tactics.manager.notSet": "Not set",
   "tactics.showNames": "Show Names",
   "tactics.hideNames": "Hide Names",
+  "tactics.labelFixed": "Fix Orientation",
   "tactics.capture.close": "Close",
   "tactics.capture.savePng": "Save PNG",
   "tactics.names.myTeam": "My Team",
