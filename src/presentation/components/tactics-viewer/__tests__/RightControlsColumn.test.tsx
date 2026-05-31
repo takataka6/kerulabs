@@ -50,14 +50,14 @@ function defaultProps(
     onToggleRightControls: vi.fn(),
     headerVisible: true,
     gameModeFormations: [
-      { id: { value: "f1" }, name: "4-4-2", positions: [] } as never,
+      { id: { value: "f1" }, name: "4-4-2 Flat", positions: [] } as never,
       { id: { value: "f2" }, name: "4-3-3", positions: [] } as never,
     ],
     currentFormationId: "f1",
     selectedTeam: {
       id: "team-1",
-      availableFormations: ["4-4-2", "4-3-3"],
-      defaultFormation: "4-4-2",
+      availableFormations: ["4-4-2 Flat", "4-3-3"],
+      defaultFormation: "4-4-2 Flat",
       players: [],
     } as never,
     showFormationEditor: false,
@@ -164,8 +164,13 @@ describe("RightControlsColumn", () => {
     it("利用可能なフォーメーションボタンが表示される", () => {
       render(<RightControlsColumn {...defaultProps()} />);
 
-      expect(screen.getByText("4-4-2")).toBeInTheDocument();
-      expect(screen.getByText("4-3-3")).toBeInTheDocument();
+      const select = screen.getByLabelText(
+        "a11y.formationSelector",
+      ) as HTMLSelectElement;
+      const optionValues = Array.from(select.options).map(
+        (option) => option.text,
+      );
+      expect(optionValues).toEqual(["4-4-2 Flat", "4-3-3"]);
     });
 
     it("現在のゲームモードの設定がない場合はデフォルトフォーメーションを表示する", () => {
@@ -196,13 +201,10 @@ describe("RightControlsColumn", () => {
       expect(screen.queryByText("1-2-1")).not.toBeInTheDocument();
     });
 
-    it("実行中の場合、フォーメーションボタンが無効になる", () => {
+    it("実行中の場合、フォーメーションセレクトが無効になる", () => {
       render(<RightControlsColumn {...defaultProps({ isExecuting: true })} />);
 
-      const buttons = screen.getAllByText(/4-[34]-[23]/);
-      buttons.forEach((btn) => {
-        expect(btn.closest("button")).toBeDisabled();
-      });
+      expect(screen.getByLabelText("a11y.formationSelector")).toBeDisabled();
     });
 
     it("フォーメーション編集ボタンが表示される", () => {
@@ -504,12 +506,14 @@ describe("RightControlsColumn", () => {
       expect(props.onToggleRightControls).toHaveBeenCalled();
     });
 
-    it("フォーメーションボタンクリックで onChangeFormation が呼ばれる", () => {
+    it("フォーメーション変更で onChangeFormation が呼ばれる", () => {
       const props = defaultProps();
       render(<RightControlsColumn {...props} />);
 
-      fireEvent.click(screen.getByText("4-3-3"));
-      expect(props.onChangeFormation).toHaveBeenCalled();
+      fireEvent.change(screen.getByLabelText("a11y.formationSelector"), {
+        target: { value: "f2" },
+      });
+      expect(props.onChangeFormation).toHaveBeenCalledWith("f2");
     });
 
     it("フォーメーション編集ボタンクリックで onToggleFormationEditor が呼ばれる", () => {

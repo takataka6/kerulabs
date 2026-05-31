@@ -129,6 +129,7 @@ async function seedFormations(repo: FormationRepository): Promise<void> {
       : (() => {
           const existingIds = new Set(existing.map((f) => f.id));
           return [
+            ...DEFAULT_FORMATIONS,
             ...DEFAULT_FUTSAL_FORMATIONS,
             ...DEFAULT_EIGHT_ASIDE_FORMATIONS,
             ...DEFAULT_SOCIETY_FORMATIONS,

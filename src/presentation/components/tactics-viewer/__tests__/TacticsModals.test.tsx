@@ -85,7 +85,7 @@ const opponentTeamId = new TeamId("opp-1");
 function createTeam(
   id: TeamId,
   name: string,
-  formations: string[] = ["4-4-2"],
+  formations: string[] = ["4-4-2 Flat"],
 ) {
   return new Team({
     id,
@@ -125,8 +125,10 @@ function createFormation(id: string, name: string): Formation {
 }
 
 const selectedTeam = createTeam(teamId, "My Team");
-const opponentTeam = createTeam(opponentTeamId, "Opponent Team", ["4-4-2"]);
-const formation442 = createFormation("f-1", "4-4-2");
+const opponentTeam = createTeam(opponentTeamId, "Opponent Team", [
+  "4-4-2 Flat",
+]);
+const formation442 = createFormation("f-1", "4-4-2 Flat");
 const futsalFormation22 = {
   ...createFormation("futsal-2-2", "2-2"),
   type: "futsal",
@@ -292,7 +294,7 @@ describe("TacticsModals", () => {
           opponentTeam,
         },
       });
-      expect(screen.getByText("4-4-2")).toBeInTheDocument();
+      expect(screen.getByText("4-4-2 Flat")).toBeInTheDocument();
     });
 
     it("相手チームに現在ゲームモードの設定がない場合はデフォルトフォーメーションを表示する", () => {
@@ -325,7 +327,7 @@ describe("TacticsModals", () => {
           setShowOpponentSquadBuilder,
         },
       });
-      fireEvent.click(screen.getByText("4-4-2"));
+      fireEvent.click(screen.getByText("4-4-2 Flat"));
       // When opponentTeam has no selectedSquad, it should transition to squad builder
       expect(setOpponentFormationId).toHaveBeenCalledWith("f-1");
       expect(setShowOpponentFormationSelect).toHaveBeenCalledWith(false);

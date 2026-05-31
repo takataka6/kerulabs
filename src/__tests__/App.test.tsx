@@ -98,8 +98,16 @@ vi.mock("@infrastructure/factories", () => ({
 // ── Seed データ ──
 vi.mock("@infrastructure/seed", () => ({
   DEFAULT_FORMATIONS: [
-    { id: "f1", name: "4-4-2", gameMode: "football" },
-    { id: "f2", name: "4-3-3", gameMode: "football" },
+    { id: "f1", name: "4-3-3", gameMode: "football" },
+    { id: "4-4-2-flat", name: "4-4-2 Flat", gameMode: "football" },
+    { id: "4-4-2-diamond", name: "4-4-2 Diamond", gameMode: "football" },
+    { id: "4-2-3-1", name: "4-2-3-1", gameMode: "football" },
+    { id: "3-5-2", name: "3-5-2", gameMode: "football" },
+    { id: "5-3-2", name: "5-3-2", gameMode: "football" },
+    { id: "3-4-2-1", name: "3-4-2-1", gameMode: "football" },
+    { id: "5-4-1", name: "5-4-1", gameMode: "football" },
+    { id: "3-4-3", name: "3-4-3", gameMode: "football" },
+    { id: "4-3-2-1", name: "4-3-2-1", gameMode: "football" },
   ],
   DEFAULT_FUTSAL_FORMATIONS: [
     { id: "futsal1", name: "2-2", gameMode: "futsal" },
@@ -348,16 +356,16 @@ describe("App", () => {
       renderApp();
 
       await waitFor(() => {
-        // football(2) + futsal(1) + eightAside(1) + society(1) = 5
-        expect(mockFormationSave).toHaveBeenCalledTimes(5);
+        // football(10) + futsal(1) + eightAside(1) + society(1) = 13
+        expect(mockFormationSave).toHaveBeenCalledTimes(13);
       });
     });
 
     it("既存データあり: 不足フォーメーションのみ追加される", async () => {
       // football のフォーメーションは既存、他ゲームモードは未シード
       mockFormationFindAll.mockResolvedValue([
-        { id: "f1", name: "4-4-2", gameMode: "football" },
-        { id: "f2", name: "4-3-3", gameMode: "football" },
+        { id: "4-4-2-flat", name: "4-4-2 Flat", gameMode: "football" },
+        { id: "f1", name: "4-3-3", gameMode: "football" },
       ]);
 
       renderApp();
@@ -366,8 +374,8 @@ describe("App", () => {
         expect(mockFormationSave).toHaveBeenCalled();
       });
 
-      // 不足している futsal(1) + eightAside(1) + society(1) = 3
-      expect(mockFormationSave).toHaveBeenCalledTimes(3);
+      // 不足している football(8) + futsal(1) + eightAside(1) + society(1) = 11
+      expect(mockFormationSave).toHaveBeenCalledTimes(11);
       expect(mockFormationSave).toHaveBeenCalledWith(
         expect.objectContaining({ id: "futsal1" }),
       );
@@ -377,12 +385,26 @@ describe("App", () => {
       expect(mockFormationSave).toHaveBeenCalledWith(
         expect.objectContaining({ id: "soc1" }),
       );
+      expect(mockFormationSave).toHaveBeenCalledWith(
+        expect.objectContaining({ id: "4-4-2-diamond" }),
+      );
+      expect(mockFormationSave).toHaveBeenCalledWith(
+        expect.objectContaining({ id: "5-4-1" }),
+      );
     });
 
     it("全フォーメーションが既に存在する場合は追加しない", async () => {
       mockFormationFindAll.mockResolvedValue([
         { id: "f1" },
-        { id: "f2" },
+        { id: "4-4-2-flat" },
+        { id: "4-4-2-diamond" },
+        { id: "4-2-3-1" },
+        { id: "3-5-2" },
+        { id: "5-3-2" },
+        { id: "3-4-2-1" },
+        { id: "5-4-1" },
+        { id: "3-4-3" },
+        { id: "4-3-2-1" },
         { id: "futsal1" },
         { id: "eight1" },
         { id: "soc1" },
