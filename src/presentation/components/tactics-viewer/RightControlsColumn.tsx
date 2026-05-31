@@ -585,12 +585,13 @@ export const RightControlsColumn = memo(function RightControlsColumn({
 
               {/* プレイヤービューボタン */}
               <div
-                className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} ${playerView.playerViewEnabled ? "border-amber-500/50" : "border-slate-700/45"}`}
+                className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} ${playerView.playerViewEnabled ? "!border-amber-500/50" : "border-slate-700/45"}`}
               >
                 <button
                   onClick={playerView.togglePlayerView}
-                  className={`${RAIL_BUTTON_CLASS} ${playerView.playerViewEnabled ? "bg-amber-600/18 text-amber-200 hover:bg-amber-600/24" : RAIL_BUTTON_INACTIVE_CLASS}`}
+                  className={`${RAIL_BUTTON_CLASS} ${playerView.playerViewEnabled ? "!bg-amber-600/18 !text-amber-200 hover:!bg-amber-600/24" : RAIL_BUTTON_INACTIVE_CLASS}`}
                   aria-label={t("tactics.playerView")}
+                  aria-pressed={playerView.playerViewEnabled}
                 >
                   <span className="text-xs" aria-hidden="true">
                     📹
