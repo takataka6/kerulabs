@@ -14,6 +14,7 @@ import { Team } from "@domain/entities/Team";
 import { Player } from "@domain/entities/Player";
 import { TeamId } from "@domain/value-objects/TeamId";
 import { Color } from "@domain/value-objects/Color";
+import { DEFAULT_OPPONENT_MARKER_COLOR } from "@shared/constants/colors";
 
 /* ------------------------------------------------------------------ */
 /*  ヘルパー                                                            */
@@ -88,7 +89,7 @@ function createDefaultHook() {
     handleOpponentSquadComplete: vi.fn(),
     toggleOpponentPlacementMode: vi.fn(),
     placeSquadDirectly: vi.fn(),
-    opponentMarkerColor: "#e74c3c",
+    opponentMarkerColor: DEFAULT_OPPONENT_MARKER_COLOR,
     setOpponentMarkerColor: vi.fn(),
     clearOpponents: vi.fn(),
     toggleOpponentPlacement: vi.fn(),
@@ -170,6 +171,30 @@ describe("OpponentSquadSelector", () => {
       const select = screen.getByRole("combobox");
       fireEvent.change(select, { target: { value: "" } });
       expect(hook.setOpponentTeamId).toHaveBeenCalledWith(null);
+    });
+  });
+
+  describe("チーム未選択時のマーカー色", () => {
+    it("ヘッダーカラーパターンのプリセットを表示する", () => {
+      renderComponent();
+
+      expect(
+        screen.getByLabelText("teamCreator.color.blue"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByLabelText("teamCreator.color.red"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByLabelText("teamCreator.color.white"),
+      ).toBeInTheDocument();
+    });
+
+    it("色プリセットをクリックすると対応するマーカー色を設定する", () => {
+      const hook = createOpponentsHook();
+      renderComponent({ opponentsHook: hook });
+
+      fireEvent.click(screen.getByLabelText("teamCreator.color.red"));
+      expect(hook.setOpponentMarkerColor).toHaveBeenCalledWith("#dc2626");
     });
   });
 

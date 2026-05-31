@@ -28,6 +28,7 @@ export const OpponentSquadSelectorPopup = memo(
   }: OpponentSquadSelectorPopupProps) {
     const popupRef = useRef<HTMLDivElement>(null);
     const hasTeams = !!teams && teams.length > 0;
+    const hasOpponents = opponentsHook.opponents.length > 0;
     const showInlineSelector =
       hasTeams &&
       (opponentsHook.opponentPlacementMode ||
@@ -47,6 +48,7 @@ export const OpponentSquadSelectorPopup = memo(
         const target = event.target;
         if (!(target instanceof Element)) return;
         if (target.closest('[data-opponent-selector-trigger="true"]')) return;
+        if (target.closest('[data-tactics-canvas-root="true"]')) return;
         if (popupRef.current?.contains(target)) return;
         handleClose();
       };
@@ -65,18 +67,6 @@ export const OpponentSquadSelectorPopup = memo(
           headerVisible ? "top-[94px] sm:top-[110px]" : "top-2"
         } right-14 sm:right-[164px] xl:right-[176px]`}
       >
-        <div className="mb-2 flex items-center justify-between px-1">
-          <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-red-200/80">
-            {t("tactics.opponents")}
-          </div>
-          <button
-            onClick={handleClose}
-            className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-700/60 bg-slate-900/85 text-slate-400 transition-colors hover:border-slate-500 hover:text-white"
-            aria-label={t("a11y.closeModal")}
-          >
-            <span aria-hidden="true">✕</span>
-          </button>
-        </div>
         <OpponentSquadSelector
           opponentsHook={opponentsHook}
           teams={teams}
@@ -84,6 +74,26 @@ export const OpponentSquadSelectorPopup = memo(
           onEditTeam={onEditTeam}
           t={t}
           className="w-full"
+          headerActions={
+            <>
+              {hasOpponents && (
+                <button
+                  onClick={opponentsHook.clearOpponents}
+                  className="flex h-8 items-center justify-center rounded-xl border border-slate-700/60 bg-slate-900/85 px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-300 transition-colors hover:border-slate-500 hover:text-white"
+                  aria-label={t("tactics.opponents.clear")}
+                >
+                  {t("tactics.opponents.clear")}
+                </button>
+              )}
+              <button
+                onClick={handleClose}
+                className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-700/60 bg-slate-900/85 text-slate-400 transition-colors hover:border-slate-500 hover:text-white"
+                aria-label={t("a11y.closeModal")}
+              >
+                <span aria-hidden="true">✕</span>
+              </button>
+            </>
+          }
         />
       </div>
     );
