@@ -236,11 +236,11 @@ export const RightControlsColumn = memo(function RightControlsColumn({
 
             {/* フォーメーション + Undo/Redo(sm+のみ) */}
             <div className="flex items-stretch justify-end gap-2 self-end">
-              {/* フォーメーション: モバイルは flex-1 で幅を合わせる */}
+              {/* フォーメーション */}
               <div
-                className={`${PRIMARY_PANEL_CLASS} ${HEADER_ACTION_CARD_HEIGHT_CLASS} flex flex-col flex-1 sm:flex-none`}
+                className={`${PRIMARY_PANEL_CLASS} ${HEADER_ACTION_CARD_HEIGHT_CLASS} flex w-[128px] sm:w-[144px] xl:w-[156px] flex-col`}
               >
-                <div className="bg-gradient-to-r from-slate-800/95 via-slate-800/90 to-slate-700/85 px-2 py-1 sm:px-3 sm:py-2 border-b border-slate-600/60 flex items-center justify-between">
+                <div className="bg-gradient-to-r from-slate-800/95 via-slate-800/90 to-slate-700/85 px-1.5 py-1 sm:px-2 sm:py-1.5 border-b border-slate-600/60 flex items-center justify-between gap-1">
                   <div className={PANEL_CAPTION_CLASS}>
                     <span className="w-1 h-3.5 bg-orange-500 rounded-full hidden sm:block"></span>
                     <span className="hidden sm:inline">
@@ -256,24 +256,30 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                     <span aria-hidden="true">✏️</span>
                   </button>
                 </div>
-                <div className="flex flex-1 items-center rounded-b-[22px] bg-[linear-gradient(180deg,rgba(2,6,23,0.76)_0%,rgba(2,6,23,0.9)_100%)] p-1.5 sm:px-1.5 sm:py-2">
-                  <div className="flex flex-wrap gap-0.5 sm:gap-1 xl:gap-1.5">
-                    {gameModeFormations
-                      .filter((f) => availableFormationNames.has(f.name))
-                      .map((f) => (
-                        <button
-                          key={f.id.value}
-                          onClick={() => onChangeFormation(f.id.value)}
-                          disabled={isExecuting}
-                          className={`py-1 px-1.5 sm:py-1.5 sm:px-2.5 xl:py-1.5 xl:px-2.5 rounded-xl text-[10px] sm:text-xs font-bold transition-all duration-300 ${
-                            currentFormationId === f.id.value
-                              ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/30 scale-[1.03]"
-                              : "bg-white/[0.04] text-slate-400 hover:bg-white/[0.08] hover:text-slate-200 border border-white/5"
-                          } ${isExecuting ? "opacity-40 cursor-not-allowed" : "hover:scale-105"}`}
-                        >
-                          {f.name}
-                        </button>
-                      ))}
+                <div className="flex flex-1 items-center rounded-b-[22px] bg-[linear-gradient(180deg,rgba(2,6,23,0.76)_0%,rgba(2,6,23,0.9)_100%)] p-0.5 sm:px-0.5 sm:py-1">
+                  <div className="relative w-full">
+                    <select
+                      value={currentFormationId ?? ""}
+                      onChange={(e) => onChangeFormation(e.target.value)}
+                      disabled={isExecuting}
+                      aria-label={t("a11y.formationSelector")}
+                      className={`pointer-events-auto w-full cursor-pointer appearance-none rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(37,99,235,0.98)_0%,rgba(29,78,216,0.98)_100%)] px-2 py-1.5 text-center text-xs sm:text-sm font-bold text-white shadow-[0_10px_24px_rgba(37,99,235,0.28)] outline-none transition-all duration-300 ${isExecuting ? "cursor-not-allowed opacity-40" : "hover:brightness-110 focus:border-blue-300/70 focus:ring-2 focus:ring-blue-400/30"}`}
+                    >
+                      {gameModeFormations
+                        .filter((f) => availableFormationNames.has(f.name))
+                        .map((f) => (
+                          <option
+                            key={f.id.value}
+                            value={f.id.value}
+                            className="bg-slate-900 text-slate-100"
+                          >
+                            {f.name}
+                          </option>
+                        ))}
+                    </select>
+                    <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-white/80">
+                      ▼
+                    </span>
                   </div>
                 </div>
               </div>

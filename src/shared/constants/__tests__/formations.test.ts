@@ -13,6 +13,18 @@ import {
 describe("getFormationOptions", () => {
   it("footballモードでサッカーフォーメーションを返す", () => {
     expect(getFormationOptions("football")).toBe(FORMATION_OPTIONS);
+    expect(FORMATION_OPTIONS).toEqual([
+      "4-3-3",
+      "4-4-2 Flat",
+      "4-4-2 Diamond",
+      "4-2-3-1",
+      "3-5-2",
+      "5-3-2",
+      "3-4-2-1",
+      "5-4-1",
+      "3-4-3",
+      "4-3-2-1",
+    ]);
   });
 
   it("futsalモードでフットサルフォーメーションを返す", () => {

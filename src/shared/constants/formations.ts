@@ -6,11 +6,15 @@ import type { GameMode } from "@shared/types/GameMode";
 
 export const FORMATION_OPTIONS = [
   "4-3-3",
-  "4-4-2",
+  "4-4-2 Flat",
+  "4-4-2 Diamond",
   "4-2-3-1",
   "3-5-2",
   "5-3-2",
   "3-4-2-1",
+  "5-4-1",
+  "3-4-3",
+  "4-3-2-1",
 ] as const;
 
 export const FUTSAL_FORMATION_OPTIONS = [
