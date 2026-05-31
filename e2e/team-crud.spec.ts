@@ -82,8 +82,8 @@ test.describe("チーム管理 (CRUD)", () => {
     const modal = page.locator('[aria-labelledby="team-creator-title"]');
     await modal.locator("#team-name").fill("複数フォメチーム");
 
-    // 4-4-2 を追加選択（4-3-3 はデフォルト選択済み）
-    await modal.getByText("4-4-2", { exact: true }).click();
+    // 4-4-2 Flat を追加選択（4-3-3 はデフォルト選択済み）
+    await modal.getByText("4-4-2 Flat", { exact: true }).click();
 
     await modal
       .getByRole("button", { name: "チームを作成", exact: true })
@@ -96,13 +96,17 @@ test.describe("チーム管理 (CRUD)", () => {
       timeout: 10000,
     });
 
-    // フォーメーションがボタンとして表示される
-    await expect(
-      page.getByRole("button", { name: "4-3-3", exact: true }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "4-4-2", exact: true }),
-    ).toBeVisible();
+    // フォーメーション選択UIに、選択済みフォーメーションが含まれる
+    const formationSelector = page.locator(
+      'select[aria-label="フォーメーション選択"]',
+    );
+    await expect(formationSelector).toBeVisible();
+    const optionTexts = await formationSelector
+      .locator("option")
+      .allTextContents();
+    expect(optionTexts).toEqual(
+      expect.arrayContaining(["4-3-3", "4-4-2 Flat"]),
+    );
   });
 
   // ── チーム編集 ──────────────────────────────────
