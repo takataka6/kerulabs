@@ -1,10 +1,16 @@
+import type { ReactNode } from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { OpponentSquadSelectorPopup } from "../OpponentSquadSelectorPopup";
 
 vi.mock("../OpponentSquadSelector", () => ({
-  OpponentSquadSelector: () => (
-    <div data-testid="opponent-squad-selector">Opponent Squad</div>
+  OpponentSquadSelector: (props: { headerActions?: ReactNode }) => (
+    <div data-testid="opponent-squad-selector">
+      <div data-testid="opponent-squad-selector-actions">
+        {props.headerActions}
+      </div>
+      Opponent Squad
+    </div>
   ),
 }));
 
@@ -12,12 +18,14 @@ const mockT = vi.fn((key: string) => key);
 
 function createOpponentsHook(overrides: Record<string, unknown> = {}) {
   return {
+    opponents: [],
     opponentPlacementMode: true,
     selectedOpponentPlayerId: null,
     showOpponentFormationSelect: false,
     showOpponentSquadBuilder: false,
     setOpponentPlacementMode: vi.fn(),
     setSelectedOpponentPlayerId: vi.fn(),
+    clearOpponents: vi.fn(),
     ...overrides,
   } as never;
 }
@@ -82,5 +90,50 @@ describe("OpponentSquadSelectorPopup", () => {
     fireEvent.mouseDown(document.body);
     expect(setOpponentPlacementMode).toHaveBeenCalledWith(false);
     expect(setSelectedOpponentPlayerId).toHaveBeenCalledWith(null);
+  });
+
+  it("キャンバス領域クリックでは閉じない", () => {
+    const setOpponentPlacementMode = vi.fn();
+    const setSelectedOpponentPlayerId = vi.fn();
+    renderComponent({
+      opponentsHook: {
+        setOpponentPlacementMode,
+        setSelectedOpponentPlayerId,
+      },
+    });
+
+    const canvasRoot = document.createElement("div");
+    canvasRoot.setAttribute("data-tactics-canvas-root", "true");
+    document.body.appendChild(canvasRoot);
+
+    fireEvent.mouseDown(canvasRoot);
+
+    expect(setOpponentPlacementMode).not.toHaveBeenCalled();
+    expect(setSelectedOpponentPlayerId).not.toHaveBeenCalled();
+
+    canvasRoot.remove();
+  });
+
+  it("相手選手がいる場合はクリアボタンを表示する", () => {
+    renderComponent({
+      opponentsHook: { opponents: [{ id: 1, x: 0, z: 0 }] },
+    });
+
+    expect(
+      screen.getByLabelText("tactics.opponents.clear"),
+    ).toBeInTheDocument();
+  });
+
+  it("クリアボタン押下で clearOpponents を呼ぶ", () => {
+    const clearOpponents = vi.fn();
+    renderComponent({
+      opponentsHook: {
+        opponents: [{ id: 1, x: 0, z: 0 }],
+        clearOpponents,
+      },
+    });
+
+    fireEvent.click(screen.getByLabelText("tactics.opponents.clear"));
+    expect(clearOpponents).toHaveBeenCalled();
   });
 });

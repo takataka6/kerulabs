@@ -367,18 +367,6 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                       </span>
                     )}
                   </button>
-                  {opponentsHook.opponents.length > 0 && (
-                    <button
-                      onClick={opponentsHook.clearOpponents}
-                      className={SPLIT_ACTION_CLASS}
-                      title={t("tactics.opponents.clear")}
-                      aria-label={t("tactics.opponents.clear")}
-                    >
-                      <span className="text-[10px]" aria-hidden="true">
-                        ✕
-                      </span>
-                    </button>
-                  )}
                 </div>
                 {opponentsHook.opponents.length > 0 && (
                   <div className="border-t border-slate-700/50">

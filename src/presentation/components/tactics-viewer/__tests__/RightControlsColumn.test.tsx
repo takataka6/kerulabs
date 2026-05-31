@@ -331,24 +331,6 @@ describe("RightControlsColumn", () => {
       expect(button).toHaveAttribute("aria-expanded", "true");
       expect(button.className).toContain("from-red-600/28");
     });
-
-    it("敵がいる場合、クリアボタンが表示される", () => {
-      const props = defaultProps({
-        opponentsHook: {
-          opponentPlacementMode: false,
-          toggleOpponentPlacement: vi.fn(),
-          opponents: [{ id: 1, x: 0, z: 0 }],
-          clearOpponents: vi.fn(),
-          showOpponentNames: false,
-          setShowOpponentNames: vi.fn(),
-        } as never,
-      });
-      render(<RightControlsColumn {...props} />);
-
-      expect(
-        screen.getByLabelText("tactics.opponents.clear"),
-      ).toBeInTheDocument();
-    });
   });
 
   // ── 名前表示 ──────────────────────────────────────────
@@ -674,24 +656,6 @@ describe("RightControlsColumn", () => {
 
       fireEvent.click(screen.getByText("Player A"));
       expect(props.onTogglePlayerHidden).toHaveBeenCalledWith(0);
-    });
-
-    it("敵クリアボタンクリックで clearOpponents が呼ばれる", () => {
-      const clearOpponents = vi.fn();
-      const props = defaultProps({
-        opponentsHook: {
-          opponentPlacementMode: false,
-          toggleOpponentPlacement: vi.fn(),
-          opponents: [{ id: 1, x: 0, z: 0 }],
-          clearOpponents,
-          showOpponentNames: false,
-          setShowOpponentNames: vi.fn(),
-        } as never,
-      });
-      render(<RightControlsColumn {...props} />);
-
-      fireEvent.click(screen.getByLabelText("tactics.opponents.clear"));
-      expect(clearOpponents).toHaveBeenCalled();
     });
 
     it("FormationEditor の onClose で onToggleFormationEditor が呼ばれる", () => {

@@ -353,6 +353,7 @@ export const TacticsCanvas = memo(function TacticsCanvas(
   return (
     <div
       ref={wrapperRef}
+      data-tactics-canvas-root="true"
       role="img"
       aria-label={t("a11y.tacticsCanvas")}
       className="absolute inset-0 outline-none select-none"

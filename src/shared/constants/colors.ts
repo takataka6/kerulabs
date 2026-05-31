@@ -2,6 +2,7 @@
  * @module colors
  * @description セマンティックカラー定数。コードベース全体で使われるマジックカラー値を一元管理する。
  */
+import { DEFAULT_OPPONENT_MARKER_COLOR as DEFAULT_OPPONENT_MARKER_COLOR_FROM_TEAM_GRADIENTS } from "./teamHeaderGradients";
 
 /** ボールパスのデフォルト表示色（黄色） */
 export const DEFAULT_BALL_PASS_COLOR = "#facc15";
@@ -22,7 +23,8 @@ export const DEFAULT_SKETCH_STROKE_COLOR = "#ef4444";
 export const DEFAULT_CONNECTION_LINE_COLOR = "#22d3ee";
 
 /** 相手チームマーカーのデフォルトカラー（赤） */
-export const DEFAULT_OPPONENT_MARKER_COLOR = "#e74c3c";
+export const DEFAULT_OPPONENT_MARKER_COLOR =
+  DEFAULT_OPPONENT_MARKER_COLOR_FROM_TEAM_GRADIENTS;
 
 /** シーン背景のデフォルトカラー（dark navy） */
 export const DEFAULT_SCENE_BG_COLOR = "#131b31";

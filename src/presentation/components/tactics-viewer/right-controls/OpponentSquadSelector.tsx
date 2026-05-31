@@ -2,18 +2,11 @@
  * @module OpponentSquadSelector
  * @description 相手チームスカッド選択コンポーネント。チーム・フォーメーション選択と選手配置操作を表示する。
  */
-import { memo } from "react";
+import { memo, type ReactNode } from "react";
 import type { Team } from "@domain/entities/Team";
 import type { useOpponents } from "@presentation/hooks/field";
+import { TEAM_HEADER_GRADIENT_OPTIONS } from "@shared/constants/teamHeaderGradients";
 import type { TranslationFn } from "../types";
-
-const OPPONENT_COLOR_PRESETS = [
-  "#e74c3c", // 赤
-  "#3498db", // 青
-  "#f39c12", // オレンジ
-  "#2ecc71", // 緑
-  "#9b59b6", // 紫
-];
 
 interface OpponentSquadSelectorProps {
   opponentsHook: ReturnType<typeof useOpponents>;
@@ -22,6 +15,7 @@ interface OpponentSquadSelectorProps {
   onEditTeam?: () => void;
   t: TranslationFn;
   className?: string;
+  headerActions?: ReactNode;
 }
 
 export const OpponentSquadSelector = memo(function OpponentSquadSelector({
@@ -31,6 +25,7 @@ export const OpponentSquadSelector = memo(function OpponentSquadSelector({
   onEditTeam,
   t,
   className = "",
+  headerActions,
 }: OpponentSquadSelectorProps) {
   if (!teams || teams.length === 0) {
     return null;
@@ -40,6 +35,11 @@ export const OpponentSquadSelector = memo(function OpponentSquadSelector({
     <div
       className={`bg-[linear-gradient(180deg,rgba(15,23,42,0.96)_0%,rgba(2,6,23,0.94)_100%)] backdrop-blur-xl rounded-[24px] border border-slate-600/40 shadow-[0_18px_40px_rgba(2,6,23,0.32),0_4px_12px_rgba(2,6,23,0.16)] ring-1 ring-white/5 overflow-hidden ${className}`}
     >
+      {headerActions && (
+        <div className="flex items-center justify-end gap-2 border-b border-slate-700/50 px-4 py-3">
+          {headerActions}
+        </div>
+      )}
       <div className="px-4 py-3 border-b border-slate-700/50">
         <label className="text-[10px] text-slate-300/90 font-semibold uppercase tracking-[0.18em]">
           {t("tactics.opponents.team")}
@@ -92,18 +92,27 @@ export const OpponentSquadSelector = memo(function OpponentSquadSelector({
           <label className="text-[10px] text-slate-300/90 font-semibold uppercase tracking-[0.18em]">
             {t("tactics.opponents.markerColor")}
           </label>
-          <div className="flex items-center gap-1.5 mt-2">
-            {OPPONENT_COLOR_PRESETS.map((c) => (
+          <div className="mt-2 grid grid-cols-3 gap-2">
+            {TEAM_HEADER_GRADIENT_OPTIONS.map((gradient) => (
               <button
-                key={c}
-                onClick={() => opponentsHook.setOpponentMarkerColor(c)}
-                className={`w-6 h-6 rounded-full border-2 transition-all ${
-                  opponentsHook.opponentMarkerColor === c
-                    ? "border-white scale-110"
+                key={gradient.value}
+                onClick={() =>
+                  opponentsHook.setOpponentMarkerColor(gradient.markerColor)
+                }
+                className={`relative h-9 overflow-hidden rounded-xl border transition-all ${
+                  opponentsHook.opponentMarkerColor === gradient.markerColor
+                    ? "border-white scale-[1.03] ring-1 ring-white/70"
                     : "border-slate-600 hover:border-slate-400"
                 }`}
-                style={{ backgroundColor: c }}
-              />
+                aria-label={t(gradient.labelKey)}
+                title={t(gradient.labelKey)}
+              >
+                <span
+                  className={`absolute inset-0 bg-gradient-to-r ${gradient.value}`}
+                  aria-hidden="true"
+                />
+                <span className="absolute inset-0 bg-slate-950/10" />
+              </button>
             ))}
           </div>
         </div>

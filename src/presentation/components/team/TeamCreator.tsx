@@ -10,7 +10,10 @@ import {
   getFlagTypeByCountryName,
 } from "@shared/constants/countries";
 import { FORMATION_OPTIONS } from "@shared/constants/formations";
-import type { TranslationKey } from "@shared/i18n/translations";
+import {
+  DEFAULT_TEAM_HEADER_GRADIENT,
+  TEAM_HEADER_GRADIENT_OPTIONS,
+} from "@shared/constants/teamHeaderGradients";
 import { useLanguage } from "@presentation/contexts/LanguageContext";
 import { AccessibleModal, useConfirm } from "@presentation/components/ui";
 
@@ -18,33 +21,6 @@ interface TeamCreatorProps {
   onCreateTeam: (team: Team) => void;
   onClose: () => void;
 }
-
-const GRADIENT_OPTIONS: { value: string; labelKey: TranslationKey }[] = [
-  { value: "from-blue-600 to-blue-400", labelKey: "teamCreator.color.blue" },
-  { value: "from-red-600 to-red-400", labelKey: "teamCreator.color.red" },
-  {
-    value: "from-green-600 to-green-400",
-    labelKey: "teamCreator.color.green",
-  },
-  {
-    value: "from-purple-600 to-purple-400",
-    labelKey: "teamCreator.color.purple",
-  },
-  {
-    value: "from-yellow-600 to-yellow-400",
-    labelKey: "teamCreator.color.yellow",
-  },
-  { value: "from-pink-600 to-pink-400", labelKey: "teamCreator.color.pink" },
-  {
-    value: "from-indigo-600 to-indigo-400",
-    labelKey: "teamCreator.color.indigo",
-  },
-  {
-    value: "from-orange-600 to-orange-400",
-    labelKey: "teamCreator.color.orange",
-  },
-  { value: "from-white to-slate-200", labelKey: "teamCreator.color.white" },
-];
 
 export function TeamCreator({ onCreateTeam, onClose }: TeamCreatorProps) {
   const { language, t } = useLanguage();
@@ -61,7 +37,7 @@ export function TeamCreator({ onCreateTeam, onClose }: TeamCreatorProps) {
   const [subtitle, setSubtitle] = useState("");
   const [flagType, setFlagType] = useState("japan");
   const [headerGradient, setHeaderGradient] = useState(
-    "from-blue-600 to-blue-400",
+    DEFAULT_TEAM_HEADER_GRADIENT,
   );
   const [selectedFormations, setSelectedFormations] = useState<string[]>([
     "4-3-3",
@@ -258,7 +234,7 @@ export function TeamCreator({ onCreateTeam, onClose }: TeamCreatorProps) {
               {t("teamCreator.headerColor")}
             </label>
             <div className="grid grid-cols-4 gap-2">
-              {GRADIENT_OPTIONS.map((gradient) => (
+              {TEAM_HEADER_GRADIENT_OPTIONS.map((gradient) => (
                 <button
                   key={gradient.value}
                   onClick={() => setHeaderGradient(gradient.value)}
