@@ -47,6 +47,8 @@
 - [ ] `pnpm lint` が通る
 - [ ] `pnpm format:check` が通る
 - [ ] `pnpm test` が通る
+- [ ] `pnpm check:circular` が通る
+- [ ] 必要に応じて `pnpm test:e2e` または `pnpm test:a11y` を確認した
 - [ ] 新機能にはテストを追加した
 - [ ] コミットメッセージが [Conventional Commits](https://www.conventionalcommits.org/) に準拠している
 - [ ] 破壊的変更がある場合は CHANGELOG.md を更新した
