@@ -59,16 +59,16 @@ Football Tactics & Code Lab
 
 - 配布物の種類、リリースチャネル、運用ポリシーの詳細は [docs/release.md](docs/release.md) を参照してください
 
-| 配布形態   | 対応環境                           | 取得物                    | 補足                                                          |
-| ---------- | ---------------------------------- | ------------------------- | ------------------------------------------------------------- |
-| Web 版     | 最新の Chromium / Safari / Firefox | `kerulabs-web-vX.Y.Z.zip` | ビルド済み静的ファイル。サーバー配信またはローカル preview 用 |
-| macOS 版   | Apple Silicon Mac を想定           | `.dmg`, `.zip`            | Electron アプリ。Developer ID 署名済み、Apple notarization 済み |
-| Windows 版 | Windows 11 を想定                  | `.exe`, `.zip`            | Electron アプリ。現在は未署名の preview build                 |
+| 配布形態   | 対応環境                           | 取得物                        | 補足                                                            |
+| ---------- | ---------------------------------- | ----------------------------- | --------------------------------------------------------------- |
+| Web 版     | 最新の Chromium / Safari / Firefox | `kerulabs-web-vX.Y.Z.zip`     | ビルド済み静的ファイル。サーバー配信またはローカル preview 用   |
+| macOS 版   | Apple Silicon Mac を想定           | `.dmg`, `.zip`                | Electron アプリ。Developer ID 署名済み、Apple notarization 済み |
+| Windows 版 | Windows 11 を想定                  | `Setup .exe`, `Portable .exe` | Electron アプリ。現在は未署名の preview build                   |
 
 ### インストール時の注意
 
 - **最も手軽なのは Web 版** です。まず試すだけなら `pnpm dev` か配布済み Web bundle の利用を推奨します。
-- **Windows 版は未署名** のため、SmartScreen 警告が出る場合があります。
+- **Windows 版は未署名** のため、SmartScreen 警告が出る場合があります。通常利用は `KeruLabs Setup X.Y.Z.exe`、インストールせず試す場合は `KeruLabs X.Y.Z.exe` を選んでください。
 
 ### macOS の初回起動
 
@@ -178,17 +178,17 @@ Web 版は `http://localhost:5173` で起動します。
 
 ## 技術スタック
 
-| カテゴリ       | 技術                                           |
-| -------------- | ---------------------------------------------- |
-| UI             | React 18, TypeScript 5, Tailwind CSS 3         |
-| 3D             | Three.js, React Three Fiber, drei              |
-| デスクトップ   | Electron 35                                    |
-| ビルド         | Vite 6                                         |
-| 状態管理       | TanStack Query v5                              |
-| 永続化         | IndexedDB (`idb`)                              |
-| バリデーション | Zod                                            |
+| カテゴリ       | 技術                                                         |
+| -------------- | ------------------------------------------------------------ |
+| UI             | React 18, TypeScript 5, Tailwind CSS 3                       |
+| 3D             | Three.js, React Three Fiber, drei                            |
+| デスクトップ   | Electron 35                                                  |
+| ビルド         | Vite 6                                                       |
+| 状態管理       | TanStack Query v5                                            |
+| 永続化         | IndexedDB (`idb`)                                            |
+| バリデーション | Zod                                                          |
 | セキュリティ   | DOMPurify, CSP, Security Headers, Electron context isolation |
-| テスト         | Vitest, Testing Library, Playwright, Storybook |
+| テスト         | Vitest, Testing Library, Playwright, Storybook               |
 
 ## プロジェクト構成
 

@@ -27,10 +27,10 @@ GitHub の **[Private vulnerability reporting](https://github.com/takataka6/keru
 
 ### 対象バージョン
 
-| バージョン | サポート状況 |
-|-----------|-------------|
-| 0.3.x     | サポート対象 |
-| 0.2.x 以前 | サポート対象外 |
+| バージョン | サポート状況   |
+| ---------- | -------------- |
+| 0.4.x      | サポート対象   |
+| 0.3.x 以前 | サポート対象外 |
 
 ---
 
@@ -62,27 +62,27 @@ webPreferences: {
 
 Electron ではレスポンスヘッダーとして、Web 版では Vite dev / preview サーバーのレスポンスヘッダーとして CSP を適用しています。静的 Web bundle を任意のサーバーで配信する場合は、配信サーバー側で同等の CSP を設定してください。
 
-| ディレクティブ | 値 | 目的 |
-|---------------|-----|------|
-| `default-src` | `'self'` | デフォルトで自身のオリジンのみ許可 |
-| `script-src` | `'self' blob: 'unsafe-eval'` | Three.js シェーダー・Mermaid・drei worker 対応 |
-| `style-src` | `'self' 'unsafe-inline'` | インラインスタイル許可 |
-| `img-src` | `'self' data: blob:` | Data URL と Blob URL を許可 |
-| `font-src` | `'self' data:` | ローカルフォントと Data URL を許可 |
-| `connect-src` | `'self'`（本番）/ `'self' http://localhost:5173 ws://localhost:5173`（開発） | 開発時の HMR と同一オリジン通信を許可 |
-| `worker-src` | `'self' blob:` | Three/drei の Web Worker 用 Blob URL を許可 |
-| `object-src` | `'none'` | プラグイン（Flash 等）を完全禁止 |
-| `base-uri` | `'self'` | base タグの制限 |
-| `form-action` | `'self'` | フォーム送信先の制限 |
-| `frame-ancestors` | `'none'` | iframe への埋め込み禁止。Electron と Vite preview / dev のレスポンスヘッダーで適用 |
+| ディレクティブ    | 値                                                                           | 目的                                                                               |
+| ----------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `default-src`     | `'self'`                                                                     | デフォルトで自身のオリジンのみ許可                                                 |
+| `script-src`      | `'self' blob: 'unsafe-eval'`                                                 | Three.js シェーダー・Mermaid・drei worker 対応                                     |
+| `style-src`       | `'self' 'unsafe-inline'`                                                     | インラインスタイル許可                                                             |
+| `img-src`         | `'self' data: blob:`                                                         | Data URL と Blob URL を許可                                                        |
+| `font-src`        | `'self' data:`                                                               | ローカルフォントと Data URL を許可                                                 |
+| `connect-src`     | `'self'`（本番）/ `'self' http://localhost:5173 ws://localhost:5173`（開発） | 開発時の HMR と同一オリジン通信を許可                                              |
+| `worker-src`      | `'self' blob:`                                                               | Three/drei の Web Worker 用 Blob URL を許可                                        |
+| `object-src`      | `'none'`                                                                     | プラグイン（Flash 等）を完全禁止                                                   |
+| `base-uri`        | `'self'`                                                                     | base タグの制限                                                                    |
+| `form-action`     | `'self'`                                                                     | フォーム送信先の制限                                                               |
+| `frame-ancestors` | `'none'`                                                                     | iframe への埋め込み禁止。Electron と Vite preview / dev のレスポンスヘッダーで適用 |
 
 ### セキュリティヘッダー
 
-| ヘッダー | 値 | 目的 |
-|---------|-----|------|
-| `X-Content-Type-Options` | `nosniff` | MIME タイプスニッフィングの防止 |
-| `X-Frame-Options` | `DENY` | クリックジャッキングの防止 |
-| `Referrer-Policy` | `strict-origin-when-cross-origin` | リファラー情報の制限 |
+| ヘッダー                 | 値                                | 目的                            |
+| ------------------------ | --------------------------------- | ------------------------------- |
+| `X-Content-Type-Options` | `nosniff`                         | MIME タイプスニッフィングの防止 |
+| `X-Frame-Options`        | `DENY`                            | クリックジャッキングの防止      |
+| `Referrer-Policy`        | `strict-origin-when-cross-origin` | リファラー情報の制限            |
 
 注記:
 
