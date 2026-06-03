@@ -169,6 +169,7 @@ Web 版は `http://localhost:5173` で起動します。
 - `madge` による循環依存チェック
 - `license-checker` による依存ライセンスチェック
 - GitHub Actions で CI、SBOM、Semgrep を実行
+- Dependabot による npm/pnpm 依存および GitHub Actions の週次自動更新（関連パッケージをグループ化して PR 数を抑制）
 
 ## Coverage
 
@@ -186,7 +187,7 @@ Web 版は `http://localhost:5173` で起動します。
 | 状態管理       | TanStack Query v5                              |
 | 永続化         | IndexedDB (`idb`)                              |
 | バリデーション | Zod                                            |
-| セキュリティ   | DOMPurify, CSP, Electron context isolation     |
+| セキュリティ   | DOMPurify, CSP, Security Headers, Electron context isolation |
 | テスト         | Vitest, Testing Library, Playwright, Storybook |
 
 ## プロジェクト構成
@@ -226,6 +227,8 @@ Presentation -> Application -> Domain <- Infrastructure
 ## セキュリティ
 
 - Electron では `nodeIntegration: false` と `contextIsolation: true` を採用
+- Vite dev / preview と Electron のレンダラーには CSP を適用
+- Vite preview / Electron では基本的な Security Headers を付与
 - ユーザー入力は DOMPurify でサニタイズ
 - インポートデータと永続化データは Zod で検証
 - データは主に IndexedDB に保存され、サーバー送信を前提にしていません

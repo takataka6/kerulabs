@@ -5,6 +5,20 @@ import renderer from "vite-plugin-electron-renderer";
 import path from "path";
 import pkg from "./package.json";
 
+const previewSecurityHeaders = {
+  "Content-Security-Policy":
+    "default-src 'self'; script-src 'self' blob: 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+};
+
+const devSecurityHeaders = {
+  ...previewSecurityHeaders,
+  "Content-Security-Policy":
+    "default-src 'self'; script-src 'self' blob: 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' http://localhost:5173 http://127.0.0.1:5173 ws://localhost:5173 ws://127.0.0.1:5173; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+};
+
 function getManualChunk(id: string) {
   if (!id.includes("node_modules")) return undefined;
 
@@ -97,6 +111,12 @@ export default defineConfig(({ mode }) => {
     },
     optimizeDeps: {
       include: ["mermaid"],
+    },
+    server: {
+      headers: devSecurityHeaders,
+    },
+    preview: {
+      headers: previewSecurityHeaders,
     },
     build: {
       outDir: "dist",

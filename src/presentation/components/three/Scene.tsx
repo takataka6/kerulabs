@@ -4,7 +4,7 @@
  */
 import { useRef, useEffect, useCallback, useMemo, memo } from "react";
 import { useThree, type ThreeEvent } from "@react-three/fiber";
-import { Text } from "@react-three/drei";
+import { CanvasText as Text } from "./CanvasText";
 import { Pitch } from "./Pitch";
 import { Player } from "./Player";
 import { OpponentMarker } from "./OpponentMarker";

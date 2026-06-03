@@ -106,7 +106,7 @@ git push origin v0.2.0
 
 ### リリース本文の生成
 
-Release workflow は `scripts/extract-release-notes.mjs` を使い、`CHANGELOG.md` の該当節と `.github/release-body.md` を結合して本文を生成します。
+Release workflow は `scripts/extract-release-notes.mjs` を使って本文を生成します。`.github/release-body.md` が存在する場合はそのテンプレートと `CHANGELOG.md` の該当節を結合し、存在しない場合はスクリプト内のデフォルトテンプレートを使います。
 
 例: `v0.2.0` の場合、`CHANGELOG.md` に次の節が必要です。
 

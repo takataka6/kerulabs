@@ -4,7 +4,7 @@
  */
 import { memo, useRef, useCallback, useMemo, useEffect } from "react";
 import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
-import { Text } from "@react-three/drei";
+import { CanvasText as Text } from "./CanvasText";
 import {
   Plane,
   SRGBColorSpace,
@@ -498,7 +498,7 @@ export const Player = memo(function Player({
           anchorX="center"
           anchorY="middle"
           fontWeight="bold"
-          outlineWidth={TEXT_LABEL.OUTLINE_WIDTH}
+          outlineWidth={TEXT_LABEL.NUMBER_OUTLINE_WIDTH}
           outlineColor="#000000"
         >
           {number}

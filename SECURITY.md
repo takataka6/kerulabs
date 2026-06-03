@@ -29,7 +29,8 @@ GitHub の **[Private vulnerability reporting](https://github.com/takataka6/keru
 
 | バージョン | サポート状況 |
 |-----------|-------------|
-| 0.1.x     | サポート対象 |
+| 0.3.x     | サポート対象 |
+| 0.2.x 以前 | サポート対象外 |
 
 ---
 
@@ -59,18 +60,21 @@ webPreferences: {
 
 ### Content Security Policy (CSP)
 
-HTTP レスポンスヘッダーとして以下の CSP を設定しています:
+Electron ではレスポンスヘッダーとして、Web 版では Vite dev / preview サーバーのレスポンスヘッダーとして CSP を適用しています。静的 Web bundle を任意のサーバーで配信する場合は、配信サーバー側で同等の CSP を設定してください。
 
 | ディレクティブ | 値 | 目的 |
 |---------------|-----|------|
 | `default-src` | `'self'` | デフォルトで自身のオリジンのみ許可 |
-| `script-src` | `'self' 'unsafe-eval'` | Three.js シェーダー・Mermaid 対応 |
+| `script-src` | `'self' blob: 'unsafe-eval'` | Three.js シェーダー・Mermaid・drei worker 対応 |
 | `style-src` | `'self' 'unsafe-inline'` | インラインスタイル許可 |
 | `img-src` | `'self' data: blob:` | Data URL と Blob URL を許可 |
+| `font-src` | `'self' data:` | ローカルフォントと Data URL を許可 |
+| `connect-src` | `'self'`（本番）/ `'self' http://localhost:5173 ws://localhost:5173`（開発） | 開発時の HMR と同一オリジン通信を許可 |
+| `worker-src` | `'self' blob:` | Three/drei の Web Worker 用 Blob URL を許可 |
 | `object-src` | `'none'` | プラグイン（Flash 等）を完全禁止 |
 | `base-uri` | `'self'` | base タグの制限 |
 | `form-action` | `'self'` | フォーム送信先の制限 |
-| `frame-ancestors` | `'none'` | iframe への埋め込み禁止 |
+| `frame-ancestors` | `'none'` | iframe への埋め込み禁止。Electron と Vite preview / dev のレスポンスヘッダーで適用 |
 
 ### セキュリティヘッダー
 
@@ -79,6 +83,12 @@ HTTP レスポンスヘッダーとして以下の CSP を設定しています:
 | `X-Content-Type-Options` | `nosniff` | MIME タイプスニッフィングの防止 |
 | `X-Frame-Options` | `DENY` | クリックジャッキングの防止 |
 | `Referrer-Policy` | `strict-origin-when-cross-origin` | リファラー情報の制限 |
+
+注記:
+
+- `script-src 'unsafe-eval'` は Three.js / Mermaid との互換性のために許可しています
+- Vite dev server では React Refresh 互換性のため `script-src 'unsafe-inline'` を追加で許可しています
+- `connect-src` の `localhost:5173` / `127.0.0.1:5173` は開発環境用です
 
 ---
 
@@ -94,7 +104,7 @@ KeruLabs はデータの永続化に IndexedDB を使用しています。以下
 
 ### セキュリティ上の考慮事項
 
-1. **暗号化されていないデータ**: IndexedDB のデータはブラウザ内に平文で保存されます。機密性の高い情報（パスワード、個人情報など）の保存には適していません。KeruLabs は戦術データのみを保存するため、機密データは含まれません。
+1. **暗号化されていないデータ**: IndexedDB のデータはブラウザ内に平文で保存されます。機密性の高い情報（パスワード、個人情報など）の保存には適していません。KeruLabs は戦術データ、チーム情報、用語集、チームマニュアルなどを保存するため、機微情報の入力は避けてください。
 
 2. **同一オリジンポリシー**: IndexedDB は同一オリジンポリシーにより保護されています。他のドメインからデータにアクセスすることはできません。
 

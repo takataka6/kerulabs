@@ -43,14 +43,19 @@ test.describe("コードラボページ", () => {
   });
 
   test("レッスンをクリックするとレッスンページに遷移する", async ({ page }) => {
-    await page.getByText("変数と型").click();
-    await page.waitForURL("**/code-lab/lesson/variables", { timeout: 15000 });
-    await expect(page.locator("h1")).toBeVisible();
+    await page.getByRole("button", { name: /Markdown/ }).click();
+    await page.waitForURL("**/code-lab/lesson/markdown", { timeout: 15000 });
+    await expect(
+      page.getByRole("heading", { name: "Markdown", exact: true }),
+    ).toBeVisible({ timeout: 15000 });
   });
 
   test("レッスンページからレッスン一覧に戻れる", async ({ page }) => {
-    await page.getByText("変数と型").click();
-    await page.waitForURL("**/code-lab/lesson/variables", { timeout: 15000 });
+    await page.getByRole("button", { name: /Markdown/ }).click();
+    await page.waitForURL("**/code-lab/lesson/markdown", { timeout: 15000 });
+    await expect(
+      page.getByRole("heading", { name: "Markdown", exact: true }),
+    ).toBeVisible({ timeout: 15000 });
     await page.getByRole("button", { name: "レッスン一覧に戻る" }).click();
     await expect(page).toHaveURL(/\/code-lab$/, { timeout: 15000 });
   });

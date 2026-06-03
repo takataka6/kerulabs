@@ -38,7 +38,9 @@
 
 虐待的、ハラスメント、またはその他の許容されない行動の事例は、執行責任を持つコミュニティリーダーに報告することができます。
 
-報告先: [GitHub Issues](https://github.com/takataka6/kerulabs/issues) または [GitHub Discussions](https://github.com/takataka6/kerulabs/discussions)
+報告先: `kerulabs@gmail.com`
+
+公開の Issue / Discussion は、ハラスメントや個人情報を含む通報には使用しないでください。
 
 すべての苦情は迅速かつ公正にレビューおよび調査されます。すべてのコミュニティリーダーは、事件の報告者のプライバシーとセキュリティを尊重する義務があります。
 
