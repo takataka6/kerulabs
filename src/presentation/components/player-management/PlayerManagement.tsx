@@ -202,11 +202,13 @@ export function PlayerManagement({
                 {team.name}
               </h2>
               <p className="text-white/80 text-xs sm:text-sm font-medium tracking-wide">
-                {t("player.management.subtitle")} •{" "}
-                {t("player.management.registered").replace(
-                  "{count}",
-                  String(team.players.length),
-                )}
+                <span>{t("player.management.subtitle")} • </span>
+                <span aria-live="polite">
+                  {t("player.management.registered").replace(
+                    "{count}",
+                    String(team.players.length),
+                  )}
+                </span>
               </p>
             </div>
           </div>
