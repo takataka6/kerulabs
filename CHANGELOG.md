@@ -7,6 +7,12 @@
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-06-03
+
+### Fixed
+
+- **選手管理の登録人数表示**: 選手削除後の登録人数表示を安定化し、E2E で更新を確実に検証できるよう改善
+
 ## [0.4.0] - 2026-06-03
 
 ### Added
@@ -90,7 +96,8 @@
 - **Husky + lint-staged**: コミット時の自動リント・フォーマット
 - **GitHub Actions CI**: 型チェック・リント・テストの自動実行
 
-[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/takataka6/kerulabs/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/takataka6/kerulabs/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/takataka6/kerulabs/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/takataka6/kerulabs/compare/v0.1.0...v0.2.0
