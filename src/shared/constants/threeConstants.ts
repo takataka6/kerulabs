@@ -49,16 +49,18 @@ export const TEXT_LABEL = {
   /** 相手背番号フォントサイズ */
   OPPONENT_NUMBER_FONT_SIZE: 0.22,
   /** 名前ラベルフォントサイズ */
-  NAME_FONT_SIZE: 0.18,
+  NAME_FONT_SIZE: 0.21,
   /** 名前ラベル幅計算: 文字数 × 係数 + パディング */
   NAME_WIDTH_FACTOR: 0.12,
-  NAME_WIDTH_PADDING: 0.2,
+  NAME_WIDTH_PADDING: 0.12,
   /** 名前ラベル高さ */
-  NAME_HEIGHT: 0.28,
-  /** アウトライン幅 */
-  OUTLINE_WIDTH: 0.02,
+  NAME_HEIGHT: 0.24,
+  /** アウトライン幅（名前ラベル用） */
+  OUTLINE_WIDTH: 0.05,
+  /** アウトライン幅（番号テキスト用） */
+  NUMBER_OUTLINE_WIDTH: 0.02,
   /** 名前背景色 */
-  NAME_BG_COLOR: "#1a1a2e",
+  NAME_BG_COLOR: "#000000",
 } as const;
 
 // ── カード表示 ──────────────────────────────────────────

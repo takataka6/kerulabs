@@ -1,5 +1,7 @@
 # Dependencies
 node_modules/
+# npm (pnpm is primary; prevent accidental npm lockfiles from being committed)
+package-lock.json
 
 # Build outputs
 dist/

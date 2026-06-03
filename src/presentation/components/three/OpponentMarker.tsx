@@ -4,7 +4,7 @@
  */
 import { memo, useRef, useCallback, useMemo, useEffect } from "react";
 import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
-import { Text } from "@react-three/drei";
+import { CanvasText as Text } from "./CanvasText";
 import {
   Plane,
   Vector2,

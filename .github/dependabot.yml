@@ -1,0 +1,61 @@
+# Dependabot configuration for KeruLabs
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # Dependabot の更新チェックを月曜 02:00 JST にスケジュールしています。
+  # 早めの時間帯に設定することで、PR 作成後に CI（E2E を含む）が完了する
+  # 十分な時間を確保しています。
+  # npm / pnpm dependencies (detects pnpm-lock.yaml)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "02:00"
+      timezone: "Asia/Tokyo"
+    open-pull-requests-limit: 5
+    commit-message-prefix: "deps:"
+    labels:
+      - "dependencies"
+      - "area:deps"
+    # 関連するパッケージをグループ化して PR 数を抑え、レビュー負荷を軽減しています。
+    groups:
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "react-router-dom"
+          - "@types/react*"
+      tanstack:
+        patterns:
+          - "@tanstack/*"
+      three:
+        patterns:
+          - "@react-three/*"
+          - "three"
+          - "camera-controls"
+      storybook:
+        patterns:
+          - "@storybook/*"
+          - "storybook"
+      testing:
+        patterns:
+          - "@testing-library/*"
+          - "@vitest/*"
+          - "vitest"
+          - "playwright"
+          - "@playwright/test"
+
+  # GitHub Actions workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "02:00"
+      timezone: "Asia/Tokyo"
+    commit-message-prefix: "ci:"
+    labels:
+      - "dependencies"
+      - "ci"

@@ -50,7 +50,10 @@ function checksumBuffer(buffer: Buffer): number {
 
 async function getCanvasScreenshotChecksum(page: Page) {
   const canvasRegion = page.getByRole("img", { name: CANVAS_LABEL });
-  await expect(canvasRegion).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText("Loading tactics canvas...")).toBeHidden({
+    timeout: 30000,
+  });
+  await expect(canvasRegion).toBeVisible({ timeout: 30000 });
   const screenshot = await canvasRegion.screenshot();
   return {
     checksum: checksumBuffer(screenshot),

@@ -8,6 +8,44 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 let mainWindow: BrowserWindow | null = null;
+let securityHeadersApplied = false;
+
+const isDev = process.env.NODE_ENV === "development";
+
+const CONTENT_SECURITY_POLICY = [
+  "default-src 'self'",
+  "script-src 'self' blob: 'unsafe-eval'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob:",
+  "font-src 'self' data:",
+  isDev
+    ? "connect-src 'self' http://localhost:5173 ws://localhost:5173"
+    : "connect-src 'self'",
+  "worker-src 'self' blob:",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+].join("; ");
+
+function applySecurityHeaders(window: BrowserWindow) {
+  if (securityHeadersApplied) return;
+  securityHeadersApplied = true;
+
+  window.webContents.session.webRequest.onHeadersReceived(
+    (details, callback) => {
+      callback({
+        responseHeaders: {
+          ...details.responseHeaders,
+          "Content-Security-Policy": [CONTENT_SECURITY_POLICY],
+          "X-Content-Type-Options": ["nosniff"],
+          "X-Frame-Options": ["DENY"],
+          "Referrer-Policy": ["strict-origin-when-cross-origin"],
+        },
+      });
+    },
+  );
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -23,9 +61,10 @@ function createWindow() {
       contextIsolation: true,
     },
   });
+  applySecurityHeaders(mainWindow);
 
   // 開発環境では開発サーバーをロード、本番環境ではビルドされたファイルをロード
-  if (process.env.NODE_ENV === "development") {
+  if (isDev) {
     mainWindow.loadURL("http://localhost:5173");
     mainWindow.webContents.openDevTools();
   } else {

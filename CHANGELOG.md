@@ -7,6 +7,11 @@
 
 ## [Unreleased]
 
+### Changed
+
+- **OSS 公開準備**: セキュリティポリシー、行動規範、リリース運用ドキュメントを実装と一致する内容へ更新
+- **CSP / Security Headers**: Web / Electron のレンダラーに Content Security Policy と基本的なセキュリティヘッダーを追加
+
 ## [0.3.0] - 2026-05-31
 
 ### Added
