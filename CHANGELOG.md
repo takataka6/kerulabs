@@ -7,10 +7,22 @@
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-06-03
+
+### Added
+
+- **3D テキストレンダリングの最適化**: `@react-three/drei` の `Text` コンポーネントをカスタムの `CanvasText` に置き換え、メモリリークを抑止しレンダリングパフォーマンスを向上
+
 ### Changed
 
 - **OSS 公開準備**: セキュリティポリシー、行動規範、リリース運用ドキュメントを実装と一致する内容へ更新
 - **CSP / Security Headers**: Web / Electron のレンダラーに Content Security Policy と基本的なセキュリティヘッダーを追加
+- **Dependabot 設定**: `.github/dependabot.yml` の設定を強化
+
+### Fixed
+
+- **E2E テスト**: E2E テストのセレクター修正および Canvas ロードのタイムアウト時間を延長
+- **パッケージロックファイル**: 不要な `package-lock.json` を削除し、`pnpm-lock.yaml` に統一
 
 ## [0.3.0] - 2026-05-31
 
@@ -78,7 +90,8 @@
 - **Husky + lint-staged**: コミット時の自動リント・フォーマット
 - **GitHub Actions CI**: 型チェック・リント・テストの自動実行
 
-[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/takataka6/kerulabs/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/takataka6/kerulabs/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/takataka6/kerulabs/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/takataka6/kerulabs/releases/tag/v0.1.0
