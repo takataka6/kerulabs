@@ -147,7 +147,9 @@ test.describe("選手管理", () => {
     await confirmDialog.getByRole("button", { name: "OK" }).click();
 
     // 選手数が減少していることを確認（10名登録）
-    await expect(modal.getByText("10名登録")).toBeVisible({ timeout: 5000 });
+    await expect(
+      modal.locator("p").filter({ has: page.getByText(/^10名登録$/) }),
+    ).toBeVisible({ timeout: 5000 });
   });
 
   // ── 検索 ──────────────────────────────────────
