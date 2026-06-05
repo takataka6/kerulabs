@@ -35,6 +35,26 @@ import { useBallPassCreation } from "./useBallPassCreation";
 import { useMergedTacticDisplay } from "./useMergedTacticDisplay";
 import { useTacticShareHandlers } from "./useTacticShareHandlers";
 
+function buildDefaultTacticNames(gamePhase: PhaseKey, count: number) {
+  const isSetPlayPhase =
+    gamePhase === "set_piece" ||
+    gamePhase === "throw_in" ||
+    gamePhase === "goal_kick";
+
+  if (!isSetPlayPhase) {
+    return {
+      ja: `${translations.ja["tactics.creation.defaultName"]}${count}`,
+      en: `${translations.en["tactics.creation.defaultName"]} ${count}`,
+    };
+  }
+
+  const phaseKey = `phase.${gamePhase}` as TranslationKey;
+  return {
+    ja: `${translations.ja[phaseKey]}${count}`,
+    en: `${translations.en[phaseKey]} ${count}`,
+  };
+}
+
 /**
  * 戦術の作成・実行・マージを統括する中核フック。
  *
@@ -221,11 +241,15 @@ export function useTacticsOrchestration(params: {
       const tactic = tacticCreation.buildTactic(currentFormation);
       const customCount = (tactics || []).filter((t) => t.isCustom).length + 1;
       const updatedName = { ...tactic.name };
+      const defaultNames = buildDefaultTacticNames(
+        tacticCreation.creation.gamePhase,
+        customCount,
+      );
       if (!updatedName.ja?.trim()) {
-        updatedName.ja = `${translations.ja["tactics.creation.defaultName"]}${customCount}`;
+        updatedName.ja = defaultNames.ja;
       }
       if (!updatedName.en?.trim()) {
-        updatedName.en = `${translations.en["tactics.creation.defaultName"]} ${customCount}`;
+        updatedName.en = defaultNames.en;
       }
       tactic.updateName(updatedName);
 

@@ -405,6 +405,47 @@ describe("useTacticsOrchestration — CRUD操作", () => {
       );
     });
 
+    it("setPlay モードで名称未入力ならセットプレー種別ごとの既定名を補完する", async () => {
+      const builtTactic = {
+        name: { ja: "", en: "" },
+        updateName(nextName: { ja: string; en: string }) {
+          this.name = nextName;
+        },
+      };
+      mockBuildTactic.mockReturnValue(builtTactic);
+
+      setMockCreationState(
+        createMockCreationState({
+          gamePhase: "throw_in",
+          steps: [
+            {
+              id: 1,
+              movements: new Map([
+                ["CB1", { targetX: 1, targetZ: 2, color: "#000" }],
+              ]),
+              ballPasses: [],
+              duration: 1000,
+            },
+          ],
+        }),
+      );
+
+      const params = createDefaultParams({
+        playMode: "setPlay",
+        selectedSetPlayType: "throw_in",
+      });
+      const { result } = renderHook(() => useTacticsOrchestration(params), {
+        wrapper: createWrapper(),
+      });
+
+      await act(async () => {
+        await result.current.handleSaveTactic();
+      });
+
+      expect(builtTactic.name.ja).toBe("スローイン1");
+      expect(builtTactic.name.en).toBe("Throw In 1");
+    });
+
     it("保存失敗時: handleError を呼ぶ", async () => {
       const { handleError } = await import("@shared/errors/handleError");
       mockBuildTactic.mockImplementation(() => {
