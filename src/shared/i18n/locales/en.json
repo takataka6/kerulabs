@@ -386,7 +386,7 @@
   "tactics.opponents.selectPlayer": "Select Player",
   "tactics.opponents.selectPlayerAlert": "Please select a player before placing",
   "tactics.opponents.squad": "Squad",
-  "tactics.opponents.editTeam": "Edit Team",
+  "tactics.opponents.editGuidance": "Edit the opponent team from that team's page.",
   "tactics.opponents.markerColor": "Marker Color",
   "tactics.opponents.selectFormation": "Select Formation",
   "tactics.connectionLines": "Draw Lines",

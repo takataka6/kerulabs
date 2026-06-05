@@ -45,8 +45,7 @@
 | OpponentSquadSelector | チーム選択 | 空文字選択時に null をセットする |
 | OpponentSquadSelector | opponentTeam 選択後のアクション | スカッドボタンを表示する |
 | OpponentSquadSelector | opponentTeam 選択後のアクション | スカッドボタンをクリックすると setShowOpponentFormationSelect が呼ばれる |
-| OpponentSquadSelector | opponentTeam 選択後のアクション | onEditTeam があれば編集ボタンを表示する |
-| OpponentSquadSelector | opponentTeam 選択後のアクション | onEditTeam がなければ編集ボタンを表示しない |
+| OpponentSquadSelector | opponentTeam 選択後のアクション | 編集案内文を表示する |
 | OpponentSquadSelector | opponentTeam 選択後のアクション | プレイヤーリストを表示する |
 | OpponentSquadSelector | opponentTeam 選択後のアクション | 配置済みプレイヤーは無効化される |
 | OpponentSquadSelector | opponentTeam 選択後のアクション | 未配置プレイヤーをクリックすると setSelectedOpponentPlayerId が呼ばれる |

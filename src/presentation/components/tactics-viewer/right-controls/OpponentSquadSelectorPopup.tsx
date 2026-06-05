@@ -12,7 +12,6 @@ interface OpponentSquadSelectorPopupProps {
   opponentsHook: ReturnType<typeof useOpponents>;
   teams: Team[] | undefined;
   selectedTeamId: string | null;
-  onEditTeam?: () => void;
   headerVisible: boolean;
   t: TranslationFn;
 }
@@ -22,7 +21,6 @@ export const OpponentSquadSelectorPopup = memo(
     opponentsHook,
     teams,
     selectedTeamId,
-    onEditTeam,
     headerVisible,
     t,
   }: OpponentSquadSelectorPopupProps) {
@@ -71,7 +69,6 @@ export const OpponentSquadSelectorPopup = memo(
           opponentsHook={opponentsHook}
           teams={teams}
           selectedTeamId={selectedTeamId}
-          onEditTeam={onEditTeam}
           t={t}
           className="w-full"
           headerActions={

@@ -12,7 +12,6 @@ interface OpponentSquadSelectorProps {
   opponentsHook: ReturnType<typeof useOpponents>;
   teams: Team[] | undefined;
   selectedTeamId: string | null;
-  onEditTeam?: () => void;
   t: TranslationFn;
   className?: string;
   headerActions?: ReactNode;
@@ -22,7 +21,6 @@ export const OpponentSquadSelector = memo(function OpponentSquadSelector({
   opponentsHook,
   teams,
   selectedTeamId,
-  onEditTeam,
   t,
   className = "",
   headerActions,
@@ -126,15 +124,9 @@ export const OpponentSquadSelector = memo(function OpponentSquadSelector({
             <span>⚽</span>
             <span>{t("tactics.opponents.squad")}</span>
           </button>
-          {onEditTeam && (
-            <button
-              onClick={onEditTeam}
-              className="w-full py-2 px-3 bg-gradient-to-r from-slate-600/18 to-slate-500/12 hover:from-slate-600/28 hover:to-slate-500/18 text-slate-100 rounded-xl text-xs font-semibold transition-all duration-300 flex items-center justify-center gap-1.5 border border-slate-500/25"
-            >
-              <span>✏️</span>
-              <span>{t("tactics.opponents.editTeam")}</span>
-            </button>
-          )}
+          <p className="px-1 text-[11px] leading-relaxed text-slate-400">
+            {t("tactics.opponents.editGuidance")}
+          </p>
         </div>
       )}
       {opponentsHook.opponentTeam && (

@@ -104,7 +104,6 @@ function renderComponent(
     opponentsHook: createOpponentsHook(),
     teams: [createTeam("team-1", "My Team"), createTeam("opp-1", "Opponent")],
     selectedTeamId: "team-1",
-    onEditTeam: vi.fn(),
     t: mockT,
     ...overrides,
   };
@@ -220,24 +219,13 @@ describe("OpponentSquadSelector", () => {
       expect(hook.setShowOpponentFormationSelect).toHaveBeenCalledWith(true);
     });
 
-    it("onEditTeam があれば編集ボタンを表示する", () => {
+    it("編集案内文を表示する", () => {
       renderComponent({
         opponentsHook: createOpponentsHook({ opponentTeam: oppTeam }),
-        onEditTeam: vi.fn(),
       });
       expect(
-        screen.getByText("tactics.opponents.editTeam"),
+        screen.getByText("tactics.opponents.editGuidance"),
       ).toBeInTheDocument();
-    });
-
-    it("onEditTeam がなければ編集ボタンを表示しない", () => {
-      renderComponent({
-        opponentsHook: createOpponentsHook({ opponentTeam: oppTeam }),
-        onEditTeam: undefined,
-      });
-      expect(
-        screen.queryByText("tactics.opponents.editTeam"),
-      ).not.toBeInTheDocument();
     });
 
     it("プレイヤーリストを表示する", () => {
