@@ -386,7 +386,7 @@
   "tactics.opponents.selectPlayer": "選手を選択",
   "tactics.opponents.selectPlayerAlert": "選手を選択してから配置してください",
   "tactics.opponents.squad": "スカッド配置",
-  "tactics.opponents.editTeam": "チーム編集",
+  "tactics.opponents.editGuidance": "相手チームの編集は、該当チームのページで行ってください。",
   "tactics.opponents.markerColor": "マーカーの色",
   "tactics.opponents.selectFormation": "フォーメーション選択",
   "tactics.connectionLines": "ライン",

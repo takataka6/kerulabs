@@ -240,13 +240,6 @@ export function TacticsMainContent() {
           opponentsHook={opponentsHook}
           teams={teams}
           selectedTeamId={teamMgmt.selectedTeamId}
-          onEditTeam={() => {
-            const oppTeamId = opponentsHook.opponentTeamId;
-            if (oppTeamId) {
-              teamMgmt.setSelectedTeamId(oppTeamId);
-              opponentsHook.toggleOpponentPlacement();
-            }
-          }}
           headerVisible={ui.headerVisible}
           t={t}
         />
