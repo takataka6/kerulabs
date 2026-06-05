@@ -7,6 +7,19 @@
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-06-06
+
+### Changed
+
+- **公開向けドキュメント整備**: README、CONTRIBUTING、SECURITY、リリース運用ドキュメント、および PR テンプレートを現行の公開運用に合わせて整理
+- **相手チーム選択 UX**: 相手チーム設定ポップアップから `チーム編集` ボタンを削除し、該当チームのページで編集する案内文へ置き換えて導線を明確化
+
+### Fixed
+
+- **初期データのフォーメーションとセットプレー名**: サンプルデータのフォーメーション定義とセットプレー初期名を修正し、期待どおりの初期状態で扱えるよう改善
+- **戦術マーカーの複数選択移動**: マルチ選択した戦術マーカーの移動結果が実行状態へ正しく反映されるよう修正
+- **依存関係の監査対応**: `react-router-dom` を更新し、依存関係監査で検出された問題に対応
+
 ## [0.4.1] - 2026-06-03
 
 ### Fixed
@@ -96,7 +109,8 @@
 - **Husky + lint-staged**: コミット時の自動リント・フォーマット
 - **GitHub Actions CI**: 型チェック・リント・テストの自動実行
 
-[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/takataka6/kerulabs/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/takataka6/kerulabs/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/takataka6/kerulabs/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/takataka6/kerulabs/compare/v0.2.0...v0.3.0
