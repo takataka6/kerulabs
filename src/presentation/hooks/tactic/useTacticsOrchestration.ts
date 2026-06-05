@@ -337,28 +337,80 @@ export function useTacticsOrchestration(params: {
   // ── プレイヤードラッグ終了 ──
   const handlePlayerDragEnd = useCallback(
     (index: number, pos: { x: number; z: number }) => {
-      if (tacticCreation.creation && currentFormation) {
-        const roleMap = currentFormation.roleMap;
-        let role: string | null = null;
-        roleMap.forEach((playerIndex, roleKey) => {
-          if (playerIndex === index) role = roleKey;
-        });
-        if (role) {
-          if (tacticCreation.creation.wizardStep === "setPosition") {
-            tacticCreation.setSetPosition(role, pos.x, pos.z);
-          } else {
-            const cat = currentFormation.positions[index]?.category;
-            tacticCreation.setPlayerTarget(
-              role,
-              pos.x,
-              pos.z,
-              POSITION_HEX_COLORS[cat as keyof typeof POSITION_HEX_COLORS] ||
-                POSITION_FALLBACK_HEX_COLOR,
-            );
+      const applyPlayerDrag = (
+        playerIndex: number,
+        playerPos: { x: number; z: number },
+      ) => {
+        if (tacticCreation.creation && currentFormation) {
+          const roleMap = currentFormation.roleMap;
+          let role: string | null = null;
+          roleMap.forEach((mappedIndex, roleKey) => {
+            if (mappedIndex === playerIndex) role = roleKey;
+          });
+          if (role) {
+            if (tacticCreation.creation.wizardStep === "setPosition") {
+              tacticCreation.setSetPosition(role, playerPos.x, playerPos.z);
+            } else {
+              const cat = currentFormation.positions[playerIndex]?.category;
+              tacticCreation.setPlayerTarget(
+                role,
+                playerPos.x,
+                playerPos.z,
+                POSITION_HEX_COLORS[cat as keyof typeof POSITION_HEX_COLORS] ||
+                  POSITION_FALLBACK_HEX_COLOR,
+              );
+            }
           }
         }
-      }
+      };
+
+      applyPlayerDrag(index, pos);
       setManualPlayerPositions((prev) => ({ ...prev, [index]: pos }));
+      pushCurrentSnapshot();
+    },
+    [
+      tacticCreation,
+      currentFormation,
+      pushCurrentSnapshot,
+      setManualPlayerPositions,
+    ],
+  );
+
+  const handleGroupPlayerDragEnd = useCallback(
+    (positions: Array<{ index: number; pos: { x: number; z: number } }>) => {
+      if (positions.length === 0) {
+        pushCurrentSnapshot();
+        return;
+      }
+
+      const nextPositions: Record<number, { x: number; z: number }> = {};
+
+      for (const { index, pos } of positions) {
+        if (tacticCreation.creation && currentFormation) {
+          const roleMap = currentFormation.roleMap;
+          let role: string | null = null;
+          roleMap.forEach((mappedIndex, roleKey) => {
+            if (mappedIndex === index) role = roleKey;
+          });
+          if (role) {
+            if (tacticCreation.creation.wizardStep === "setPosition") {
+              tacticCreation.setSetPosition(role, pos.x, pos.z);
+            } else {
+              const cat = currentFormation.positions[index]?.category;
+              tacticCreation.setPlayerTarget(
+                role,
+                pos.x,
+                pos.z,
+                POSITION_HEX_COLORS[cat as keyof typeof POSITION_HEX_COLORS] ||
+                  POSITION_FALLBACK_HEX_COLOR,
+              );
+            }
+          }
+        }
+        nextPositions[index] = pos;
+      }
+
+      setManualPlayerPositions((prev) => ({ ...prev, ...nextPositions }));
       pushCurrentSnapshot();
     },
     [
@@ -473,6 +525,7 @@ export function useTacticsOrchestration(params: {
     handleImportTactics,
     handleImportFromJson,
     handlePlayerDragEnd,
+    handleGroupPlayerDragEnd,
     triggerTactic,
 
     // ── ツールバーハンドラー ──

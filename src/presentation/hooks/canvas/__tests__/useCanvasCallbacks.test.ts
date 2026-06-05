@@ -35,6 +35,7 @@ function createMockDeps() {
         } | null,
       },
       handlePlayerDragEnd: vi.fn(),
+      handleGroupPlayerDragEnd: vi.fn(),
       setManualPlayerPositions: vi.fn(),
     },
     ballHook: {
@@ -319,8 +320,11 @@ describe("useCanvasCallbacks", () => {
       act(() => result.current.handleGroupDragEnd(positions));
 
       expect(deps.ui.setIsDraggingObject).toHaveBeenCalledWith(false);
-      expect(deps.tOrch.setManualPlayerPositions).toHaveBeenCalled();
-      expect(deps.pushCurrentSnapshot).toHaveBeenCalled();
+      expect(deps.tOrch.handleGroupPlayerDragEnd).toHaveBeenCalledWith([
+        { index: 0, pos: { x: 1, z: 2 } },
+        { index: 1, pos: { x: 3, z: 4 } },
+      ]);
+      expect(deps.pushCurrentSnapshot).not.toHaveBeenCalled();
 
       rAF.mockRestore();
     });
@@ -359,7 +363,7 @@ describe("useCanvasCallbacks", () => {
 
       act(() => result.current.handleGroupDragEnd([]));
 
-      expect(deps.tOrch.setManualPlayerPositions).not.toHaveBeenCalled();
+      expect(deps.tOrch.handleGroupPlayerDragEnd).not.toHaveBeenCalled();
       expect(deps.opponentsHook.setOpponents).not.toHaveBeenCalled();
       // pushCurrentSnapshot はドラッグ終了時に常に呼ばれる
       expect(deps.pushCurrentSnapshot).toHaveBeenCalled();
