@@ -169,14 +169,11 @@ export function useCanvasCallbacks(deps: CanvasDeps) {
       // プレイヤーの位置を一括コミット
       const playerUpdates = positions.filter((p) => p.type === "player");
       if (playerUpdates.length > 0) {
-        t.setManualPlayerPositions(
-          (prev: Record<number, { x: number; z: number }>) => {
-            const next = { ...prev };
-            for (const u of playerUpdates) {
-              next[u.id] = u.pos;
-            }
-            return next;
-          },
+        t.handleGroupPlayerDragEnd(
+          playerUpdates.map((player) => ({
+            index: player.id,
+            pos: player.pos,
+          })),
         );
       }
 
@@ -201,7 +198,9 @@ export function useCanvasCallbacks(deps: CanvasDeps) {
         );
       }
 
-      requestAnimationFrame(() => push());
+      if (playerUpdates.length === 0) {
+        requestAnimationFrame(() => push());
+      }
     },
     [],
   );

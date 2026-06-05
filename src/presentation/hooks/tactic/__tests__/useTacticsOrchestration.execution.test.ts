@@ -245,6 +245,49 @@ describe("useTacticsOrchestration — 実行制御・操作", () => {
     });
   });
 
+  describe("handleGroupPlayerDragEnd", () => {
+    it("複数の manualPlayerPositions をまとめて更新し snapshot を1回記録する", () => {
+      const params = createDefaultParams();
+      const { result } = renderHook(() => useTacticsOrchestration(params), {
+        wrapper: createWrapper(),
+      });
+
+      act(() => {
+        result.current.handleGroupPlayerDragEnd([
+          { index: 0, pos: { x: 5, z: 10 } },
+          { index: 1, pos: { x: 7, z: 12 } },
+        ]);
+      });
+
+      expect(result.current.manualPlayerPositions).toEqual({
+        0: { x: 5, z: 10 },
+        1: { x: 7, z: 12 },
+      });
+      expect(params.pushCurrentSnapshot).toHaveBeenCalledTimes(1);
+    });
+
+    it("creation 中の editing ステップでは各選手に setPlayerTarget を呼ぶ", () => {
+      setMockCreationState(createMockCreationState({ wizardStep: "editing" }));
+
+      const formation = createTestFormation();
+      const params = createDefaultParams({ currentFormation: formation });
+      const { result } = renderHook(() => useTacticsOrchestration(params), {
+        wrapper: createWrapper(),
+      });
+
+      act(() => {
+        result.current.handleGroupPlayerDragEnd([
+          { index: 1, pos: { x: 4, z: 5 } },
+          { index: 2, pos: { x: 6, z: 7 } },
+        ]);
+      });
+
+      expect(mockSetPlayerTarget).toHaveBeenCalledWith("CB1", 4, 5, "#3b82f6");
+      expect(mockSetPlayerTarget).toHaveBeenCalledWith("CB2", 6, 7, "#3b82f6");
+      expect(params.pushCurrentSnapshot).toHaveBeenCalledTimes(1);
+    });
+  });
+
   // ==========================================================================
   // handleWizardStepChange
   // ==========================================================================
