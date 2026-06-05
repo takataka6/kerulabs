@@ -7,6 +7,12 @@
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-06-06
+
+### Changed
+
+- **相手チーム選択 UX**: 相手チーム設定ポップアップから `チーム編集` ボタンを削除し、該当チームのページで編集する案内文へ置き換えて導線を明確化
+
 ## [0.4.1] - 2026-06-03
 
 ### Fixed
@@ -96,7 +102,8 @@
 - **Husky + lint-staged**: コミット時の自動リント・フォーマット
 - **GitHub Actions CI**: 型チェック・リント・テストの自動実行
 
-[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/takataka6/kerulabs/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/takataka6/kerulabs/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/takataka6/kerulabs/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/takataka6/kerulabs/compare/v0.2.0...v0.3.0

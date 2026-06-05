@@ -1,6 +1,6 @@
 {
   "name": "kerulabs",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "KeruLabs - Football Tactics & Code Lab",
   "main": "dist-electron/main.js",
   "type": "module",
