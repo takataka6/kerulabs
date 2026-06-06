@@ -49,19 +49,6 @@ export const teamImportDataSchema = z.object({
     .optional()
     .default("linear-gradient(135deg, #667eea 0%, #764ba2 100%)"),
   manager: z.string().optional(),
-  availableTactics: z
-    .record(z.string(), z.array(z.string()))
-    .optional()
-    .transform((availableTactics) =>
-      availableTactics
-        ? Object.fromEntries(
-            Object.entries(availableTactics).map(([formation, tacticIds]) => [
-              normalizeFormationKey(formation),
-              tacticIds,
-            ]),
-          )
-        : undefined,
-    ),
   players: z.array(playerImportSchema).optional(),
 });
 

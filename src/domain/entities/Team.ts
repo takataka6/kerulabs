@@ -51,7 +51,6 @@ export interface TeamProps {
   manager?: string;
   playerCards?: Record<number, string>;
   managerCard?: string;
-  availableTactics?: Record<string, string[]>;
 }
 
 /**
@@ -79,7 +78,6 @@ export class Team {
   private _manager?: string;
   private _playerCards?: Record<number, string>;
   private _managerCard?: string;
-  private _availableTactics?: Record<string, string[]>;
 
   constructor(props: TeamProps) {
     if (!props.name.trim()) {
@@ -109,14 +107,6 @@ export class Team {
       ? { ...props.playerCards }
       : undefined;
     this._managerCard = props.managerCard;
-    this._availableTactics = props.availableTactics
-      ? Object.fromEntries(
-          Object.entries(props.availableTactics).map(([k, v]) => [
-            normalizeFormationKey(k),
-            [...v],
-          ]),
-        )
-      : undefined;
   }
 
   // ── Getters ─────────────────────────────────────────────
@@ -162,11 +152,6 @@ export class Team {
   }
   get managerCard(): string | undefined {
     return this._managerCard;
-  }
-  get availableTactics():
-    | Readonly<Record<string, readonly string[]>>
-    | undefined {
-    return this._availableTactics;
   }
 
   // ── Factory ─────────────────────────────────────────────
@@ -358,18 +343,6 @@ export class Team {
 
     this._availableFormations = normalizedFormations;
 
-    // 削除されたフォーメーションの戦術設定をクリーンアップ
-    if (this._availableTactics) {
-      for (const formationKey of Object.keys(this._availableTactics)) {
-        if (!normalizedFormations.includes(formationKey)) {
-          delete this._availableTactics[formationKey];
-        }
-      }
-      if (Object.keys(this._availableTactics).length === 0) {
-        this._availableTactics = undefined;
-      }
-    }
-
     const normalizedDefaultFormation = defaultFormation
       ? normalizeFormationKey(defaultFormation)
       : undefined;
@@ -386,36 +359,6 @@ export class Team {
       this._defaultFormation = normalizedFormations[0];
     }
 
-    this._updatedAt = new Date();
-  }
-
-  /**
-   * 指定フォーメーションで利用可能な戦術IDの配列を取得する
-   * @param formationName - フォーメーション名
-   * @returns 戦術IDの配列。undefinedの場合は全戦術が利用可能
-   */
-  getAvailableTacticsForFormation(formationName: string): string[] | undefined {
-    if (!this._availableTactics) return undefined;
-    const tactics =
-      this._availableTactics[normalizeFormationKey(formationName)];
-    if (!tactics || tactics.length === 0) return undefined;
-    return [...tactics];
-  }
-
-  /**
-   * フォーメーションごとの利用可能戦術（ホワイトリスト）を更新する
-   * 空の配列を持つフォーメーションは自動的に除外される
-   * @param availableTactics - フォーメーション名をキーとした戦術IDの配列
-   */
-  updateAvailableTactics(availableTactics: Record<string, string[]>): void {
-    const cleaned: Record<string, string[]> = {};
-    for (const [formation, tacticIds] of Object.entries(availableTactics)) {
-      if (tacticIds.length > 0) {
-        cleaned[normalizeFormationKey(formation)] = tacticIds;
-      }
-    }
-    this._availableTactics =
-      Object.keys(cleaned).length > 0 ? cleaned : undefined;
     this._updatedAt = new Date();
   }
 }

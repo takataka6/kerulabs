@@ -97,7 +97,10 @@ export function useTacticsOrchestration(params: {
 }) {
   const {
     currentFormation,
-    selectedTeam,
+    // selectedTeam は現在 tacticsForCurrentFormation のフィルタで使用していないが、
+    // 呼び出し元（TacticsViewerPage など）のインターフェース互換のため残す。
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    selectedTeam: _selectedTeam,
     tactics,
     playMode,
     selectedPhase,
@@ -466,18 +469,10 @@ export function useTacticsOrchestration(params: {
   // ── フィルタ済みタクティクス ──
   const tacticsForCurrentFormation = useMemo(() => {
     if (!tactics || !currentFormation) return [];
-    const formationTactics = tactics.filter((t) =>
+    return tactics.filter((t) =>
       t.supportsFormation(currentFormation.id.value),
     );
-    if (!selectedTeam) return formationTactics;
-    const whitelist = selectedTeam.getAvailableTacticsForFormation(
-      currentFormation.id.value,
-    );
-    if (!whitelist) return formationTactics;
-    return formationTactics.filter(
-      (t) => t.isCustom || whitelist.includes(t.id.value),
-    );
-  }, [tactics, currentFormation, selectedTeam]);
+  }, [tactics, currentFormation]);
 
   return {
     // ── 手動ポジション ──

@@ -218,21 +218,6 @@ describe("IndexedDBTeamRepository", () => {
       const team = repo.testMapToDomain(recordWithManagerCard);
       expect(team.managerCard).toBe("yellow");
     });
-
-    it("availableTacticsが復元される", () => {
-      const recordWithTactics = {
-        ...sampleRecord,
-        availableTactics: {
-          "4-4-2": ["tactic-1", "tactic-2"],
-          "4-3-3": ["tactic-3"],
-        },
-      };
-      const team = repo.testMapToDomain(recordWithTactics);
-      expect(team.availableTactics).toEqual({
-        "4-4-2": ["tactic-1", "tactic-2"],
-        "4-3-3": ["tactic-3"],
-      });
-    });
   });
 
   describe("mapToPersistence", () => {
@@ -345,43 +330,6 @@ describe("IndexedDBTeamRepository", () => {
       const record = repo.testMapToPersistence(team);
 
       expect(record.playerCards).toBeUndefined();
-    });
-
-    it("availableTacticsがシリアライズされる", () => {
-      const team = Team.create({
-        name: "チーム",
-        subtitle: "",
-        colors: { gk: "#fff", main: "#fff" },
-        availableFormations: ["4-4-2", "4-3-3"],
-        flagType: "",
-        headerGradient: "",
-      });
-      team.updateAvailableTactics({
-        "4-4-2": ["tactic-1", "tactic-2"],
-        "4-3-3": ["tactic-3"],
-      });
-
-      const record = repo.testMapToPersistence(team);
-
-      expect(record.availableTactics).toEqual({
-        "4-4-2": ["tactic-1", "tactic-2"],
-        "4-3-3": ["tactic-3"],
-      });
-    });
-
-    it("availableTacticsが未設定の場合はundefined", () => {
-      const team = Team.create({
-        name: "チーム",
-        subtitle: "",
-        colors: { gk: "#fff", main: "#fff" },
-        availableFormations: ["4-4-2"],
-        flagType: "",
-        headerGradient: "",
-      });
-
-      const record = repo.testMapToPersistence(team);
-
-      expect(record.availableTactics).toBeUndefined();
     });
 
     it("選手のオプショナルフィールドがすべてシリアライズされる", () => {

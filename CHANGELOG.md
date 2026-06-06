@@ -7,6 +7,17 @@
 
 ## [Unreleased]
 
+### Removed
+
+- **チーム別戦術ホワイトリスト機能 (`availableTactics`)** を完全に廃止しました。
+  戦術はフォーメーションへの直接紐付け（`supportsFormation`）のみで管理されるようになりました。
+  - `Team` エンティティから `availableTactics` プロパティ、`updateAvailableTactics()`、`getAvailableTacticsForFormation()` を削除
+  - `IndexedDBTeamRepository` の永続化・復元、インポートスキーマ (`teamImportDataSchema`) から同フィールドを削除
+  - `useTacticsOrchestration` の `tacticsForCurrentFormation` から `selectedTeam` によるホワイトリストフィルタを削除
+  - `FormationEditor` から「戦術タブ」（対象フォーメーションごとの戦術選択UI）を廃止（Formationsタブのみ残す）
+  - サンプルデータ適用、チームCRUD、関連テスト・i18n も整理
+  - これは PR #28「フォーメーションIDベースの戦術管理に移行」の設計方針をさらに徹底する後続リファクタリングです。
+
 ## [0.4.3] - 2026-06-06
 
 ### Added

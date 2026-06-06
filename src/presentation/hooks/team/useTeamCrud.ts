@@ -187,10 +187,6 @@ export function useTeamCrud(params: {
               }
             }
 
-            if (teamData.availableTactics) {
-              team.updateAvailableTactics(teamData.availableTactics);
-            }
-
             getLogger().info("database", "Saving team", {
               teamName: team.name,
             });
