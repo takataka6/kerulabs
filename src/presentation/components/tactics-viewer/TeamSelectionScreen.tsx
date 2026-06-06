@@ -11,6 +11,7 @@ import {
   BulkTeamImportModal,
 } from "@presentation/components/team";
 import { TacticsPageIcon } from "@presentation/components/ui";
+import { getFormationNameById } from "@shared/constants/formations";
 import type { TranslationFn, Language } from "./types";
 
 interface TeamSelectionScreenProps {
@@ -182,12 +183,12 @@ export const TeamSelectionScreen = memo(function TeamSelectionScreen({
                         </div>
                       </div>
                       <div className="flex gap-2 flex-wrap">
-                        {team.availableFormations.map((formation) => (
+                        {team.availableFormations.map((formationId) => (
                           <span
-                            key={formation}
+                            key={formationId}
                             className="px-3 py-1.5 bg-slate-800/80 text-slate-300 rounded-lg text-xs font-semibold tracking-wider border border-slate-700/50 group-hover:border-blue-500/30 transition-colors"
                           >
-                            {formation}
+                            {getFormationNameById(formationId) ?? formationId}
                           </span>
                         ))}
                       </div>

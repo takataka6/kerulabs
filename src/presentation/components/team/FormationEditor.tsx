@@ -6,6 +6,7 @@ import { memo, useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useClickOutside } from "@presentation/hooks/ui";
 import { Team } from "@domain/entities/Team";
 import { Tactic } from "@domain/entities/Tactic";
+import type { Formation } from "@domain/entities/Formation";
 import { useLanguage } from "@presentation/contexts/LanguageContext";
 import { AccessibleModal } from "@presentation/components/ui";
 import {
@@ -13,6 +14,8 @@ import {
   ensureFormationDefaultForGameMode,
   getFormationOptions,
   getFormationOptionsWithDefault,
+  getFormationNameById,
+  normalizeFormationKey,
 } from "@shared/constants/formations";
 import type { GameMode } from "@shared/types/GameMode";
 import { PHASE_CONFIG } from "@shared/constants/phases";
@@ -36,6 +39,7 @@ const PHASE_ORDER = [
 interface FormationEditorProps {
   team: Team;
   allTactics: Tactic[];
+  formations?: Formation[];
   onUpdateTeam: (team: Team) => void;
   onClose: () => void;
   gameMode?: GameMode;
@@ -44,6 +48,7 @@ interface FormationEditorProps {
 export const FormationEditor = memo(function FormationEditor({
   team,
   allTactics,
+  formations = [],
   onUpdateTeam,
   onClose,
   gameMode = "football",
@@ -104,6 +109,16 @@ export const FormationEditor = memo(function FormationEditor({
 
   useClickOutside(panelRef, onClose);
 
+  const getFormationId = useCallback(
+    (formationKey: string) =>
+      formations.find(
+        (formation) =>
+          formation.id.value === formationKey ||
+          formation.name === formationKey,
+      )?.id.value ?? normalizeFormationKey(formationKey),
+    [formations],
+  );
+
   const handleFormationToggle = (formation: string) => {
     if (selectedFormations.includes(formation)) {
       if (selectedFormations.length <= 1) return;
@@ -119,8 +134,9 @@ export const FormationEditor = memo(function FormationEditor({
 
   // 編集中フォーメーションで利用可能な戦術（フェーズごとにグループ化）
   const tacticsForEditingFormation = useMemo(() => {
-    return allTactics.filter((t) => t.supportsFormation(editingFormation));
-  }, [allTactics, editingFormation]);
+    const formationId = getFormationId(editingFormation);
+    return allTactics.filter((t) => t.supportsFormation(formationId));
+  }, [allTactics, editingFormation, getFormationId]);
 
   const tacticsByPhase = useMemo(() => {
     const grouped: Record<string, Tactic[]> = {};
@@ -134,43 +150,47 @@ export const FormationEditor = memo(function FormationEditor({
 
   // 戦術が有効かどうか
   const isTacticEnabled = (tacticId: string): boolean => {
-    const whitelist = localAvailableTactics[editingFormation];
+    const whitelist = localAvailableTactics[getFormationId(editingFormation)];
     if (!whitelist || whitelist.length === 0) return true;
     return whitelist.includes(tacticId);
   };
 
   // 全戦術モードかどうか
   const isAllMode = (formationName: string): boolean => {
-    const whitelist = localAvailableTactics[formationName];
+    const whitelist = localAvailableTactics[getFormationId(formationName)];
     return !whitelist || whitelist.length === 0;
   };
 
   // 選択中の戦術数
   const selectedTacticCount = useMemo(() => {
-    const whitelist = localAvailableTactics[editingFormation];
+    const whitelist = localAvailableTactics[getFormationId(editingFormation)];
     if (!whitelist || whitelist.length === 0)
       return tacticsForEditingFormation.length;
     return whitelist.length;
-  }, [localAvailableTactics, editingFormation, tacticsForEditingFormation]);
+  }, [
+    localAvailableTactics,
+    editingFormation,
+    tacticsForEditingFormation,
+    getFormationId,
+  ]);
 
   // 戦術のトグル
   const handleTacticToggle = (tacticId: string) => {
     setLocalAvailableTactics((prev) => {
       const next = { ...prev };
-      const currentList = next[editingFormation];
+      const formationId = getFormationId(editingFormation);
+      const currentList = next[formationId];
 
       if (!currentList || currentList.length === 0) {
         // 「全戦術」モードから明示モードに移行
         const allIds = tacticsForEditingFormation.map((t) => t.id.value);
-        next[editingFormation] = allIds.filter((id) => id !== tacticId);
+        next[formationId] = allIds.filter((id) => id !== tacticId);
       } else if (currentList.includes(tacticId)) {
-        next[editingFormation] = currentList.filter((id) => id !== tacticId);
+        next[formationId] = currentList.filter((id) => id !== tacticId);
       } else {
-        next[editingFormation] = [...currentList, tacticId];
-        if (
-          next[editingFormation].length >= tacticsForEditingFormation.length
-        ) {
-          delete next[editingFormation];
+        next[formationId] = [...currentList, tacticId];
+        if (next[formationId].length >= tacticsForEditingFormation.length) {
+          delete next[formationId];
         }
       }
       return next;
@@ -181,7 +201,8 @@ export const FormationEditor = memo(function FormationEditor({
   const handleSelectAllPhase = (phase: string) => {
     setLocalAvailableTactics((prev) => {
       const next = { ...prev };
-      const currentList = next[editingFormation];
+      const formationId = getFormationId(editingFormation);
+      const currentList = next[formationId];
 
       if (!currentList || currentList.length === 0) {
         return prev; // 既に全選択
@@ -191,9 +212,9 @@ export const FormationEditor = memo(function FormationEditor({
       const merged = [...new Set([...currentList, ...phaseIds])];
 
       if (merged.length >= tacticsForEditingFormation.length) {
-        delete next[editingFormation];
+        delete next[formationId];
       } else {
-        next[editingFormation] = merged;
+        next[formationId] = merged;
       }
       return next;
     });
@@ -203,16 +224,17 @@ export const FormationEditor = memo(function FormationEditor({
   const handleDeselectAllPhase = (phase: string) => {
     setLocalAvailableTactics((prev) => {
       const next = { ...prev };
-      const currentList = next[editingFormation];
+      const formationId = getFormationId(editingFormation);
+      const currentList = next[formationId];
       const phaseIds = new Set(
         (tacticsByPhase[phase] || []).map((t) => t.id.value),
       );
 
       if (!currentList || currentList.length === 0) {
         const allIds = tacticsForEditingFormation.map((t) => t.id.value);
-        next[editingFormation] = allIds.filter((id) => !phaseIds.has(id));
+        next[formationId] = allIds.filter((id) => !phaseIds.has(id));
       } else {
-        next[editingFormation] = currentList.filter((id) => !phaseIds.has(id));
+        next[formationId] = currentList.filter((id) => !phaseIds.has(id));
       }
       return next;
     });
@@ -275,9 +297,15 @@ export const FormationEditor = memo(function FormationEditor({
           ...getFormationOptions("eight_aside"),
           ...getFormationOptions("society"),
         ]);
-        const validFormations = data.availableFormations.filter((f: string) =>
-          allOptions.has(f),
-        );
+        const validFormations = [
+          ...new Set(
+            data.availableFormations
+              .map((f: string) => normalizeFormationKey(f))
+              .filter((f: string) =>
+                allOptions.has(getFormationNameById(f) ?? f),
+              ),
+          ),
+        ];
         if (validFormations.length === 0) {
           throw new Error("No valid formations found");
         }
@@ -404,12 +432,13 @@ export const FormationEditor = memo(function FormationEditor({
           <div className="p-4 space-y-3">
             <div className="grid grid-cols-2 gap-2">
               {formationOptions.map((formation) => {
-                const isSelected = selectedFormations.includes(formation);
+                const formationId = normalizeFormationKey(formation);
+                const isSelected = selectedFormations.includes(formationId);
                 const isLastOne = isSelected && selectedFormations.length <= 1;
                 return (
                   <button
                     key={formation}
-                    onClick={() => handleFormationToggle(formation)}
+                    onClick={() => handleFormationToggle(formationId)}
                     disabled={isLastOne}
                     className={`py-2.5 px-3 rounded-xl font-bold text-sm transition-all duration-300 ${
                       isSelected
@@ -436,7 +465,7 @@ export const FormationEditor = memo(function FormationEditor({
                 >
                   {selectedFormations.map((f) => (
                     <option key={f} value={f}>
-                      {f}
+                      {getFormationNameById(f) ?? f}
                     </option>
                   ))}
                 </select>
@@ -459,7 +488,7 @@ export const FormationEditor = memo(function FormationEditor({
               >
                 {selectedFormations.map((f) => (
                   <option key={f} value={f}>
-                    {f}
+                    {getFormationNameById(f) ?? f}
                   </option>
                 ))}
               </select>

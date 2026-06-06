@@ -172,7 +172,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
   const currentFormation = gameModeFormations.find(
     (f) => f.id.value === currentFormationId,
   );
-  const availableFormationNames = new Set(
+  const availableFormationIds = new Set(
     getFormationOptionsWithDefault(selectedTeam.availableFormations, gameMode),
   );
   const showOpponentSelector =
@@ -216,20 +216,21 @@ export const RightControlsColumn = memo(function RightControlsColumn({
               <FormationEditor
                 team={selectedTeam}
                 allTactics={allTactics || []}
+                formations={gameModeFormations}
                 gameMode={gameMode}
                 onUpdateTeam={(updatedTeam) => {
                   onUpdateTeam(updatedTeam);
                   if (
                     currentFormation &&
                     !updatedTeam.availableFormations.includes(
-                      currentFormation.name,
+                      currentFormation.id.value,
                     )
                   ) {
                     const newDefault =
                       updatedTeam.defaultFormation ||
                       updatedTeam.availableFormations[0];
                     const newFormation = gameModeFormations.find(
-                      (f) => f.name === newDefault,
+                      (f) => f.id.value === newDefault,
                     );
                     if (newFormation) onChangeFormation(newFormation.id.value);
                   }
@@ -270,7 +271,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                       className={`pointer-events-auto w-full cursor-pointer appearance-none rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(37,99,235,0.98)_0%,rgba(29,78,216,0.98)_100%)] px-2 py-1.5 text-center text-xs sm:text-sm font-bold text-white shadow-[0_10px_24px_rgba(37,99,235,0.28)] outline-none transition-all duration-300 ${isExecuting ? "cursor-not-allowed opacity-40" : "hover:brightness-110 focus:border-blue-300/70 focus:ring-2 focus:ring-blue-400/30"}`}
                     >
                       {gameModeFormations
-                        .filter((f) => availableFormationNames.has(f.name))
+                        .filter((f) => availableFormationIds.has(f.id.value))
                         .map((f) => (
                           <option
                             key={f.id.value}

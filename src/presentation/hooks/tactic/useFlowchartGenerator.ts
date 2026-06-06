@@ -47,10 +47,10 @@ export function useFlowchartGenerator(params: {
     if (!activeTactic || !currentFormation) return "";
 
     const movements = activeTactic.getMovementsForFormation(
-      currentFormation.name,
+      currentFormation.id.value,
     );
     const ballPasses = activeTactic.getBallPassesForFormation(
-      currentFormation.name,
+      currentFormation.id.value,
     );
     if (movements.length === 0 && ballPasses.length === 0) return "";
 

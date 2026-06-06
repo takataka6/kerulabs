@@ -41,7 +41,11 @@ export interface UseTacticCreationReturn {
   creation: CreationState | null;
 
   // ライフサイクル
-  startCreation: (formationName: string, gamePhase: PhaseKey) => void;
+  startCreation: (
+    formationName: string,
+    gamePhase: PhaseKey,
+    formationId?: string,
+  ) => void;
   cancelCreation: () => void;
 
   // 移動編集（useMovementEditor）
@@ -149,12 +153,13 @@ export function useTacticCreation(): UseTacticCreationReturn {
   // ----- ライフサイクル -------------------------------------------------------
 
   const startCreation = useCallback(
-    (formationName: string, gamePhase: PhaseKey) => {
+    (formationName: string, gamePhase: PhaseKey, formationId?: string) => {
       setCreation({
         nameJa: "",
         nameEn: "",
         icon: "\u26BD",
         gamePhase,
+        formationId: formationId ?? formationName,
         formationName,
         currentStepIndex: 0,
         steps: [createEmptyStep(1)],

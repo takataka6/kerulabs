@@ -28,8 +28,8 @@ export const SAMPLE_TEAM_B: CreateTeamInput = {
   name: "[Sample] Team 02",
   subtitle: "サンプルチーム 02",
   colors: { gk: "#32CD32", main: "#DC143C" },
-  availableFormations: ["4-4-2 Flat", "4-2-3-1"],
-  defaultFormation: "4-4-2 Flat",
+  availableFormations: ["4-4-2-flat", "4-2-3-1"],
+  defaultFormation: "4-4-2-flat",
   flagType: "none",
   headerGradient: "from-red-600 to-orange-500",
   manager: "Sample Coach 02",
@@ -41,7 +41,7 @@ export const SAMPLE_TEAM_A_TACTICS: Record<string, string[]> = {
 };
 
 export const SAMPLE_TEAM_B_TACTICS: Record<string, string[]> = {
-  "4-4-2 Flat": [
+  "4-4-2-flat": [
     "LEFT_SB_OVERLAP",
     "RIGHT_SB_OVERLAP",
     "HIGH_PRESS",

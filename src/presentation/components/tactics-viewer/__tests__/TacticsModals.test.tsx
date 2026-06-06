@@ -85,7 +85,7 @@ const opponentTeamId = new TeamId("opp-1");
 function createTeam(
   id: TeamId,
   name: string,
-  formations: string[] = ["4-4-2 Flat"],
+  formations: string[] = ["4-4-2-flat"],
 ) {
   return new Team({
     id,
@@ -126,9 +126,9 @@ function createFormation(id: string, name: string): Formation {
 
 const selectedTeam = createTeam(teamId, "My Team");
 const opponentTeam = createTeam(opponentTeamId, "Opponent Team", [
-  "4-4-2 Flat",
+  "4-4-2-flat",
 ]);
-const formation442 = createFormation("f-1", "4-4-2 Flat");
+const formation442 = createFormation("4-4-2-flat", "4-4-2 Flat");
 const futsalFormation22 = {
   ...createFormation("futsal-2-2", "2-2"),
   type: "futsal",
@@ -329,7 +329,7 @@ describe("TacticsModals", () => {
       });
       fireEvent.click(screen.getByText("4-4-2 Flat"));
       // When opponentTeam has no selectedSquad, it should transition to squad builder
-      expect(setOpponentFormationId).toHaveBeenCalledWith("f-1");
+      expect(setOpponentFormationId).toHaveBeenCalledWith("4-4-2-flat");
       expect(setShowOpponentFormationSelect).toHaveBeenCalledWith(false);
       expect(setShowOpponentSquadBuilder).toHaveBeenCalledWith(true);
     });
@@ -388,7 +388,7 @@ describe("TacticsModals", () => {
         opponentsHook: {
           showOpponentSquadBuilder: true,
           opponentTeam,
-          opponentFormationId: "f-1",
+          opponentFormationId: "4-4-2-flat",
         },
         formationMgmt: {
           gameModeFormations: [formation442],

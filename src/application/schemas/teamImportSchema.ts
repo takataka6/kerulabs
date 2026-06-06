@@ -1,5 +1,9 @@
 import { z } from "zod";
 import { DEFAULT_TEAM_GK_COLOR } from "@shared/constants";
+import {
+  normalizeFormationKey,
+  normalizeFormationKeys,
+} from "@shared/constants/formations";
 
 /** 一括インポート用の選手スキーマ（id/timestamps 不要） */
 const playerImportSchema = z.object({
@@ -28,15 +32,36 @@ export const teamImportDataSchema = z.object({
     })
     .optional()
     .default({ gk: DEFAULT_TEAM_GK_COLOR }),
-  availableFormations: z.array(z.string()).optional().default(["4-3-3"]),
-  defaultFormation: z.string().optional(),
+  availableFormations: z
+    .array(z.string())
+    .optional()
+    .default(["4-3-3"])
+    .transform((formations) => normalizeFormationKeys(formations)),
+  defaultFormation: z
+    .string()
+    .optional()
+    .transform((formation) =>
+      formation ? normalizeFormationKey(formation) : undefined,
+    ),
   flagType: z.string().optional().default("japan"),
   headerGradient: z
     .string()
     .optional()
     .default("linear-gradient(135deg, #667eea 0%, #764ba2 100%)"),
   manager: z.string().optional(),
-  availableTactics: z.record(z.string(), z.array(z.string())).optional(),
+  availableTactics: z
+    .record(z.string(), z.array(z.string()))
+    .optional()
+    .transform((availableTactics) =>
+      availableTactics
+        ? Object.fromEntries(
+            Object.entries(availableTactics).map(([formation, tacticIds]) => [
+              normalizeFormationKey(formation),
+              tacticIds,
+            ]),
+          )
+        : undefined,
+    ),
   players: z.array(playerImportSchema).optional(),
 });
 

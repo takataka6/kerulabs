@@ -2,7 +2,7 @@
  * @module PlayerManagement
  * @description 選手管理のメインコンポーネント。選手一覧・追加・編集・削除・一括インポート・検索/フィルタ機能を統合する。
  */
-import { useState, useCallback, useMemo, useRef, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 import type { Team } from "@domain/entities/Team";
 import type { PositionCategory } from "@domain/types";
 import type { PlayerStatus } from "@shared/types/PlayerStatus";
@@ -21,7 +21,6 @@ import { PlayerRow } from "./PlayerRow";
 import type { SortBy, FilterPosition } from "./constants";
 
 const PLAYERS_PER_PAGE = 20;
-const SEARCH_DEBOUNCE_MS = 200;
 
 interface PlayerManagementProps {
   team: Team;
@@ -46,30 +45,24 @@ export function PlayerManagement({
   // ── 検索・フィルタ・ソート ──
   const [sortBy, setSortBy] = useState<SortBy>("number");
   const [filterPosition, setFilterPosition] = useState<FilterPosition>("all");
-  const [searchInput, setSearchInput] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PLAYERS_PER_PAGE);
-  const searchTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const [, setRenderVersion] = useState(0);
 
-  useEffect(() => {
-    return () => {
-      if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
-    };
-  }, []);
-
-  // 検索入力は即時表示、フィルタリングはデバウンス
+  // 検索は即時反映し、結果件数の表示も同期させる
   const handleSearchChange = useCallback((query: string) => {
-    setSearchInput(query);
-    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
-    searchTimerRef.current = setTimeout(() => {
-      setDebouncedSearch(query);
-      setVisibleCount(PLAYERS_PER_PAGE);
-    }, SEARCH_DEBOUNCE_MS);
+    setSearchQuery(query);
+    setVisibleCount(PLAYERS_PER_PAGE);
   }, []);
   const handleFilterChange = useCallback((filter: FilterPosition) => {
     setFilterPosition(filter);
     setVisibleCount(PLAYERS_PER_PAGE);
   }, []);
+
+  const syncTeamUpdate = useCallback(() => {
+    onUpdateTeam(team);
+    setRenderVersion((version) => version + 1);
+  }, [onUpdateTeam, team]);
 
   // ── ハンドラ ──
   const handleStartEdit = useCallback((playerId: string) => {
@@ -91,10 +84,10 @@ export function PlayerManagement({
       const player = team.players.find((p) => p.id.value === playerId);
       if (player) {
         team.removePlayer(player.id);
-        onUpdateTeam(team);
+        syncTeamUpdate();
       }
     },
-    [team, onUpdateTeam, t, confirm],
+    [team, t, confirm, syncTeamUpdate],
   );
 
   const handleUpdatePlayer = useCallback(
@@ -136,7 +129,7 @@ export function PlayerManagement({
         player.updateMainVisualImageUrl(mainVisualImageUrl);
         player.updateNote(note);
         if (status) player.updateStatus(status);
-        onUpdateTeam(team);
+        syncTeamUpdate();
       } catch (error) {
         handleError(error, "ui", "Failed to update player", {
           toast: {
@@ -147,7 +140,7 @@ export function PlayerManagement({
         });
       }
     },
-    [team, onUpdateTeam, showToast, t],
+    [team, showToast, t, syncTeamUpdate],
   );
 
   // ── フィルタリングとソート ──
@@ -158,9 +151,9 @@ export function PlayerManagement({
           if (filterPosition !== "all" && p.position !== filterPosition)
             return false;
           if (
-            debouncedSearch &&
-            !p.name.toLowerCase().includes(debouncedSearch.toLowerCase()) &&
-            !p.number.toString().includes(debouncedSearch)
+            searchQuery &&
+            !p.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+            !p.number.toString().includes(searchQuery)
           )
             return false;
           return true;
@@ -174,7 +167,7 @@ export function PlayerManagement({
           }
           return 0;
         }),
-    [team.players, filterPosition, debouncedSearch, sortBy],
+    [team.players, filterPosition, searchQuery, sortBy],
   );
 
   return (
@@ -227,7 +220,7 @@ export function PlayerManagement({
         <PositionStatsGrid players={team.players} t={t} />
 
         <PlayerSearchFilter
-          searchQuery={searchInput}
+          searchQuery={searchQuery}
           onSearchChange={handleSearchChange}
           filterPosition={filterPosition}
           onFilterChange={handleFilterChange}
@@ -271,7 +264,7 @@ export function PlayerManagement({
         {isAddingPlayer && (
           <PlayerAddForm
             team={team}
-            onUpdateTeam={onUpdateTeam}
+            onUpdateTeam={syncTeamUpdate}
             onClose={() => setIsAddingPlayer(false)}
             language={language}
             t={t}
@@ -281,7 +274,7 @@ export function PlayerManagement({
         {showBulkImport && (
           <BulkImportForm
             team={team}
-            onUpdateTeam={onUpdateTeam}
+            onUpdateTeam={syncTeamUpdate}
             onClose={() => setShowBulkImport(false)}
             t={t}
           />

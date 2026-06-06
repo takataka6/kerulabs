@@ -135,10 +135,16 @@ export function useTacticBuilder(
       }
 
       const movementsMap = new Map<string, Movement[]>();
-      movementsMap.set(formation.name, allMovements);
+      movementsMap.set(
+        creation.formationId || formation.id.value,
+        allMovements,
+      );
 
       const ballPassesMap = new Map<string, BallPass[]>();
-      ballPassesMap.set(formation.name, allBallPasses);
+      ballPassesMap.set(
+        creation.formationId || formation.id.value,
+        allBallPasses,
+      );
 
       const phaseType = phaseKeyToPhaseType(creation.gamePhase);
 

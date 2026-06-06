@@ -34,7 +34,7 @@ function createMockFormation(): Formation {
   positions.forEach((pos, index) => roleMap.set(pos.pos, index));
 
   return {
-    id: new FormationId("fm-1"),
+    id: new FormationId("4-3-3"),
     name: "4-3-3",
     type: "football",
     positions,

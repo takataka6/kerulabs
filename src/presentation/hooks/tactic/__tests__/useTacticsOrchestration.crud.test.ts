@@ -218,7 +218,11 @@ describe("useTacticsOrchestration — CRUD操作", () => {
       act(() => {
         result.current.startTacticCreation();
       });
-      expect(mockStartCreation).toHaveBeenCalledWith("4-3-3", "defense");
+      expect(mockStartCreation).toHaveBeenCalledWith(
+        "4-3-3",
+        "defense",
+        "4-3-3",
+      );
     });
 
     it("setPlay モードで selectedSetPlayType を渡して startCreation を呼ぶ", () => {
@@ -232,7 +236,11 @@ describe("useTacticsOrchestration — CRUD操作", () => {
       act(() => {
         result.current.startTacticCreation();
       });
-      expect(mockStartCreation).toHaveBeenCalledWith("4-3-3", "throw_in");
+      expect(mockStartCreation).toHaveBeenCalledWith(
+        "4-3-3",
+        "throw_in",
+        "4-3-3",
+      );
     });
 
     it("開始時に各モードをリセットする", () => {

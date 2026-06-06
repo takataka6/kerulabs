@@ -52,20 +52,20 @@ describe("formation defaults", () => {
 
   it("対象モードの設定がない場合はデフォルト1件を返す", () => {
     expect(getFormationOptionsWithDefault(["4-3-3"], "futsal")).toEqual([
-      "2-2",
+      "futsal-2-2",
     ]);
   });
 
   it("対象モードの設定がある場合はその設定を返す", () => {
     expect(
       getFormationOptionsWithDefault(["4-3-3", "1-2-1"], "futsal"),
-    ).toEqual(["1-2-1"]);
+    ).toEqual(["futsal-1-2-1"]);
   });
 
   it("対象モードの設定がない場合は既存設定にデフォルトを追加する", () => {
     expect(ensureFormationDefaultForGameMode(["4-3-3"], "society")).toEqual([
       "4-3-3",
-      "2-3-1",
+      "society-2-3-1",
     ]);
   });
 });
