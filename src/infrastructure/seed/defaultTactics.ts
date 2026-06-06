@@ -7,9 +7,9 @@ import { ROLES, FUTSAL_ROLES } from "@shared/constants/roles";
 export const DEFAULT_TACTICS = [
   // ========== ATTACK (攻撃フェーズ) ==========
 
-  // 左SBオーバーラップ
+  // 左オーバーラップ
   Tactic.createDefault(new TacticId("LEFT_SB_OVERLAP"), {
-    name: { ja: "左SBオーバーラップ", en: "左SBオーバーラップ" },
+    name: { ja: "左オーバーラップ", en: "Left Overlap" },
     icon: "↖️",
     phase: Phase.attack(),
     movements: new Map([
@@ -28,7 +28,7 @@ export const DEFAULT_TACTICS = [
         ],
       ],
       [
-        "4-4-2",
+        "4-4-2 Flat",
         [
           Movement.create(ROLES.WIDE_ATK_L, 2.5, 2, 0, "#ef4444"),
           Movement.create(ROLES.WIDE_DEF_L, 4.5, 2.8, 600, "#3b82f6"),
@@ -41,12 +41,26 @@ export const DEFAULT_TACTICS = [
           Movement.create(ROLES.WIDE_MID_L, 4.5, 2, 600, "#3b82f6"),
         ],
       ],
+      [
+        "3-4-3",
+        [
+          Movement.create(ROLES.WIDE_ATK_L, 2, 2.5, 0, "#ef4444"),
+          Movement.create(ROLES.WIDE_MID_L, 4.5, 2, 600, "#3b82f6"),
+        ],
+      ],
+      [
+        "5-4-1",
+        [
+          Movement.create(ROLES.WIDE_MID_L, 2, 2.5, 0, "#ef4444"),
+          Movement.create(ROLES.WIDE_DEF_L, 4.5, 2, 600, "#3b82f6"),
+        ],
+      ],
     ]),
   }),
 
-  // 右SBオーバーラップ
+  // 右オーバーラップ
   Tactic.createDefault(new TacticId("RIGHT_SB_OVERLAP"), {
-    name: { ja: "右SBオーバーラップ", en: "右SBオーバーラップ" },
+    name: { ja: "右オーバーラップ", en: "Right Overlap" },
     icon: "↗️",
     phase: Phase.attack(),
     movements: new Map([
@@ -65,7 +79,7 @@ export const DEFAULT_TACTICS = [
         ],
       ],
       [
-        "4-4-2",
+        "4-4-2 Flat",
         [
           Movement.create(ROLES.WIDE_ATK_R, -2.5, 2, 0, "#ef4444"),
           Movement.create(ROLES.WIDE_DEF_R, -4.5, 2.8, 600, "#3b82f6"),
@@ -76,6 +90,20 @@ export const DEFAULT_TACTICS = [
         [
           Movement.create(ROLES.WIDE_ATK_R, -2, 2.5, 0, "#ef4444"),
           Movement.create(ROLES.WIDE_MID_R, -4.5, 2, 600, "#3b82f6"),
+        ],
+      ],
+      [
+        "3-4-3",
+        [
+          Movement.create(ROLES.WIDE_ATK_R, -2, 2.5, 0, "#ef4444"),
+          Movement.create(ROLES.WIDE_MID_R, -4.5, 2, 600, "#3b82f6"),
+        ],
+      ],
+      [
+        "5-4-1",
+        [
+          Movement.create(ROLES.WIDE_MID_R, -2, 2.5, 0, "#ef4444"),
+          Movement.create(ROLES.WIDE_DEF_R, -4.5, 2, 600, "#3b82f6"),
         ],
       ],
     ]),
@@ -113,7 +141,7 @@ export const DEFAULT_TACTICS = [
         ],
       ],
       [
-        "4-4-2",
+        "4-4-2 Flat",
         [
           Movement.create(ROLES.CENTER_FWD, 0.5, 3.8, 0, "#ef4444"),
           Movement.create(ROLES.SECOND_FWD, -0.5, 3.8, 0, "#ef4444"),
@@ -125,6 +153,22 @@ export const DEFAULT_TACTICS = [
           Movement.create(ROLES.CENTER_FWD, 0, 4, 0, "#ef4444"),
           Movement.create(ROLES.WIDE_ATK_L, 2.5, 2.5, 200, "#ef4444"),
           Movement.create(ROLES.WIDE_ATK_R, -2.5, 2.5, 200, "#ef4444"),
+        ],
+      ],
+      [
+        "3-4-3",
+        [
+          Movement.create(ROLES.CENTER_FWD, 0, 4, 0, "#ef4444"),
+          Movement.create(ROLES.WIDE_ATK_L, 2.5, 2.5, 200, "#ef4444"),
+          Movement.create(ROLES.WIDE_ATK_R, -2.5, 2.5, 200, "#ef4444"),
+        ],
+      ],
+      [
+        "5-4-1",
+        [
+          Movement.create(ROLES.CENTER_FWD, 0, 4, 0, "#ef4444"),
+          Movement.create(ROLES.WIDE_MID_L, 2.5, 2.2, 200, "#ef4444"),
+          Movement.create(ROLES.WIDE_MID_R, -2.5, 2.2, 200, "#ef4444"),
         ],
       ],
     ]),
@@ -162,7 +206,7 @@ export const DEFAULT_TACTICS = [
         ],
       ],
       [
-        "4-4-2",
+        "4-4-2 Flat",
         [
           Movement.create(ROLES.CENTER_FWD, 0.5, 4, 0, "#ef4444"),
           Movement.create(ROLES.SECOND_FWD, -0.5, 3.8, 0, "#ef4444"),
@@ -176,6 +220,22 @@ export const DEFAULT_TACTICS = [
           Movement.create(ROLES.CENTER_FWD, 0, 4, 0, "#ef4444"),
           Movement.create(ROLES.WIDE_ATK_L, 3, 3.5, 200, "#ef4444"),
           Movement.create(ROLES.WIDE_ATK_R, -3, 3.5, 200, "#ef4444"),
+        ],
+      ],
+      [
+        "3-4-3",
+        [
+          Movement.create(ROLES.CENTER_FWD, 0, 4, 0, "#ef4444"),
+          Movement.create(ROLES.WIDE_ATK_L, 3, 3.5, 200, "#ef4444"),
+          Movement.create(ROLES.WIDE_ATK_R, -3, 3.5, 200, "#ef4444"),
+        ],
+      ],
+      [
+        "5-4-1",
+        [
+          Movement.create(ROLES.CENTER_FWD, 0, 4, 0, "#ef4444"),
+          Movement.create(ROLES.WIDE_MID_L, 3, 3, 200, "#ef4444"),
+          Movement.create(ROLES.WIDE_MID_R, -3, 3, 200, "#ef4444"),
         ],
       ],
     ]),

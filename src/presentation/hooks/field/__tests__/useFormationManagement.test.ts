@@ -163,4 +163,44 @@ describe("useFormationManagement", () => {
     expect(mockActions.clearManualPositions).not.toHaveBeenCalled();
     expect(resetHistory).not.toHaveBeenCalled();
   });
+
+  it("別チームへ切り替えたときは新しいチームの既定フォーメーションへ再同期する", async () => {
+    const teamA = {
+      id: { value: "team-a" },
+      availableFormations: ["4-4-2"],
+      defaultFormation: "4-4-2",
+    } as never;
+    const teamB = {
+      id: { value: "team-b" },
+      availableFormations: ["3-5-2"],
+      defaultFormation: "3-5-2",
+    } as never;
+
+    const mockActions = createMockActions();
+    const resetHistory = vi.fn();
+    const pushCurrentSnapshot = vi.fn();
+
+    const { result, rerender } = renderHook(
+      (selectedTeam) =>
+        useFormationManagement({
+          formations: [mockFormation1, mockFormation2, mockFutsalFormation],
+          gameMode: "football",
+          selectedTeam,
+          actionsRef: { current: mockActions },
+          resetHistory,
+          pushCurrentSnapshot,
+        }),
+      { initialProps: teamA },
+    );
+
+    await waitFor(() => {
+      expect(result.current.currentFormationId).toBe("f-1");
+    });
+
+    rerender(teamB);
+
+    await waitFor(() => {
+      expect(result.current.currentFormationId).toBe("f-2");
+    });
+  });
 });

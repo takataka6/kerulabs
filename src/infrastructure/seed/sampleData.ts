@@ -17,8 +17,8 @@ export const SAMPLE_TEAM_A: CreateTeamInput = {
   name: "[Sample] Team 01",
   subtitle: "サンプルチーム 01",
   colors: { gk: "#FFD700", main: "#1E90FF" },
-  availableFormations: ["4-3-3", "4-2-3-1", "3-5-2"],
-  defaultFormation: "4-3-3",
+  availableFormations: ["5-4-1", "3-4-3"],
+  defaultFormation: "5-4-1",
   flagType: "none",
   headerGradient: "from-blue-600 to-cyan-500",
   manager: "Sample Coach 01",
@@ -28,11 +28,31 @@ export const SAMPLE_TEAM_B: CreateTeamInput = {
   name: "[Sample] Team 02",
   subtitle: "サンプルチーム 02",
   colors: { gk: "#32CD32", main: "#DC143C" },
-  availableFormations: ["4-4-2 Flat", "4-2-3-1", "4-1-4-1"],
+  availableFormations: ["4-4-2 Flat", "4-2-3-1"],
   defaultFormation: "4-4-2 Flat",
   flagType: "none",
   headerGradient: "from-red-600 to-orange-500",
   manager: "Sample Coach 02",
+};
+
+export const SAMPLE_TEAM_A_TACTICS: Record<string, string[]> = {
+  "5-4-1": ["LEFT_SB_OVERLAP", "RIGHT_SB_OVERLAP", "HIGH_PRESS", "COUNTER_ATK"],
+  "3-4-3": ["LEFT_SB_OVERLAP", "RIGHT_SB_OVERLAP", "HIGH_PRESS", "COUNTER_ATK"],
+};
+
+export const SAMPLE_TEAM_B_TACTICS: Record<string, string[]> = {
+  "4-4-2 Flat": [
+    "LEFT_SB_OVERLAP",
+    "RIGHT_SB_OVERLAP",
+    "HIGH_PRESS",
+    "COUNTER_ATK",
+  ],
+  "4-2-3-1": [
+    "LEFT_SB_OVERLAP",
+    "RIGHT_SB_OVERLAP",
+    "HIGH_PRESS",
+    "COUNTER_ATK",
+  ],
 };
 
 /** チームAの選手データ（teamIdは実行時に差し込む） */

@@ -58,6 +58,12 @@ export const TeamSelectionScreen = memo(function TeamSelectionScreen({
   onUpdateTeam,
   t,
 }: TeamSelectionScreenProps) {
+  const sortedTeams = teams
+    ? [...teams].sort((a, b) =>
+        a.name.localeCompare(b.name, undefined, { numeric: true }),
+      )
+    : undefined;
+
   return (
     <div className="h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 relative overflow-y-auto">
       {/* ウィンドウドラッグ領域（Electron のみ） */}
@@ -142,7 +148,7 @@ export const TeamSelectionScreen = memo(function TeamSelectionScreen({
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-              {teams?.map((team, index) => (
+              {sortedTeams?.map((team, index) => (
                 <div
                   key={team.id.value}
                   className="group relative animate-slide-in-right"

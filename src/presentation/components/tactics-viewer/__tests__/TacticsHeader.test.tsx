@@ -17,11 +17,29 @@ import { Team } from "@domain/entities/Team";
 /* ------------------------------------------------------------------ */
 
 const mockSetShowTeamSelection = vi.fn();
+const mockSetCustomSquad = vi.fn();
+const mockResetSubstitutions = vi.fn();
 const mockSetShowPlayerManagement = vi.fn();
 const mockSetShowSquadBuilder = vi.fn();
 const mockSetCaptureMode = vi.fn();
 const mockSetHeaderVisible = vi.fn();
 const mockHandlePlayModeChange = vi.fn();
+const mockClearManualPositions = vi.fn();
+const mockResetTactic = vi.fn();
+const mockClearConnectionLines = vi.fn();
+const mockResetLineDrawingState = vi.fn();
+const mockSetBallPosition = vi.fn();
+const mockSetBallPlacementMode = vi.fn();
+const mockClearOpponents = vi.fn();
+const mockSetOpponentPlacementMode = vi.fn();
+const mockSetOpponentTeamId = vi.fn();
+const mockSetSelectedOpponentPlayerId = vi.fn();
+const mockSetShowOpponentFormationSelect = vi.fn();
+const mockSetOpponentFormationId = vi.fn();
+const mockSetShowOpponentSquadBuilder = vi.fn();
+const mockExitPlayerView = vi.fn();
+const mockClearSelection = vi.fn();
+const mockClearRect = vi.fn();
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
@@ -63,6 +81,8 @@ interface ContextOverrides {
   }>;
   teamMgmt?: Partial<{
     setShowTeamSelection: typeof vi.fn;
+    setCustomSquad: typeof vi.fn;
+    resetSubstitutions: typeof vi.fn;
   }>;
 }
 
@@ -84,10 +104,40 @@ function createDefaultContexts(overrides: ContextOverrides = {}) {
       currentFormation: overrides.currentFormation ?? createFormation(),
       teamMgmt: {
         setShowTeamSelection: mockSetShowTeamSelection,
+        setCustomSquad: mockSetCustomSquad,
+        resetSubstitutions: mockResetSubstitutions,
         ...overrides.teamMgmt,
       },
     },
     execCtx: {
+      tOrch: {
+        clearManualPositions: mockClearManualPositions,
+        resetTactic: mockResetTactic,
+      },
+      opponentsHook: {
+        clearOpponents: mockClearOpponents,
+        setOpponentPlacementMode: mockSetOpponentPlacementMode,
+        setOpponentTeamId: mockSetOpponentTeamId,
+        setSelectedOpponentPlayerId: mockSetSelectedOpponentPlayerId,
+        setShowOpponentFormationSelect: mockSetShowOpponentFormationSelect,
+        setOpponentFormationId: mockSetOpponentFormationId,
+        setShowOpponentSquadBuilder: mockSetShowOpponentSquadBuilder,
+      },
+      ballHook: {
+        setBallPosition: mockSetBallPosition,
+        setBallPlacementMode: mockSetBallPlacementMode,
+      },
+      connLines: {
+        clearConnectionLines: mockClearConnectionLines,
+        resetLineDrawingState: mockResetLineDrawingState,
+      },
+      playerView: {
+        exitPlayerView: mockExitPlayerView,
+      },
+      multiSelect: {
+        clearSelection: mockClearSelection,
+        clearRect: mockClearRect,
+      },
       playModePhase: {
         playMode: "field" as const,
         handlePlayModeChange: mockHandlePlayModeChange,
@@ -169,6 +219,11 @@ describe("TacticsHeader", () => {
       screen.getByRole("button", { name: "tactics.teamSelection" }),
     );
     expect(mockSetShowTeamSelection).toHaveBeenCalledWith(true);
+    expect(mockClearManualPositions).toHaveBeenCalledOnce();
+    expect(mockResetTactic).toHaveBeenCalledOnce();
+    expect(mockClearConnectionLines).toHaveBeenCalledOnce();
+    expect(mockSetBallPosition).toHaveBeenCalledWith(null);
+    expect(mockClearOpponents).toHaveBeenCalledOnce();
   });
 
   it("選手管理ボタンをクリックすると setShowPlayerManagement が呼ばれる", () => {
