@@ -36,6 +36,7 @@ export function PlayerMarker({
       {/* 背番号 */}
       {number !== undefined && (
         <Text
+          font="/fonts/Roboto-Regular.ttf"
           position={[0, 0.2, 0]}
           rotation={[-Math.PI / 2, 0, Math.PI]}
           fontSize={0.28}
@@ -58,6 +59,7 @@ export function PlayerMarker({
             <meshBasicMaterial color="#1e293b" />
           </mesh>
           <Text
+            font="/fonts/Roboto-Regular.ttf"
             position={[0, 0.03, -0.75]}
             rotation={[-Math.PI / 2, 0, Math.PI]}
             fontSize={0.16}
