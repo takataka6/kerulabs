@@ -22,7 +22,7 @@ export const BackgroundSettingsPanel = memo(function BackgroundSettingsPanel({
     <div className={className}>
       <button
         onClick={() => bgSettings.setShowSceneBgSettings((prev) => !prev)}
-        className={`relative w-full min-h-[42px] py-1.5 px-2 sm:py-2 sm:px-2.5 xl:py-2 xl:px-3 rounded-[20px] border shadow-[0_6px_16px_rgba(2,6,23,0.12),0_1px_3px_rgba(2,6,23,0.08)] ring-1 ring-white/5 transition-all duration-300 flex items-center justify-center gap-1.5 ${bgSettings.showSceneBgSettings ? "border-slate-400/55 bg-[linear-gradient(180deg,rgba(51,65,85,0.95)_0%,rgba(30,41,59,0.95)_100%)] text-white hover:border-slate-300/60" : "border-slate-600/35 bg-[linear-gradient(180deg,rgba(15,23,42,0.92)_0%,rgba(2,6,23,0.9)_100%)] text-slate-300 hover:-translate-y-[1px] hover:border-slate-500/50 hover:text-white"}`}
+        className={`relative w-full min-h-[36px] py-1 px-1.5 sm:py-1.5 sm:px-2 xl:py-1.5 xl:px-2.5 rounded-[20px] border shadow-[0_6px_16px_rgba(2,6,23,0.12),0_1px_3px_rgba(2,6,23,0.08)] ring-1 ring-white/5 transition-all duration-300 flex items-center justify-center gap-1.5 ${bgSettings.showSceneBgSettings ? "border-slate-400/55 bg-[linear-gradient(180deg,rgba(51,65,85,0.95)_0%,rgba(30,41,59,0.95)_100%)] text-white hover:border-slate-300/60" : "border-slate-600/35 bg-[linear-gradient(180deg,rgba(15,23,42,0.92)_0%,rgba(2,6,23,0.9)_100%)] text-slate-300 hover:-translate-y-[1px] hover:border-slate-500/50 hover:text-white"}`}
         aria-label={t("tactics.sceneBackground")}
         aria-expanded={bgSettings.showSceneBgSettings}
       >

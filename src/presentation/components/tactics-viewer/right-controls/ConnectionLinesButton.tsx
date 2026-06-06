@@ -33,7 +33,7 @@ export const ConnectionLinesButton = memo(function ConnectionLinesButton({
       <div className="flex items-center">
         <button
           onClick={connLines.toggleLineDrawing}
-          className={`flex-1 min-h-[42px] py-1.5 px-2 sm:py-2 sm:px-2.5 xl:py-2 xl:px-3 transition-all duration-300 flex items-center justify-center gap-1.5 ${connLines.lineDrawingMode ? "bg-cyan-600/18 text-cyan-200 hover:bg-cyan-600/24" : "text-slate-300 hover:bg-white/[0.06] hover:text-white"}`}
+          className={`flex-1 min-h-[36px] py-1 px-1.5 sm:py-1.5 sm:px-2 xl:py-1.5 xl:px-2.5 transition-all duration-300 flex items-center justify-center gap-1.5 ${connLines.lineDrawingMode ? "bg-cyan-600/18 text-cyan-200 hover:bg-cyan-600/24" : "text-slate-300 hover:bg-white/[0.06] hover:text-white"}`}
           aria-label={t("tactics.connectionLines")}
         >
           <span className="text-xs sm:text-sm" aria-hidden="true">
