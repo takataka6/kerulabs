@@ -7,6 +7,8 @@
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-06-06
+
 ### Removed
 
 - **チーム別戦術ホワイトリスト機能 (`availableTactics`)** を完全に廃止しました。
@@ -17,6 +19,15 @@
   - `FormationEditor` から「戦術タブ」（対象フォーメーションごとの戦術選択UI）を廃止（Formationsタブのみ残す）
   - サンプルデータ適用、チームCRUD、関連テスト・i18n も整理
   - これは PR #28「フォーメーションIDベースの戦術管理に移行」の設計方針をさらに徹底する後続リファクタリングです。
+
+### Changed
+
+- **フォーメーションIDベースの戦術管理への移行**: 戦術の管理単位をフォーメーションIDベースに切り替えました。
+- **Tactics Simulator UIの改善**: 右サイドバーカードの配置、ヘッダー中央揃え、ボタンの高さ、およびモバイルレイアウトを調整し、操作性と視認性を向上させました。
+
+### Fixed
+
+- **サンプルチームとチーム切り替えの安定化**: サンプルチームデータのフォーメーションと戦術割り当てを修正し、チーム切り替え時の動作を安定化しました。
 
 ## [0.4.3] - 2026-06-06
 
@@ -138,7 +149,8 @@
 - **Husky + lint-staged**: コミット時の自動リント・フォーマット
 - **GitHub Actions CI**: 型チェック・リント・テストの自動実行
 
-[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.4.3...HEAD
+[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/takataka6/kerulabs/compare/v0.4.3...v0.5.0
 [0.4.3]: https://github.com/takataka6/kerulabs/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/takataka6/kerulabs/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/takataka6/kerulabs/compare/v0.4.0...v0.4.1
