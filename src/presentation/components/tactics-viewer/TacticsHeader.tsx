@@ -18,11 +18,41 @@ import { useLanguage } from "@presentation/contexts/LanguageContext";
 export const TacticsHeader = memo(function TacticsHeader() {
   const { ui } = useTacticsUI();
   const { selectedTeam, currentFormation, teamMgmt } = useTacticsTeam();
-  const { playModePhase } = useTacticsExecution();
+  const {
+    playModePhase,
+    tOrch,
+    opponentsHook,
+    ballHook,
+    connLines,
+    playerView,
+    multiSelect,
+  } = useTacticsExecution();
   const { t, tDynamic, language } = useLanguage();
 
   const { captureMode, headerVisible } = ui;
   const isHidden = captureMode || !headerVisible;
+
+  const handleBackToTeamSelection = () => {
+    tOrch.clearManualPositions();
+    tOrch.resetTactic();
+    connLines.clearConnectionLines();
+    connLines.resetLineDrawingState();
+    ballHook.setBallPosition(null);
+    ballHook.setBallPlacementMode(false);
+    opponentsHook.clearOpponents();
+    opponentsHook.setOpponentPlacementMode(false);
+    opponentsHook.setOpponentTeamId(null);
+    opponentsHook.setSelectedOpponentPlayerId(null);
+    opponentsHook.setShowOpponentFormationSelect(false);
+    opponentsHook.setOpponentFormationId(null);
+    opponentsHook.setShowOpponentSquadBuilder(false);
+    playerView.exitPlayerView();
+    multiSelect.clearSelection();
+    multiSelect.clearRect();
+    teamMgmt.setCustomSquad([]);
+    teamMgmt.resetSubstitutions();
+    teamMgmt.setShowTeamSelection(true);
+  };
 
   return (
     <>
@@ -57,7 +87,7 @@ export const TacticsHeader = memo(function TacticsHeader() {
           })}
         >
           <button
-            onClick={() => teamMgmt.setShowTeamSelection(true)}
+            onClick={handleBackToTeamSelection}
             className="px-2 xl:px-3 py-1.5 hover:bg-slate-800 rounded-lg transition-all duration-200 text-slate-400 hover:text-slate-200 text-sm flex items-center gap-1.5"
             aria-label={t("tactics.teamSelection")}
           >

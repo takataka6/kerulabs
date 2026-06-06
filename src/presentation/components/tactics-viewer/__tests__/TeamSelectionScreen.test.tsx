@@ -142,6 +142,20 @@ describe("TeamSelectionScreen", () => {
       expect(onSelectTeam).toHaveBeenCalledWith("t1");
     });
 
+    it("チーム名の昇順で表示される", () => {
+      const teams = [
+        createTeam("t2", "[Sample] Team 02"),
+        createTeam("t1", "[Sample] Team 01"),
+      ];
+      renderScreen({ teams });
+
+      const headings = screen.getAllByRole("heading", { level: 2 });
+      expect(headings.map((heading) => heading.textContent)).toEqual([
+        "[Sample] Team 01",
+        "[Sample] Team 02",
+      ]);
+    });
+
     it("teams が undefined の場合、チーム一覧は空", () => {
       renderScreen({ teams: undefined });
       expect(screen.queryByText("Team Alpha")).not.toBeInTheDocument();

@@ -2,7 +2,7 @@
  * @module useFormationManagement
  * @description フォーメーションの選択・切替・フィルタリングを管理するフック。ゲームモードに応じた一覧表示と自動選択を提供する。
  */
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import type { Formation } from "@domain/entities/Formation";
 import type { Team } from "@domain/entities/Team";
 import type { GameMode } from "@domain/value-objects";
@@ -52,6 +52,7 @@ export function useFormationManagement(params: {
     null,
   );
   const [showFormationEditor, setShowFormationEditor] = useState(false);
+  const previousSelectedTeamIdRef = useRef<string | null>(null);
 
   const gameModeFormations = useMemo(() => {
     if (!formations) return [];
@@ -74,33 +75,46 @@ export function useFormationManagement(params: {
 
   // ── チーム/ゲームモード変更時にデフォルトフォーメーションを自動選択 ──
   useEffect(() => {
-    if (gameModeFormations.length > 0 && selectedTeam && !currentFormationId) {
-      const availableFormationNames = getFormationOptionsWithDefault(
-        selectedTeam.availableFormations,
-        gameMode,
-      );
-
-      if (
-        selectedTeam.defaultFormation &&
-        availableFormationNames.includes(selectedTeam.defaultFormation)
-      ) {
-        const defaultFormation = gameModeFormations.find(
-          (f) => f.name === selectedTeam.defaultFormation,
-        );
-        if (defaultFormation) {
-          // eslint-disable-next-line react-hooks/set-state-in-effect -- 派生状態: 未選択時にフォーメーションを自動選択
-          setCurrentFormationId(defaultFormation.id.value);
-          return;
-        }
-      }
-
-      const fallbackFormation =
-        gameModeFormations.find((f) => f.name === availableFormationNames[0]) ??
-        gameModeFormations[0];
-
-      setCurrentFormationId(fallbackFormation.id.value);
+    if (!selectedTeam) {
+      previousSelectedTeamIdRef.current = null;
+      return;
     }
-  }, [gameModeFormations, currentFormationId, selectedTeam, gameMode]);
+    if (gameModeFormations.length === 0) return;
+
+    const selectedTeamId = selectedTeam.id?.value ?? "__selected-team__";
+    const teamChanged = previousSelectedTeamIdRef.current !== selectedTeamId;
+    previousSelectedTeamIdRef.current = selectedTeamId;
+
+    const availableFormationNames = getFormationOptionsWithDefault(
+      selectedTeam.availableFormations,
+      gameMode,
+    );
+    const currentFormationSupported =
+      !!currentFormation &&
+      availableFormationNames.includes(currentFormation.name);
+
+    if (!teamChanged && currentFormationSupported) return;
+
+    if (
+      selectedTeam.defaultFormation &&
+      availableFormationNames.includes(selectedTeam.defaultFormation)
+    ) {
+      const defaultFormation = gameModeFormations.find(
+        (f) => f.name === selectedTeam.defaultFormation,
+      );
+      if (defaultFormation) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- チーム変更時または無効な選択時にデフォルトへ再同期する派生状態
+        setCurrentFormationId(defaultFormation.id.value);
+        return;
+      }
+    }
+
+    const fallbackFormation =
+      gameModeFormations.find((f) => f.name === availableFormationNames[0]) ??
+      gameModeFormations[0];
+
+    setCurrentFormationId(fallbackFormation.id.value);
+  }, [gameModeFormations, selectedTeam, gameMode, currentFormation]);
 
   const changeFormation = useCallback(
     (formationId: string) => {
