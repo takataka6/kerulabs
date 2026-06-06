@@ -98,9 +98,9 @@ export function useTacticsOrchestration(params: {
   const {
     currentFormation,
     // selectedTeam は現在 tacticsForCurrentFormation のフィルタで使用していないが、
-    // 呼び出し元（TacticsViewerPage など）のインターフェース互換のため残す
+    // 呼び出し元（TacticsViewerPage など）のインターフェース互換のため残す。
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    selectedTeam,
+    selectedTeam: _selectedTeam,
     tactics,
     playMode,
     selectedPhase,
