@@ -106,7 +106,9 @@ export function MermaidFlowchart({
         // 注: style タグは Mermaid が SVG スタイリングに使用するため許可
         __html: DOMPurify.sanitize(svgContent, {
           USE_PROFILES: { svg: true, svgFilters: true, html: true },
-          ADD_TAGS: ["foreignObject"],
+          ADD_TAGS: ["foreignObject", "div", "span", "br", "p"],
+          ADD_ATTR: ["xmlns", "style", "class"],
+          HTML_INTEGRATION_POINTS: { foreignobject: true },
           FORBID_TAGS: ["form", "input", "textarea", "button", "select"],
         }),
       }}
