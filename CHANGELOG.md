@@ -7,6 +7,24 @@
 
 ## [Unreleased]
 
+## [0.4.3] - 2026-06-06
+
+### Added
+
+- **クイックスタートガイド**: Tactics Simulator に操作方法（ドラッグ可能な選手、コントロールサイドバー、ビューポート設定）を説明するポップオーバーガイドを追加
+- **ローカルフォント対応**: オフライン環境での Web フォント読み込み遅延やフリーズを防ぐため、`Roboto-Regular.ttf` を追加し、PlayerMarker.tsx 内のテキストに指定
+
+### Changed
+
+- **HomePage レイアウト刷新**: ヒーローセクションのアクションボタン、サンプルデータ移行（Seeding）への案内、ダウンロード情報を整理し、モダンな配置へ刷新
+- **国際化対応**: クイックスタートガイドとホームページの刷新に伴い、英語と日本語のローカライズリソースを追加
+- **README ドキュメント**: インストール手順および配布チャネルの選択について記載を整理・明確化
+
+### Fixed
+
+- **Code Lab 読み込みフリーズの解消**: 3D テキスト表示を行う PlayerMarker.tsx でローカルフォントを使用するように修正し、レッスンロード時のハングアップを回避
+- **Mermaid フローチャートのレンダリングバグ**: `DOMPurify` のサニタイズ設定で `foreignObject` 内の HTML タグ（`div`, `span` 等）および `style`, `class` 属性などを明示的にホワイトリストへ追加し、テキストやレイアウトが崩れる不具合を修正
+
 ## [0.4.2] - 2026-06-06
 
 ### Changed
@@ -109,7 +127,8 @@
 - **Husky + lint-staged**: コミット時の自動リント・フォーマット
 - **GitHub Actions CI**: 型チェック・リント・テストの自動実行
 
-[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.4.2...HEAD
+[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.4.3...HEAD
+[0.4.3]: https://github.com/takataka6/kerulabs/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/takataka6/kerulabs/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/takataka6/kerulabs/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/takataka6/kerulabs/compare/v0.3.0...v0.4.0
