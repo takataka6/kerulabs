@@ -40,7 +40,7 @@ const PANEL_CAPTION_CLASS =
   "text-[10px] text-slate-300/90 font-bold tracking-[0.22em] uppercase flex items-center gap-1.5 h-5";
 const COUNT_BADGE_CLASS =
   "text-[9px] bg-white/8 text-slate-200 px-1.5 py-0.5 rounded-full border border-white/10";
-const HEADER_ACTION_CARD_HEIGHT_CLASS = "sm:min-h-[82px] xl:min-h-[86px]";
+const HEADER_ACTION_CARD_HEIGHT_CLASS = "sm:h-[82px] xl:h-[86px]";
 const RAIL_PANEL_WIDTH_CLASS = "w-full sm:w-[136px] xl:w-[148px]";
 const RAIL_ROW_CLASS =
   "grid grid-cols-2 sm:grid-cols-1 gap-1 sm:gap-1.5 items-start sm:justify-items-end w-full sm:w-[136px] xl:w-[148px]";
@@ -240,10 +240,10 @@ export const RightControlsColumn = memo(function RightControlsColumn({
             )}
 
             {/* フォーメーション + Undo/Redo(sm+のみ) */}
-            <div className="flex items-stretch justify-end gap-2 self-end">
+            <div className="flex w-full sm:w-auto items-stretch justify-end gap-2 self-end">
               {/* フォーメーション */}
               <div
-                className={`${PRIMARY_PANEL_CLASS} ${HEADER_ACTION_CARD_HEIGHT_CLASS} flex w-[128px] sm:w-[144px] xl:w-[156px] flex-col`}
+                className={`${PRIMARY_PANEL_CLASS} ${HEADER_ACTION_CARD_HEIGHT_CLASS} flex w-full sm:w-[144px] xl:w-[156px] flex-col`}
               >
                 <div className="bg-gradient-to-r from-slate-800/95 via-slate-800/90 to-slate-700/85 px-1.5 py-1 sm:px-2 sm:py-1.5 border-b border-slate-600/60 flex items-center justify-between gap-1">
                   <div className={PANEL_CAPTION_CLASS}>
@@ -293,17 +293,17 @@ export const RightControlsColumn = memo(function RightControlsColumn({
               <div
                 className={`hidden sm:flex ${SECONDARY_PANEL_CLASS} ${HEADER_ACTION_CARD_HEIGHT_CLASS} w-[88px] xl:w-[96px] self-stretch flex-col`}
               >
-                <div className="bg-gradient-to-r from-slate-800/90 to-slate-700/90 px-3 py-2 border-b border-slate-700/45 flex items-center justify-between">
+                <div className="bg-gradient-to-r from-slate-800/95 via-slate-800/90 to-slate-700/85 px-1 py-1 sm:py-1.5 border-b border-slate-600/60 flex items-center justify-center xl:justify-start xl:px-2">
                   <div className={PANEL_CAPTION_CLASS}>
-                    <span className="w-1 h-3.5 bg-blue-500 rounded-full"></span>
+                    <span className="w-1 h-3.5 bg-blue-500 rounded-full hidden xl:block"></span>
                     <span>History</span>
                   </div>
                 </div>
-                <div className="p-2 flex items-center justify-center gap-1.5 flex-1">
+                <div className="px-1.5 py-1 sm:p-2 flex items-center justify-center gap-1 sm:gap-1.5 flex-1">
                   <button
                     onClick={onUndo}
                     disabled={!canUndo || !undoRedoEnabled}
-                    className={`h-9 w-9 xl:h-10 xl:w-10 rounded-xl text-xs font-bold transition-all duration-300 flex items-center justify-center ${
+                    className={`h-7 w-7 sm:h-8 sm:w-8 xl:h-9 xl:w-9 rounded-xl text-xs font-bold transition-all duration-300 flex items-center justify-center ${
                       canUndo && undoRedoEnabled
                         ? "bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] hover:text-white border border-white/5 hover:scale-105"
                         : "bg-white/[0.03] border border-white/5 opacity-25 cursor-not-allowed"
@@ -316,7 +316,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                   <button
                     onClick={onRedo}
                     disabled={!canRedo || !undoRedoEnabled}
-                    className={`h-9 w-9 xl:h-10 xl:w-10 rounded-xl text-xs font-bold transition-all duration-300 flex items-center justify-center ${
+                    className={`h-7 w-7 sm:h-8 sm:w-8 xl:h-9 xl:w-9 rounded-xl text-xs font-bold transition-all duration-300 flex items-center justify-center ${
                       canRedo && undoRedoEnabled
                         ? "bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] hover:text-white border border-white/5 hover:scale-105"
                         : "bg-white/[0.03] border border-white/5 opacity-25 cursor-not-allowed"
@@ -392,13 +392,13 @@ export const RightControlsColumn = memo(function RightControlsColumn({
 
               {/* Undo / Redo - モバイルのみ表示 */}
               <div
-                className={`sm:hidden ${SECONDARY_PANEL_CLASS} flex flex-col`}
+                className={`sm:hidden ${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} flex flex-col min-h-[36px] justify-center`}
               >
-                <div className="p-1 flex items-center justify-center gap-1 flex-1">
+                <div className="py-0.5 px-1 flex items-center justify-center gap-2 flex-1">
                   <button
                     onClick={onUndo}
                     disabled={!canUndo || !undoRedoEnabled}
-                    className={`py-0.5 px-1.5 rounded-lg text-xs font-bold transition-all duration-300 ${
+                    className={`flex-1 min-h-[26px] rounded-lg text-xs font-bold transition-all duration-300 flex items-center justify-center ${
                       canUndo && undoRedoEnabled
                         ? "bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] hover:text-white border border-white/5 hover:scale-105"
                         : "bg-white/[0.03] border border-white/5 opacity-25 cursor-not-allowed"
@@ -411,7 +411,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                   <button
                     onClick={onRedo}
                     disabled={!canRedo || !undoRedoEnabled}
-                    className={`py-0.5 px-1.5 rounded-lg text-xs font-bold transition-all duration-300 ${
+                    className={`flex-1 min-h-[26px] rounded-lg text-xs font-bold transition-all duration-300 flex items-center justify-center ${
                       canRedo && undoRedoEnabled
                         ? "bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] hover:text-white border border-white/5 hover:scale-105"
                         : "bg-white/[0.03] border border-white/5 opacity-25 cursor-not-allowed"
@@ -532,24 +532,26 @@ export const RightControlsColumn = memo(function RightControlsColumn({
 
               {/* マーカーサイズ */}
               <div
-                className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} flex items-center`}
+                className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} flex items-center min-h-[36px] justify-between p-0.5`}
               >
-                <span className="py-1.5 px-2 sm:py-2 sm:px-2.5 text-[10px] sm:text-[11px] font-semibold text-slate-400 border-r border-slate-700/50 tracking-[0.12em] uppercase whitespace-nowrap hidden sm:block">
+                <span className="py-1 px-2 text-[10px] sm:text-[11px] font-semibold text-slate-400 border-r border-slate-700/50 tracking-[0.12em] uppercase whitespace-nowrap hidden sm:block">
                   {t("tactics.size")}
                 </span>
-                {([0.9, 1.0, 1.1] as const).map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => onMarkerScaleChange(s)}
-                    className={`py-1.5 px-1.5 sm:py-2 sm:px-2.5 xl:py-2 xl:px-2.5 text-[10px] sm:text-xs font-semibold transition-all duration-200 ${playerMarkerScale === s ? "bg-white/[0.08] text-white" : "text-slate-400 hover:bg-white/[0.06] hover:text-slate-300"}`}
-                    aria-label={t("a11y.markerSize").replace(
-                      "{size}",
-                      s === 0.9 ? "S" : s === 1.0 ? "M" : "L",
-                    )}
-                  >
-                    {s === 0.9 ? "S" : s === 1.0 ? "M" : "L"}
-                  </button>
-                ))}
+                <div className="flex items-center gap-1 flex-1 h-full">
+                  {([0.9, 1.0, 1.1] as const).map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => onMarkerScaleChange(s)}
+                      className={`flex-1 min-h-[26px] py-1 px-1.5 text-[10px] sm:text-xs font-semibold rounded-lg transition-all duration-200 flex items-center justify-center ${playerMarkerScale === s ? "bg-white/[0.08] text-white" : "text-slate-400 hover:bg-white/[0.06] hover:text-slate-300"}`}
+                      aria-label={t("a11y.markerSize").replace(
+                        "{size}",
+                        s === 0.9 ? "S" : s === 1.0 ? "M" : "L",
+                      )}
+                    >
+                      {s === 0.9 ? "S" : s === 1.0 ? "M" : "L"}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* 戦術フローボタン */}
