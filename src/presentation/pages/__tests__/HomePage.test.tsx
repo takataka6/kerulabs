@@ -23,6 +23,9 @@ vi.mock("react-router-dom", async () => {
 });
 
 const mockSetLanguage = vi.fn();
+const mockUseTeams = vi.fn<
+  () => { data: Array<{ id: string }>; isLoading: boolean }
+>(() => ({ data: [], isLoading: false }));
 vi.mock("@presentation/contexts/LanguageContext", () => ({
   useLanguage: () => ({
     language: "ja",
@@ -30,6 +33,10 @@ vi.mock("@presentation/contexts/LanguageContext", () => ({
     t: (key: string) => key,
     tDynamic: (key: string) => key,
   }),
+}));
+
+vi.mock("@presentation/hooks/queries", () => ({
+  useTeams: () => mockUseTeams(),
 }));
 
 const mockConfirm = vi.fn().mockResolvedValue(true);
@@ -90,6 +97,33 @@ describe("HomePage", () => {
     );
 
     expect(screen.getByText("app.subtitle")).toBeInTheDocument();
+  });
+
+  it("配布体験向けのヒーロー導線が表示される", () => {
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText("app.hero.publicBeta")).toBeInTheDocument();
+    expect(screen.getByText("app.hero.primaryActionEmpty")).toBeInTheDocument();
+    expect(screen.getByText("app.hero.secondaryAction")).toBeInTheDocument();
+  });
+
+  it("既存データがある場合は戦術シミュレーター導線を主表示する", () => {
+    mockUseTeams.mockReturnValueOnce({
+      data: [{ id: "team-1" }],
+      isLoading: false,
+    });
+
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText("app.hero.primaryAction")).toBeInTheDocument();
   });
 
   it("アプリカードが表示される", () => {
@@ -189,6 +223,64 @@ describe("HomePage", () => {
 
     fireEvent.click(screen.getByText("app.backup.export"));
     expect(mockHandleExport).toHaveBeenCalled();
+  });
+
+  it("初回導線の主ボタンをクリックすると確認後にホーム上でガイド表示へ切り替わる", async () => {
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByText("app.hero.primaryActionEmpty"));
+
+    await waitFor(() => {
+      expect(mockConfirm).toHaveBeenCalledWith({ message: "app.seed.confirm" });
+    });
+    await waitFor(() => {
+      expect(mockHandleSeed).toHaveBeenCalled();
+    });
+    await waitFor(() => {
+      expect(screen.getByText("app.seed.tryHere")).toBeInTheDocument();
+    });
+    expect(screen.getAllByText("app.seed.inserted")).toHaveLength(3);
+    expect(screen.getByText("app.hero.primaryAction")).toBeInTheDocument();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("関連カードを押すとサンプル投入ガイドが消える", async () => {
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByText("app.hero.primaryActionEmpty"));
+
+    await waitFor(() => {
+      expect(screen.getByText("app.seed.tryHere")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText("tactics.simulator"));
+
+    expect(screen.queryByText("app.seed.tryHere")).not.toBeInTheDocument();
+    expect(mockNavigate).toHaveBeenCalledWith("/tactics-simulator");
+  });
+
+  it("既存データがある場合は主ボタンから直接戦術画面へ進む", () => {
+    mockUseTeams.mockReturnValueOnce({
+      data: [{ id: "team-1" }],
+      isLoading: false,
+    });
+
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByText("app.hero.primaryAction"));
+    expect(mockNavigate).toHaveBeenCalledWith("/tactics-simulator");
   });
 
   it("インポートボタンをクリックすると handleImport が呼ばれる", () => {

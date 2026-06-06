@@ -8,11 +8,13 @@ import { IS_ELECTRON } from "@shared/constants";
 import { useLanguage } from "@presentation/contexts/LanguageContext";
 import { useToast, useConfirm } from "@presentation/components/ui";
 import { useAppBackup } from "@presentation/hooks/useAppBackup";
+import { useTeams } from "@presentation/hooks/queries";
 import { useSeedSampleData } from "@presentation/hooks/useSeedSampleData";
 import { PageShell } from "@presentation/components/layout";
 import { STAGGER_DELAY_MS } from "@shared/constants";
 
 const GITHUB_URL = "https://github.com/takataka6/kerulabs";
+const RELEASES_URL = "https://github.com/takataka6/kerulabs/releases";
 
 function HomeCardIcon({
   children,
@@ -240,6 +242,17 @@ function ImportIcon({ className = "" }: { className?: string }) {
   );
 }
 
+function ReleaseIcon({ className = "" }: { className?: string }) {
+  return (
+    <HeaderActionIcon className={className}>
+      <path d="M12 4v8" />
+      <path d="m8.5 8.5 3.5 3.5 3.5-3.5" />
+      <path d="M6 15.5h12" opacity="0.8" />
+      <rect x="5" y="15.5" width="14" height="4.5" rx="1.5" opacity="0.7" />
+    </HeaderActionIcon>
+  );
+}
+
 function TacticsIcon({ className = "" }: { className?: string }) {
   return (
     <HomeCardIcon className={className}>
@@ -295,17 +308,49 @@ function CodeLabIcon({ className = "" }: { className?: string }) {
 export function HomePage() {
   const navigate = useNavigate();
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [sampleGuideVisible, setSampleGuideVisible] = useState(false);
+  const [sampleSeededLocally, setSampleSeededLocally] = useState(false);
   const { language, setLanguage, t } = useLanguage();
   const { showToast } = useToast();
   const { confirm } = useConfirm();
+  const { data: teams = [] } = useTeams();
   const backup = useAppBackup(showToast, t);
   const { handleSeed, isSeeding } = useSeedSampleData(showToast, t);
+  const hasExistingData = teams.length > 0;
+  const canOpenSimulator = hasExistingData || sampleSeededLocally;
 
   const handleSeedWithConfirm = useCallback(async () => {
     if (await confirm({ message: t("app.seed.confirm") })) {
       await handleSeed();
+      setSampleSeededLocally(true);
+      setSampleGuideVisible(true);
+      return true;
     }
+    return false;
   }, [handleSeed, t, confirm]);
+
+  const handlePrimaryCta = useCallback(async () => {
+    if (canOpenSimulator) {
+      setSampleGuideVisible(false);
+      navigate("/tactics-simulator");
+      return;
+    }
+
+    await handleSeedWithConfirm();
+  }, [canOpenSimulator, handleSeedWithConfirm, navigate]);
+
+  const handleModuleNavigate = useCallback(
+    (moduleId: string) => {
+      if (
+        sampleGuideVisible &&
+        ["tactics-simulator", "glossary", "team-manual"].includes(moduleId)
+      ) {
+        setSampleGuideVisible(false);
+      }
+      navigate(`/${moduleId}`);
+    },
+    [navigate, sampleGuideVisible],
+  );
 
   const handleResetWithConfirm = useCallback(async () => {
     if (
@@ -369,43 +414,48 @@ export function HomePage() {
         style: { WebkitAppRegion: "no-drag" } as React.CSSProperties,
       })}
     >
-      {/* 左: サンプルデータ挿入 + オールリセット */}
+      {/* 左: データ操作 */}
       <div className="flex flex-wrap items-start gap-2 sm:gap-3 sm:justify-start">
-        <button
-          onClick={handleSeedWithConfirm}
-          disabled={isSeeding}
-          className="bg-slate-900/80 backdrop-blur-md rounded-xl border border-slate-700/50 shadow-2xl px-3 py-2 text-xs font-semibold transition-all duration-300 text-emerald-400 hover:text-white hover:bg-emerald-800/50 flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <SeedIcon className="h-2 w-2 shrink-0" />
-          {t("app.seed")}
-        </button>
-        <button
-          onClick={handleResetWithConfirm}
-          disabled={backup.isResetting}
-          className="bg-slate-900/80 backdrop-blur-md rounded-xl border border-slate-700/50 shadow-2xl px-3 py-2 text-xs font-semibold transition-all duration-300 text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <ResetIcon className="h-2 w-2 shrink-0" />
-          {t("app.backup.reset")}
-        </button>
+        <div className="overflow-hidden rounded-xl border border-slate-700/50 bg-slate-900/72 backdrop-blur-md shadow-2xl">
+          <div className="flex items-stretch">
+            <button
+              onClick={handleSeedWithConfirm}
+              disabled={isSeeding}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-emerald-300 transition-all duration-300 hover:bg-emerald-900/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <SeedIcon className="h-2 w-2 shrink-0" />
+              {t("app.seed")}
+            </button>
+            <div className="w-px bg-slate-700/60" aria-hidden="true" />
+            <button
+              onClick={handleResetWithConfirm}
+              disabled={backup.isResetting}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-400 transition-all duration-300 hover:bg-slate-800/70 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <ResetIcon className="h-2 w-2 shrink-0" />
+              {t("app.backup.reset")}
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* 右: GitHub + バックアップ + 言語選択 */}
+      {/* 右: バックアップ + 言語選択 + GitHub */}
       <div className="flex flex-wrap items-start gap-2 sm:gap-3 sm:justify-end">
-        {/* バックアップ */}
-        <div className="bg-slate-900/80 backdrop-blur-md rounded-xl border border-slate-700/50 shadow-2xl overflow-hidden">
+        <div className="overflow-hidden rounded-xl border border-slate-700/50 bg-slate-900/72 backdrop-blur-md shadow-2xl">
           <div className="flex">
             <button
               onClick={backup.handleExport}
               disabled={backup.isExporting}
-              className="px-3 py-2 text-xs font-semibold transition-all duration-300 text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-400 transition-all duration-300 hover:bg-slate-800/70 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
               <ExportIcon className="h-2 w-2 shrink-0" />
               {t("app.backup.export")}
             </button>
+            <div className="w-px bg-slate-700/60" aria-hidden="true" />
             <button
               onClick={backup.handleImport}
               disabled={backup.isImporting}
-              className="px-3 py-2 text-xs font-semibold transition-all duration-300 text-slate-400 hover:text-white hover:bg-slate-800/50 flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-400 transition-all duration-300 hover:bg-slate-800/70 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
               <ImportIcon className="h-2 w-2 shrink-0" />
               {t("app.backup.import")}
@@ -415,7 +465,7 @@ export function HomePage() {
 
         {/* 言語選択 */}
         <nav aria-label={t("a11y.languageSwitch")}>
-          <div className="bg-slate-900/80 backdrop-blur-md rounded-xl border border-slate-700/50 shadow-2xl overflow-hidden">
+          <div className="overflow-hidden rounded-xl border border-slate-700/50 bg-slate-900/72 backdrop-blur-md shadow-2xl">
             <div
               className="flex"
               role="group"
@@ -453,7 +503,7 @@ export function HomePage() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="GitHub"
-          className="bg-slate-900/80 backdrop-blur-md rounded-xl border border-slate-700/50 shadow-2xl px-3.5 py-2 text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all duration-300 flex items-center gap-2"
+          className="flex items-center gap-2 rounded-xl border border-slate-700/50 bg-slate-900/72 px-3.5 py-2 text-slate-400 shadow-2xl backdrop-blur-md transition-all duration-300 hover:bg-slate-800/70 hover:text-white"
         >
           <GitHubIcon className="h-3.5 w-3.5 shrink-0" />
           <span className="hidden sm:inline text-xs sm:text-sm font-semibold">
@@ -478,12 +528,17 @@ export function HomePage() {
       <section className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-8 lg:gap-10 items-center mb-14 sm:mb-16">
         {/* 左: テキスト */}
         <header className="text-center lg:text-left">
-          {/* OSSバッジ */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-700/50 bg-slate-800/60 backdrop-blur-sm text-xs text-slate-400 mb-7">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
-            <span>Open Source</span>
-            <span className="text-slate-600 mx-0.5">·</span>
-            <span>Soccer Tactics</span>
+          <div className="mb-7 flex flex-wrap items-center justify-center gap-2 lg:justify-start">
+            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1.5 text-xs font-semibold text-cyan-200 backdrop-blur-sm">
+              <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-cyan-300 animate-pulse" />
+              <span>{t("app.hero.publicBeta")}</span>
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-slate-700/50 bg-slate-800/60 px-3 py-1.5 text-xs text-slate-400 backdrop-blur-sm">
+              <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Open Source</span>
+              <span className="mx-0.5 text-slate-600">·</span>
+              <span>Soccer Tactics</span>
+            </div>
           </div>
 
           <h1 className="text-5xl sm:text-6xl xl:text-7xl font-black text-white tracking-tighter leading-[0.9] mb-6">
@@ -520,6 +575,42 @@ export function HomePage() {
               </span>
             ))}
           </div>
+
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center lg:justify-start">
+            <button
+              onClick={handlePrimaryCta}
+              className={`inline-flex items-center justify-center gap-2 rounded-2xl border px-5 py-3 text-sm font-semibold transition-transform duration-300 hover:scale-[1.02] ${
+                canOpenSimulator
+                  ? "border-blue-400/20 bg-gradient-to-r from-blue-500 to-cyan-400 text-slate-950 shadow-[0_10px_30px_rgba(34,211,238,0.18)]"
+                  : "border-emerald-400/20 bg-gradient-to-r from-emerald-400 to-cyan-300 text-slate-950 shadow-[0_10px_30px_rgba(52,211,153,0.22)]"
+              }`}
+            >
+              {canOpenSimulator ? (
+                <TacticsIcon className="h-4 w-4" />
+              ) : (
+                <SeedIcon className="h-4 w-4" />
+              )}
+              {canOpenSimulator
+                ? t("app.hero.primaryAction")
+                : t("app.hero.primaryActionEmpty")}
+            </button>
+          </div>
+          <div className="mt-4 flex justify-center lg:justify-start">
+            <div className="flex flex-col items-center gap-1.5 text-center lg:items-start lg:text-left">
+              <a
+                href={RELEASES_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-xs font-medium text-slate-500 transition-colors duration-300 hover:text-slate-300"
+              >
+                <ReleaseIcon className="h-3.5 w-3.5" />
+                {t("app.hero.secondaryAction")}
+              </a>
+              <p className="text-[11px] leading-relaxed text-slate-600">
+                {t("app.hero.downloadNote")}
+              </p>
+            </div>
+          </div>
         </header>
 
         {/* 右: タクティカルボード (デスクトップのみ) */}
@@ -541,73 +632,127 @@ export function HomePage() {
 
         {/* カードグリッド */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 max-w-4xl mx-auto">
-          {APP_CARDS.map((app, index) => (
-            <button
-              key={app.id}
-              onClick={() => app.available && navigate(`/${app.id}`)}
-              onMouseEnter={() => setHoveredCard(app.id)}
-              onMouseLeave={() => setHoveredCard(null)}
-              disabled={!app.available}
-              className={`group relative rounded-2xl border transition-all duration-500 text-left overflow-hidden animate-slide-in-up ${
-                app.available
-                  ? `bg-slate-900/50 border-slate-700/50 hover:bg-slate-800/70 hover:scale-[1.02] hover:shadow-xl ${app.hoverShadow} cursor-pointer hover:border-slate-600/50`
-                  : "bg-slate-900/30 border-slate-800 cursor-not-allowed opacity-60"
-              }`}
-              style={{ animationDelay: `${index * STAGGER_DELAY_MS}ms` }}
-            >
-              {/* カラートップアクセントライン */}
-              <div className={`h-px w-full bg-gradient-to-r ${app.topLine}`} />
+          {APP_CARDS.map((app, index) => {
+            const isSeededModule =
+              sampleGuideVisible &&
+              ["tactics-simulator", "glossary", "team-manual"].includes(app.id);
+            const isPrimaryGuide =
+              sampleGuideVisible && app.id === "tactics-simulator";
 
-              {/* ホバーグラデーションオーバーレイ */}
-              <div
-                className={`absolute inset-0 bg-gradient-to-br ${app.gradient} opacity-0 group-hover:opacity-[0.06] transition-opacity duration-500`}
-              />
+            return (
+              <button
+                key={app.id}
+                onClick={() => app.available && handleModuleNavigate(app.id)}
+                onMouseEnter={() => setHoveredCard(app.id)}
+                onMouseLeave={() => setHoveredCard(null)}
+                disabled={!app.available}
+                className={`group relative rounded-2xl border transition-all duration-500 text-left overflow-hidden animate-slide-in-up ${
+                  app.available
+                    ? `bg-slate-900/50 border-slate-700/50 hover:bg-slate-800/70 hover:scale-[1.02] hover:shadow-xl ${app.hoverShadow} cursor-pointer hover:border-slate-600/50`
+                    : "bg-slate-900/30 border-slate-800 cursor-not-allowed opacity-60"
+                } ${
+                  isSeededModule
+                    ? "ring-1 ring-emerald-400/18 border-emerald-400/22"
+                    : ""
+                } ${
+                  isPrimaryGuide
+                    ? "shadow-[0_0_0_1px_rgba(96,165,250,0.28),0_18px_48px_rgba(59,130,246,0.22)] scale-[1.01]"
+                    : ""
+                }`}
+                style={{ animationDelay: `${index * STAGGER_DELAY_MS}ms` }}
+              >
+                {/* カラートップアクセントライン */}
+                <div
+                  className={`pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r ${isPrimaryGuide ? "from-cyan-300 via-blue-400 to-blue-500" : app.topLine}`}
+                />
 
-              {/* コンテンツ */}
-              <div className="relative z-10 p-5 sm:p-7">
-                <div className="flex items-start gap-4">
-                  {/* アイコンバッジ */}
-                  <div
-                    className={`flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br ${app.gradient} p-2.5 sm:p-3 text-white shadow-lg transition-all duration-500 ${hoveredCard === app.id ? "scale-110 rotate-3" : ""}`}
-                    aria-hidden="true"
-                  >
-                    {app.icon}
-                  </div>
+                {/* ホバーグラデーションオーバーレイ */}
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${app.gradient} ${
+                    isPrimaryGuide
+                      ? "opacity-[0.12]"
+                      : isSeededModule
+                        ? "opacity-[0.045]"
+                        : "opacity-0 group-hover:opacity-[0.06]"
+                  } transition-opacity duration-500`}
+                />
 
-                  {/* テキスト */}
-                  <div className="flex-1 min-w-0 pt-1">
-                    <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight mb-1.5">
-                      {app.title}
-                    </h2>
-                    <p className="text-slate-400 text-sm font-medium mb-3">
-                      {app.subtitle}
-                    </p>
-                    <p className="text-slate-500 text-xs leading-relaxed">
-                      {app.description}
-                    </p>
-                  </div>
-                </div>
-
-                {/* 矢印インジケーター */}
-                {app.available && (
-                  <div
-                    className={`absolute bottom-5 right-6 transition-all duration-300 ${hoveredCard === app.id ? "translate-x-0 opacity-100" : "-translate-x-2 opacity-0"}`}
-                    aria-hidden="true"
-                  >
-                    <svg
-                      className="w-5 h-5 text-slate-400"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
+                {/* コンテンツ */}
+                <div className="relative z-10 px-5 pb-5 pt-4 sm:px-7 sm:pb-7 sm:pt-5">
+                  {sampleGuideVisible && (
+                    <div className="mb-3 flex min-h-[22px] items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        {isPrimaryGuide && (
+                          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-200/40 bg-cyan-300/16 px-3 py-0.5 text-[11px] font-semibold text-cyan-50 shadow-[0_0_0_1px_rgba(103,232,249,0.08),0_10px_24px_rgba(34,211,238,0.12)]">
+                            <span className="h-1.5 w-1.5 rounded-full bg-cyan-200 shadow-[0_0_10px_rgba(165,243,252,0.9)]" />
+                            {t("app.seed.tryHere")}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex min-h-[22px] items-center justify-end">
+                        {isSeededModule && (
+                          <div
+                            className={`inline-flex items-center gap-2 rounded-full px-3 py-0.5 text-[11px] font-medium ${
+                              isPrimaryGuide
+                                ? "border border-emerald-400/20 bg-emerald-400/10 text-emerald-100"
+                                : "border border-slate-600/40 bg-slate-900/80 text-slate-300"
+                            }`}
+                          >
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
+                            {t("app.seed.inserted")}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex items-start gap-4">
+                    {/* アイコンバッジ */}
+                    <div
+                      className={`flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br ${app.gradient} p-2.5 sm:p-3 text-white shadow-lg transition-all duration-500 ${
+                        hoveredCard === app.id || isPrimaryGuide
+                          ? "scale-110 rotate-3"
+                          : ""
+                      }`}
+                      aria-hidden="true"
                     >
-                      <path d="m9 18 6-6-6-6" />
-                    </svg>
+                      {app.icon}
+                    </div>
+
+                    {/* テキスト */}
+                    <div className="flex-1 min-w-0 pt-1">
+                      <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight mb-1.5">
+                        {app.title}
+                      </h2>
+                      <p className="text-slate-400 text-sm font-medium mb-3">
+                        {app.subtitle}
+                      </p>
+                      <p className="text-slate-500 text-xs leading-relaxed max-w-[32ch]">
+                        {app.description}
+                      </p>
+                    </div>
                   </div>
-                )}
-              </div>
-            </button>
-          ))}
+
+                  {/* 矢印インジケーター */}
+                  {app.available && (
+                    <div
+                      className={`absolute bottom-5 right-6 transition-all duration-300 ${hoveredCard === app.id ? "translate-x-0 opacity-100" : "-translate-x-2 opacity-0"}`}
+                      aria-hidden="true"
+                    >
+                      <svg
+                        className="w-5 h-5 text-slate-400"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="m9 18 6-6-6-6" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+              </button>
+            );
+          })}
         </div>
       </section>
 

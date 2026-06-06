@@ -50,6 +50,7 @@ const sceneBackgroundSchema: z.ZodType<
 /** 各設定キーのデフォルト値 */
 const DEFAULTS: PreferenceMap = {
   language: "ja",
+  tacticsViewerGuideDismissed: false,
   sceneBackground: DEFAULT_SCENE_BACKGROUND,
   sceneBackgroundImageUrl: "",
   sceneBackgroundImageSaturation: 100,

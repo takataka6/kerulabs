@@ -7,7 +7,8 @@
  * - TacticsTeamContext: チーム・フォーメーション・表示データ
  * - TacticsExecutionContext: 戦術実行・フィールド操作・キャンバス
  */
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { getContainer } from "@application/ServiceContainer";
 import { useTacticsUI } from "@presentation/contexts/TacticsUIContext";
 import { useTacticsTeam } from "@presentation/contexts/TacticsTeamContext";
 import { useTacticsExecution } from "@presentation/contexts/TacticsExecutionContext";
@@ -45,6 +46,7 @@ function CanvasLoader() {
 }
 
 export function TacticsMainContent() {
+  const preferencesService = getContainer().preferencesService;
   const { ui, canUndo, canRedo, handleUndo, handleRedo } = useTacticsUI();
   const {
     selectedTeam,
@@ -77,9 +79,17 @@ export function TacticsMainContent() {
     generateFlowchart,
   } = useTacticsExecution();
   const { t, tDynamic, language } = useLanguage();
+  const [showGuide, setShowGuide] = useState(
+    () => !preferencesService.get("tacticsViewerGuideDismissed"),
+  );
 
   const { playersData, colorsData, lineupPlayers, lineupTeamInfo } =
     displayData;
+
+  const handleDismissGuide = useCallback(() => {
+    setShowGuide(false);
+    preferencesService.set("tacticsViewerGuideDismissed", true);
+  }, [preferencesService]);
 
   useEffect(() => {
     if (!sketch.sketchMode) return;
@@ -127,6 +137,45 @@ export function TacticsMainContent() {
             "linear-gradient(180deg, rgba(148,163,184,0.05) 0%, rgba(148,163,184,0.016) 38%, rgba(148,163,184,0) 100%)",
         }}
       />
+
+      {!ui.captureMode && showGuide && (
+        <section className="absolute left-3 top-3 z-50 max-w-[min(360px,calc(100%-1.5rem))] rounded-2xl border border-cyan-300/18 bg-slate-950/84 p-4 text-slate-100 shadow-[0_18px_45px_rgba(2,6,23,0.42)] backdrop-blur-xl sm:left-4 sm:top-4 sm:p-5">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-200/72">
+            {t("tactics.guide.eyebrow")}
+          </p>
+          <div className="mt-2 flex items-start justify-between gap-3">
+            <div className="space-y-2">
+              <h2 className="text-base font-semibold text-slate-50 sm:text-lg">
+                {t("tactics.guide.title")}
+              </h2>
+              <p className="text-sm leading-6 text-slate-300/88">
+                {t("tactics.guide.description")}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleDismissGuide}
+              className="shrink-0 rounded-full border border-cyan-400/60 bg-cyan-500/15 px-3.5 py-1.5 text-xs font-semibold text-cyan-200 transition hover:bg-cyan-500/30 hover:border-cyan-300/80 hover:text-white active:scale-95"
+            >
+              {t("tactics.guide.dismiss")}
+            </button>
+          </div>
+          <ul className="mt-4 space-y-2.5 text-sm leading-6 text-slate-200/88">
+            <li className="flex gap-2.5">
+              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-300" />
+              <span>{t("tactics.guide.stepDrag")}</span>
+            </li>
+            <li className="flex gap-2.5">
+              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-300" />
+              <span>{t("tactics.guide.stepControls")}</span>
+            </li>
+            <li className="flex gap-2.5">
+              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-300" />
+              <span>{t("tactics.guide.stepSidebar")}</span>
+            </li>
+          </ul>
+        </section>
+      )}
 
       {/* スカッドパネル */}
       <SquadPanel
