@@ -42,7 +42,6 @@ export interface TacticsDB extends DBSchema {
       manager?: string;
       playerCards?: Record<number, string>;
       managerCard?: string;
-      availableTactics?: Record<string, string[]>;
     };
     indexes: { "by-name": string; "by-created": number };
   };

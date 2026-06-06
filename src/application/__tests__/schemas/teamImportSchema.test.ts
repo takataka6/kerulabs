@@ -76,7 +76,6 @@ describe("teamImportDataSchema", () => {
       expect(result.data.defaultFormation).toBeUndefined();
       expect(result.data.manager).toBeUndefined();
       expect(result.data.players).toBeUndefined();
-      expect(result.data.availableTactics).toBeUndefined();
     }
   });
 

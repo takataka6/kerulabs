@@ -242,23 +242,6 @@ describe("Team", () => {
       );
     });
 
-    it("削除されたフォーメーションの戦術設定がクリーンアップされる", () => {
-      const team = Team.create({
-        name: "チーム",
-        subtitle: "",
-        colors: defaultColors,
-        availableFormations: ["4-4-2", "3-5-2"],
-        flagType: "",
-        headerGradient: "",
-      });
-      team.updateAvailableTactics({
-        "4-4-2": ["tactic-1"],
-        "3-5-2": ["tactic-2"],
-      });
-      team.updateFormations(["4-4-2"]);
-      expect(team.getAvailableTacticsForFormation("3-5-2")).toBeUndefined();
-    });
-
     it("デフォルトフォーメーションが削除された場合は最初のフォーメーションに変わる", () => {
       const team = Team.create({
         name: "チーム",
@@ -315,51 +298,6 @@ describe("Team", () => {
       team.updateManager("監督A");
       team.updateManager(undefined);
       expect(team.manager).toBeUndefined();
-    });
-  });
-
-  // ── 戦術管理 ──
-
-  describe("availableTactics", () => {
-    it("フォーメーション別の戦術を設定・取得できる", () => {
-      const team = Team.create({
-        name: "チーム",
-        subtitle: "",
-        colors: defaultColors,
-        availableFormations: defaultFormations,
-        flagType: "",
-        headerGradient: "",
-      });
-      team.updateAvailableTactics({ "4-4-2": ["tactic-1", "tactic-2"] });
-      expect(team.getAvailableTacticsForFormation("4-4-2")).toEqual([
-        "tactic-1",
-        "tactic-2",
-      ]);
-    });
-
-    it("戦術が設定されていないフォーメーションはundefined", () => {
-      const team = Team.create({
-        name: "チーム",
-        subtitle: "",
-        colors: defaultColors,
-        availableFormations: defaultFormations,
-        flagType: "",
-        headerGradient: "",
-      });
-      expect(team.getAvailableTacticsForFormation("4-4-2")).toBeUndefined();
-    });
-
-    it("空の戦術配列はクリーンアップされる", () => {
-      const team = Team.create({
-        name: "チーム",
-        subtitle: "",
-        colors: defaultColors,
-        availableFormations: defaultFormations,
-        flagType: "",
-        headerGradient: "",
-      });
-      team.updateAvailableTactics({ "4-4-2": [] });
-      expect(team.availableTactics).toBeUndefined();
     });
   });
 });

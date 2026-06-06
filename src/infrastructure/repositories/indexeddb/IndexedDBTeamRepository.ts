@@ -112,7 +112,6 @@ export class IndexedDBTeamRepository implements ITeamRepository {
       manager: record.manager,
       playerCards: record.playerCards,
       managerCard: record.managerCard,
-      availableTactics: record.availableTactics,
     });
   }
 
@@ -149,11 +148,6 @@ export class IndexedDBTeamRepository implements ITeamRepository {
       manager: team.manager,
       playerCards: team.playerCards ? { ...team.playerCards } : undefined,
       managerCard: team.managerCard,
-      availableTactics: team.availableTactics
-        ? Object.fromEntries(
-            Object.entries(team.availableTactics).map(([k, v]) => [k, [...v]]),
-          )
-        : undefined,
       createdAt: team.createdAt.getTime(),
       updatedAt: team.updatedAt.getTime(),
     };

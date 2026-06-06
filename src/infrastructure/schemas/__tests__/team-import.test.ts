@@ -61,10 +61,6 @@ describe("Team import validation", () => {
         flagType: "spain",
         headerGradient: "linear-gradient(135deg, #fff 0%, #000 100%)",
         manager: "Coach Name",
-        availableTactics: {
-          attack: ["tiki-taka"],
-          defense: ["high-press"],
-        },
         players: [
           { name: "GK Player", number: 1, position: "gk" as const },
           {
@@ -84,10 +80,6 @@ describe("Team import validation", () => {
       expect(result.players).toHaveLength(2);
       expect(result.players![0].position).toBe("gk");
       expect(result.players![1].nationality).toBe("Brazil");
-      expect(result.availableTactics).toEqual({
-        attack: ["tiki-taka"],
-        defense: ["high-press"],
-      });
     });
   });
 

@@ -35,26 +35,6 @@ export const SAMPLE_TEAM_B: CreateTeamInput = {
   manager: "Sample Coach 02",
 };
 
-export const SAMPLE_TEAM_A_TACTICS: Record<string, string[]> = {
-  "5-4-1": ["LEFT_SB_OVERLAP", "RIGHT_SB_OVERLAP", "HIGH_PRESS", "COUNTER_ATK"],
-  "3-4-3": ["LEFT_SB_OVERLAP", "RIGHT_SB_OVERLAP", "HIGH_PRESS", "COUNTER_ATK"],
-};
-
-export const SAMPLE_TEAM_B_TACTICS: Record<string, string[]> = {
-  "4-4-2-flat": [
-    "LEFT_SB_OVERLAP",
-    "RIGHT_SB_OVERLAP",
-    "HIGH_PRESS",
-    "COUNTER_ATK",
-  ],
-  "4-2-3-1": [
-    "LEFT_SB_OVERLAP",
-    "RIGHT_SB_OVERLAP",
-    "HIGH_PRESS",
-    "COUNTER_ATK",
-  ],
-};
-
 /** チームAの選手データ（teamIdは実行時に差し込む） */
 export function getSamplePlayersA(
   teamId: TeamId,

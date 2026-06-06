@@ -8,7 +8,7 @@
  * - 戦術割り当て設定のUIを検証
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { FormationEditor } from "../FormationEditor";
 import { Team } from "@domain/entities/Team";
 import type { Tactic } from "@domain/entities/Tactic";
@@ -55,9 +55,8 @@ vi.mock("@shared/errors/handleError", () => ({
 function createMockTeam(overrides?: {
   availableFormations?: string[];
   defaultFormation?: string;
-  availableTactics?: Record<string, string[]>;
 }): Team {
-  const team = Team.create({
+  return Team.create({
     name: "Test Team",
     subtitle: "Test",
     colors: { gk: "#ff0000", main: "#0000ff" },
@@ -68,12 +67,6 @@ function createMockTeam(overrides?: {
     defaultFormation: overrides?.defaultFormation ?? "4-3-3",
     manager: "Manager",
   });
-
-  if (overrides?.availableTactics) {
-    team.updateAvailableTactics(overrides.availableTactics);
-  }
-
-  return team;
 }
 
 function createMockTactic(
@@ -140,17 +133,11 @@ describe("FormationEditor", () => {
 
   // ── レンダリング ──
 
-  it("ヘッダーとタブを表示する", () => {
+  it("ヘッダーを表示する", () => {
     renderFormationEditor();
 
     expect(
       screen.getByText("tactics.editFormations.title"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("tactics.editFormations.tabFormations"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("tactics.editFormations.tabTactics"),
     ).toBeInTheDocument();
   });
 
@@ -207,63 +194,6 @@ describe("FormationEditor", () => {
     ).toBeInTheDocument();
   });
 
-  // ── 戦術タブ ──
-
-  it("戦術タブに切り替えるとフェーズごとの戦術リストを表示する", () => {
-    renderFormationEditor();
-
-    // 戦術タブに切り替え
-    fireEvent.click(screen.getByText("tactics.editFormations.tabTactics"));
-
-    // フェーズラベルが表示される
-    expect(screen.getByText(/phase\.attack/)).toBeInTheDocument();
-    expect(screen.getByText(/phase\.defense/)).toBeInTheDocument();
-  });
-
-  it("デフォルトでは全戦術モード表示", () => {
-    renderFormationEditor();
-
-    fireEvent.click(screen.getByText("tactics.editFormations.tabTactics"));
-
-    expect(
-      screen.getByText(/tactics\.editFormations\.allTactics/),
-    ).toBeInTheDocument();
-  });
-
-  it("戦術のチェックボックスを外すと明示モードに切り替わる", () => {
-    renderFormationEditor();
-
-    fireEvent.click(screen.getByText("tactics.editFormations.tabTactics"));
-
-    // 最初の戦術チェックボックスを外す
-    const checkboxes = screen.getAllByRole("checkbox");
-    fireEvent.click(checkboxes[0]);
-
-    // "allTactics" ではなく "N/M tacticsSelected" 表示になる
-    expect(
-      screen.getByText(/tactics\.editFormations\.tacticsSelected/),
-    ).toBeInTheDocument();
-  });
-
-  // ── フェーズ全選択・全解除 ──
-
-  it("全解除ボタンで該当フェーズの戦術を全解除する", () => {
-    renderFormationEditor();
-
-    fireEvent.click(screen.getByText("tactics.editFormations.tabTactics"));
-
-    // attack フェーズの全解除ボタンをクリック
-    const deselectButtons = screen.getAllByText(
-      "tactics.editFormations.deselectAll",
-    );
-    fireEvent.click(deselectButtons[0]); // attack phase
-
-    // 明示モード（tacticsSelected）に切り替わる
-    expect(
-      screen.getByText(/tactics\.editFormations\.tacticsSelected/),
-    ).toBeInTheDocument();
-  });
-
   // ── 保存 ──
 
   it("保存ボタンで onUpdateTeam と onClose が呼ばれる", () => {
@@ -273,117 +203,5 @@ describe("FormationEditor", () => {
 
     expect(onUpdateTeam).toHaveBeenCalledWith(team);
     expect(onClose).toHaveBeenCalledTimes(1);
-  });
-
-  // ── インポート ──
-
-  it("テキストインポートエリアの表示・非表示を切り替えられる", () => {
-    renderFormationEditor();
-
-    // テキストインポートボタンをクリック
-    fireEvent.click(screen.getByText("tactics.editFormations.importText"));
-
-    // テキストエリアが表示される
-    expect(
-      screen.getByPlaceholderText(/availableFormations/),
-    ).toBeInTheDocument();
-
-    // キャンセルで非表示
-    fireEvent.click(screen.getByText("tactics.squadBuilder.cancel"));
-    expect(
-      screen.queryByPlaceholderText(/availableFormations/),
-    ).not.toBeInTheDocument();
-  });
-
-  it("有効な JSON をインポートすると成功通知を表示する", () => {
-    renderFormationEditor();
-
-    // テキストインポートエリアを開く
-    fireEvent.click(screen.getByText("tactics.editFormations.importText"));
-
-    const textarea = screen.getByPlaceholderText(/availableFormations/);
-    const validJson = JSON.stringify({
-      availableFormations: ["4-3-3", "3-5-2"],
-      defaultFormation: "4-3-3",
-    });
-
-    fireEvent.change(textarea, { target: { value: validJson } });
-    fireEvent.click(screen.getByText("tactics.editFormations.import"));
-
-    expect(
-      screen.getByText("tactics.editFormations.importSuccess"),
-    ).toBeInTheDocument();
-  });
-
-  it("無効な JSON をインポートするとエラー通知を表示する", () => {
-    renderFormationEditor();
-
-    fireEvent.click(screen.getByText("tactics.editFormations.importText"));
-
-    const textarea = screen.getByPlaceholderText(/availableFormations/);
-    fireEvent.change(textarea, { target: { value: "invalid json" } });
-    fireEvent.click(screen.getByText("tactics.editFormations.import"));
-
-    expect(
-      screen.getByText("tactics.editFormations.importError"),
-    ).toBeInTheDocument();
-  });
-
-  it("空の availableFormations でインポートするとエラーになる", () => {
-    renderFormationEditor();
-
-    fireEvent.click(screen.getByText("tactics.editFormations.importText"));
-
-    const textarea = screen.getByPlaceholderText(/availableFormations/);
-    const emptyJson = JSON.stringify({ availableFormations: [] });
-    fireEvent.change(textarea, { target: { value: emptyJson } });
-    fireEvent.click(screen.getByText("tactics.editFormations.import"));
-
-    expect(
-      screen.getByText("tactics.editFormations.importError"),
-    ).toBeInTheDocument();
-  });
-
-  // ── エクスポート ──
-
-  it("クリップボードにエクスポートすると成功通知を表示する", async () => {
-    // clipboard mock
-    Object.assign(navigator, {
-      clipboard: { writeText: vi.fn().mockResolvedValue(undefined) },
-    });
-
-    renderFormationEditor();
-
-    fireEvent.click(screen.getByText("tactics.editFormations.export"));
-
-    // 非同期で通知が表示される
-    await waitFor(() => {
-      expect(
-        screen.getByText("tactics.editFormations.exportSuccess"),
-      ).toBeInTheDocument();
-    });
-  });
-
-  // ── 対象フォーメーション選択 ──
-
-  it("戦術タブで対象フォーメーションを切り替えられる", () => {
-    renderFormationEditor({
-      team: createMockTeam({
-        availableFormations: ["4-3-3", "4-4-2"],
-      }),
-      allTactics: [
-        createMockTactic("t1", "attack", "4-3-3"),
-        createMockTactic("t2", "attack", "4-4-2"),
-      ],
-    });
-
-    fireEvent.click(screen.getByText("tactics.editFormations.tabTactics"));
-
-    // combobox で 4-4-2 に変更
-    const select = screen.getAllByRole("combobox")[0];
-    fireEvent.change(select, { target: { value: "4-4-2" } });
-
-    // t2 は 4-4-2 をサポートしているのでリストに表示される
-    expect(screen.getByText(/tactics\.name\.t2/)).toBeInTheDocument();
   });
 });

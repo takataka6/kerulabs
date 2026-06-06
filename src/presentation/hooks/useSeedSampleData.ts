@@ -20,8 +20,6 @@ import type { TranslationKey } from "@shared/i18n/translations";
 import {
   SAMPLE_TEAM_A,
   SAMPLE_TEAM_B,
-  SAMPLE_TEAM_A_TACTICS,
-  SAMPLE_TEAM_B_TACTICS,
   getSamplePlayersA,
   getSamplePlayersB,
   SAMPLE_GLOSSARY,
@@ -52,13 +50,11 @@ export function useSeedSampleData(
       for (const p of getSamplePlayersA(teamA.id)) {
         teamA.addPlayer(Player.create({ ...p, teamId: teamA.id }));
       }
-      teamA.updateAvailableTactics(SAMPLE_TEAM_A_TACTICS);
 
       const teamB = Team.create(SAMPLE_TEAM_B);
       for (const p of getSamplePlayersB(teamB.id)) {
         teamB.addPlayer(Player.create({ ...p, teamId: teamB.id }));
       }
-      teamB.updateAvailableTactics(SAMPLE_TEAM_B_TACTICS);
 
       const glossary = Glossary.create(
         SAMPLE_GLOSSARY.name,
