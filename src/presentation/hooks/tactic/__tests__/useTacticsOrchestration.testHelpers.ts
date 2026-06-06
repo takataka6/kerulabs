@@ -13,6 +13,7 @@ import { Position } from "@domain/value-objects/Position";
 import { Movement } from "@domain/entities/Movement";
 import { FormationId } from "@domain/value-objects/FormationId";
 import { TacticId } from "@domain/value-objects/TacticId";
+import { getFormationIdByName } from "@shared/constants/formations";
 import type { TranslationKey } from "@shared/i18n/translations";
 import { useTacticsOrchestration } from "../useTacticsOrchestration";
 
@@ -129,7 +130,7 @@ export function createTestFormationPositions(): FormationPosition[] {
 
 export function createTestFormation(name = "4-3-3"): Formation {
   return Formation.createDefault(
-    new FormationId("f-1"),
+    new FormationId(getFormationIdByName(name) ?? name),
     name,
     "standard",
     createTestFormationPositions(),
@@ -255,6 +256,7 @@ export function createMockCreationState(
     nameEn: "",
     icon: "⚽",
     gamePhase: "attack",
+    formationId: "4-3-3",
     formationName: "4-3-3",
     currentStepIndex: 0,
     steps: [{ id: 1, movements: new Map(), ballPasses: [], duration: 1000 }],

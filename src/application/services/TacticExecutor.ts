@@ -67,8 +67,8 @@ export class TacticExecutor {
     );
 
     // フォーメーションに対応する動きを取得
-    const movements = tactic.getMovementsForFormation(formation.name);
-    const ballPasses = tactic.getBallPassesForFormation(formation.name);
+    const movements = tactic.getMovementsForFormation(formation.id.value);
+    const ballPasses = tactic.getBallPassesForFormation(formation.id.value);
 
     if (movements.length === 0 && ballPasses.length === 0) {
       this.eventBus.publish(

@@ -34,8 +34,8 @@ function createTestFormation(): Formation {
     { pos: "CF2", position: Position.create(1, 2.5), category: "fw" },
   ];
   return Formation.createDefault(
-    new FormationId("test-442"),
-    "4-4-2",
+    new FormationId("4-4-2-flat"),
+    "4-4-2 Flat",
     "standard",
     positions,
   );
@@ -64,11 +64,14 @@ function createTactic(input?: {
   name?: { ja: string; en: string };
 }): Tactic {
   const movements = new Map<string, Movement[]>();
-  movements.set("4-4-2", input?.movements ?? [Movement.create("CF1", 0, 4, 0)]);
+  movements.set(
+    "4-4-2-flat",
+    input?.movements ?? [Movement.create("CF1", 0, 4, 0)],
+  );
 
   const ballPasses = new Map<string, BallPass[]>();
   if (input?.ballPasses) {
-    ballPasses.set("4-4-2", input.ballPasses);
+    ballPasses.set("4-4-2-flat", input.ballPasses);
   }
 
   return Tactic.create({

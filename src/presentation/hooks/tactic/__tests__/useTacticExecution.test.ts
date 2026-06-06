@@ -18,6 +18,7 @@ import { Movement } from "@domain/entities/Movement";
 import { FormationId } from "@domain/value-objects/FormationId";
 import { TacticId } from "@domain/value-objects/TacticId";
 import { EventBus } from "@domain/events/EventBus";
+import { getFormationIdByName } from "@shared/constants/formations";
 import {
   TacticStartedEvent,
   PlayerMovementStartedEvent,
@@ -87,7 +88,7 @@ function createTestFormationPositions(): FormationPosition[] {
 
 function createTestFormation(): Formation {
   return Formation.createDefault(
-    new FormationId("f-1"),
+    new FormationId("4-3-3"),
     "4-3-3",
     "standard",
     createTestFormationPositions(),
@@ -208,7 +209,7 @@ describe("useTacticExecution", () => {
         position: Position.create(i * 2, i * 3),
       }));
       const formation2 = Formation.createDefault(
-        new FormationId("f-2"),
+        new FormationId(getFormationIdByName("4-4-2 Flat") ?? "4-4-2-flat"),
         "4-4-2",
         "standard",
         positions2,

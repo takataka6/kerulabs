@@ -83,6 +83,7 @@ export interface CreationState {
   nameEn: string;
   icon: string;
   gamePhase: PhaseKey;
+  formationId?: string;
   formationName: string;
   currentStepIndex: number;
   steps: CreationStep[];

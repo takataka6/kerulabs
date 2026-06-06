@@ -9,7 +9,11 @@ import {
   FLAG_EMOJI,
   getFlagTypeByCountryName,
 } from "@shared/constants/countries";
-import { FORMATION_OPTIONS } from "@shared/constants/formations";
+import {
+  FORMATION_OPTIONS,
+  getFormationNameById,
+  normalizeFormationKey,
+} from "@shared/constants/formations";
 import { TEAM_HEADER_GRADIENT_OPTIONS } from "@shared/constants/teamHeaderGradients";
 import { useLanguage } from "@presentation/contexts/LanguageContext";
 import { AccessibleModal, useConfirm } from "@presentation/components/ui";
@@ -46,7 +50,8 @@ export function TeamEditor({ team, onSave, onClose }: TeamEditorProps) {
   const [gkColor, setGkColor] = useState(team.colors.gk.hex);
   const [mainColor, setMainColor] = useState(team.colors.main.hex);
 
-  const handleFormationToggle = (formation: string) => {
+  const handleFormationToggle = (formationName: string) => {
+    const formation = normalizeFormationKey(formationName);
     if (selectedFormations.includes(formation)) {
       if (selectedFormations.length > 1) {
         const newFormations = selectedFormations.filter((f) => f !== formation);
@@ -296,7 +301,9 @@ export function TeamEditor({ team, onSave, onClose }: TeamEditorProps) {
                   key={formation}
                   onClick={() => handleFormationToggle(formation)}
                   className={`py-3 px-4 rounded-xl font-bold transition-all duration-300 ${
-                    selectedFormations.includes(formation)
+                    selectedFormations.includes(
+                      normalizeFormationKey(formation),
+                    )
                       ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg scale-105"
                       : "bg-slate-800 text-slate-400 hover:bg-slate-700 border border-slate-700"
                   }`}
@@ -324,7 +331,7 @@ export function TeamEditor({ team, onSave, onClose }: TeamEditorProps) {
               >
                 {selectedFormations.map((formation) => (
                   <option key={formation} value={formation}>
-                    {formation}
+                    {getFormationNameById(formation) ?? formation}
                   </option>
                 ))}
               </select>

@@ -7,6 +7,7 @@ import { Movement } from "./Movement";
 import { BallPass } from "./BallPass";
 import { Phase } from "../value-objects/Phase";
 import { TacticId } from "../value-objects/TacticId";
+import { normalizeFormationKey } from "@shared/constants/formations";
 
 /** 戦術名の多言語マップ（例: { ja: '戦術1', en: 'Tactic 1' }） */
 export type TacticName = Record<string, string>;
@@ -61,13 +62,18 @@ export class Tactic {
     this._icon = props.icon;
     this._phase = props.phase;
     this._movements = new Map(
-      [...props.movements].map(([k, v]) => [k, [...v]]),
+      [...props.movements].map(([k, v]) => [normalizeFormationKey(k), [...v]]),
     );
     this.isCustom = props.isCustom;
     this.createdAt = props.createdAt;
     this._updatedAt = props.updatedAt;
     this._ballPasses = props.ballPasses
-      ? new Map([...props.ballPasses].map(([k, v]) => [k, [...v]]))
+      ? new Map(
+          [...props.ballPasses].map(([k, v]) => [
+            normalizeFormationKey(k),
+            [...v],
+          ]),
+        )
       : new Map();
     this._ballPosition = props.ballPosition
       ? { ...props.ballPosition }
@@ -179,7 +185,7 @@ export class Tactic {
    * @returns 選手移動の配列（該当なしの場合は空配列）
    */
   getMovementsForFormation(formationName: string): readonly Movement[] {
-    return this._movements.get(formationName) ?? [];
+    return this._movements.get(normalizeFormationKey(formationName)) ?? [];
   }
 
   /**
@@ -188,7 +194,7 @@ export class Tactic {
    * @returns ボールパスの配列（該当なしの場合は空配列）
    */
   getBallPassesForFormation(formationName: string): readonly BallPass[] {
-    return this._ballPasses.get(formationName) ?? [];
+    return this._ballPasses.get(normalizeFormationKey(formationName)) ?? [];
   }
 
   /**
@@ -197,7 +203,7 @@ export class Tactic {
    * @returns サポートしている場合true
    */
   supportsFormation(formationName: string): boolean {
-    return this._movements.has(formationName);
+    return this._movements.has(normalizeFormationKey(formationName));
   }
 
   // ── Mutators（状態変更は必ずメソッド経由） ──────────────
@@ -245,7 +251,9 @@ export class Tactic {
    * @param movements - 新しい選手移動マップ
    */
   updateMovements(movements: Map<string, Movement[]>): void {
-    this._movements = new Map([...movements].map(([k, v]) => [k, [...v]]));
+    this._movements = new Map(
+      [...movements].map(([k, v]) => [normalizeFormationKey(k), [...v]]),
+    );
     this._updatedAt = new Date();
   }
 
@@ -254,7 +262,9 @@ export class Tactic {
    * @param ballPasses - 新しいボールパスマップ
    */
   updateBallPasses(ballPasses: Map<string, BallPass[]>): void {
-    this._ballPasses = new Map([...ballPasses].map(([k, v]) => [k, [...v]]));
+    this._ballPasses = new Map(
+      [...ballPasses].map(([k, v]) => [normalizeFormationKey(k), [...v]]),
+    );
     this._updatedAt = new Date();
   }
 

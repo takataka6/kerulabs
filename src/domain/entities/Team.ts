@@ -7,6 +7,10 @@ import { TeamId } from "../value-objects/TeamId";
 import { PlayerId } from "../value-objects/PlayerId";
 import { Color } from "../value-objects/Color";
 import { Player } from "./Player";
+import {
+  normalizeFormationKey,
+  normalizeFormationKeys,
+} from "@shared/constants/formations";
 
 /** チームのユニフォームカラー（GKとフィールドプレイヤー） */
 export interface TeamColors {
@@ -85,14 +89,18 @@ export class Team {
     this._name = props.name;
     this._subtitle = props.subtitle;
     this._colors = { gk: props.colors.gk, main: props.colors.main };
-    this._availableFormations = [...props.availableFormations];
+    this._availableFormations = normalizeFormationKeys(
+      props.availableFormations,
+    );
     this._players = [...props.players];
     this._flagType = props.flagType;
     this._headerGradient = props.headerGradient;
     this.createdAt = props.createdAt;
     this._updatedAt = props.updatedAt;
     this._country = props.country;
-    this._defaultFormation = props.defaultFormation;
+    this._defaultFormation = props.defaultFormation
+      ? normalizeFormationKey(props.defaultFormation)
+      : undefined;
     this._selectedSquad = props.selectedSquad
       ? [...props.selectedSquad]
       : undefined;
@@ -103,7 +111,10 @@ export class Team {
     this._managerCard = props.managerCard;
     this._availableTactics = props.availableTactics
       ? Object.fromEntries(
-          Object.entries(props.availableTactics).map(([k, v]) => [k, [...v]]),
+          Object.entries(props.availableTactics).map(([k, v]) => [
+            normalizeFormationKey(k),
+            [...v],
+          ]),
         )
       : undefined;
   }
@@ -169,10 +180,15 @@ export class Team {
   static create(input: CreateTeamInput): Team {
     const now = new Date();
     // デフォルトフォーメーションが指定されていない場合は最初のフォーメーションを使用
-    const defaultFm = input.defaultFormation || input.availableFormations[0];
+    const availableFormations = normalizeFormationKeys(
+      input.availableFormations,
+    );
+    const defaultFm = normalizeFormationKey(
+      input.defaultFormation || availableFormations[0],
+    );
 
     // デフォルトフォーメーションがavailableFormationsに含まれているか確認
-    if (defaultFm && !input.availableFormations.includes(defaultFm)) {
+    if (defaultFm && !availableFormations.includes(defaultFm)) {
       throw new Error(
         `Default formation "${defaultFm}" must be included in available formations`,
       );
@@ -186,7 +202,7 @@ export class Team {
         gk: Color.fromHex(input.colors.gk),
         main: Color.fromHex(input.colors.main),
       },
-      availableFormations: input.availableFormations,
+      availableFormations,
       players: [],
       flagType: input.flagType,
       headerGradient: input.headerGradient,
@@ -334,16 +350,18 @@ export class Team {
    * @throws フォーメーションが空の場合
    */
   updateFormations(formations: string[], defaultFormation?: string): void {
-    if (formations.length === 0) {
+    const normalizedFormations = normalizeFormationKeys(formations);
+
+    if (normalizedFormations.length === 0) {
       throw new Error("At least one formation must be selected");
     }
 
-    this._availableFormations = formations;
+    this._availableFormations = normalizedFormations;
 
     // 削除されたフォーメーションの戦術設定をクリーンアップ
     if (this._availableTactics) {
       for (const formationKey of Object.keys(this._availableTactics)) {
-        if (!formations.includes(formationKey)) {
+        if (!normalizedFormations.includes(formationKey)) {
           delete this._availableTactics[formationKey];
         }
       }
@@ -352,13 +370,20 @@ export class Team {
       }
     }
 
-    if (defaultFormation && formations.includes(defaultFormation)) {
-      this._defaultFormation = defaultFormation;
+    const normalizedDefaultFormation = defaultFormation
+      ? normalizeFormationKey(defaultFormation)
+      : undefined;
+
+    if (
+      normalizedDefaultFormation &&
+      normalizedFormations.includes(normalizedDefaultFormation)
+    ) {
+      this._defaultFormation = normalizedDefaultFormation;
     } else if (
       this._defaultFormation &&
-      !formations.includes(this._defaultFormation)
+      !normalizedFormations.includes(this._defaultFormation)
     ) {
-      this._defaultFormation = formations[0];
+      this._defaultFormation = normalizedFormations[0];
     }
 
     this._updatedAt = new Date();
@@ -371,7 +396,8 @@ export class Team {
    */
   getAvailableTacticsForFormation(formationName: string): string[] | undefined {
     if (!this._availableTactics) return undefined;
-    const tactics = this._availableTactics[formationName];
+    const tactics =
+      this._availableTactics[normalizeFormationKey(formationName)];
     if (!tactics || tactics.length === 0) return undefined;
     return [...tactics];
   }
@@ -385,7 +411,7 @@ export class Team {
     const cleaned: Record<string, string[]> = {};
     for (const [formation, tacticIds] of Object.entries(availableTactics)) {
       if (tacticIds.length > 0) {
-        cleaned[formation] = tacticIds;
+        cleaned[normalizeFormationKey(formation)] = tacticIds;
       }
     }
     this._availableTactics =

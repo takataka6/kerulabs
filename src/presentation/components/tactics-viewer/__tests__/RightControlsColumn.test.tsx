@@ -50,14 +50,18 @@ function defaultProps(
     onToggleRightControls: vi.fn(),
     headerVisible: true,
     gameModeFormations: [
-      { id: { value: "f1" }, name: "4-4-2 Flat", positions: [] } as never,
-      { id: { value: "f2" }, name: "4-3-3", positions: [] } as never,
+      {
+        id: { value: "4-4-2-flat" },
+        name: "4-4-2 Flat",
+        positions: [],
+      } as never,
+      { id: { value: "4-3-3" }, name: "4-3-3", positions: [] } as never,
     ],
-    currentFormationId: "f1",
+    currentFormationId: "4-4-2-flat",
     selectedTeam: {
       id: "team-1",
-      availableFormations: ["4-4-2 Flat", "4-3-3"],
-      defaultFormation: "4-4-2 Flat",
+      availableFormations: ["4-4-2-flat", "4-3-3"],
+      defaultFormation: "4-4-2-flat",
       players: [],
     } as never,
     showFormationEditor: false,
@@ -191,8 +195,8 @@ describe("RightControlsColumn", () => {
             currentFormationId: "futsal-2-2",
             selectedTeam: {
               id: "team-1",
-              availableFormations: ["4-4-2"],
-              defaultFormation: "4-4-2",
+              availableFormations: ["4-4-2-flat"],
+              defaultFormation: "4-4-2-flat",
               players: [],
             } as never,
           })}
@@ -513,9 +517,9 @@ describe("RightControlsColumn", () => {
       render(<RightControlsColumn {...props} />);
 
       fireEvent.change(screen.getByLabelText("a11y.formationSelector"), {
-        target: { value: "f2" },
+        target: { value: "4-3-3" },
       });
-      expect(props.onChangeFormation).toHaveBeenCalledWith("f2");
+      expect(props.onChangeFormation).toHaveBeenCalledWith("4-3-3");
     });
 
     it("フォーメーション編集ボタンクリックで onToggleFormationEditor が呼ばれる", () => {

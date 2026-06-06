@@ -16,8 +16,8 @@ import type { OrchestratorActions } from "@presentation/components/tactics-viewe
 /* ── Mock formations ── */
 
 const mockFormation1 = {
-  id: { value: "f-1" },
-  name: "4-4-2",
+  id: { value: "4-4-2-flat" },
+  name: "4-4-2 Flat",
   gameMode: "football",
   positions: [
     { pos: "GK", position: { x: 0, z: -40 }, category: "gk" },
@@ -30,7 +30,7 @@ const mockFormation1 = {
 } as unknown as Formation;
 
 const mockFormation2 = {
-  id: { value: "f-2" },
+  id: { value: "3-5-2" },
   name: "3-5-2",
   gameMode: "football",
   positions: [{ pos: "GK", position: { x: 0, z: -40 }, category: "gk" }],
@@ -102,8 +102,8 @@ describe("useFormationManagement", () => {
     const { result } = renderFormationHook();
     expect(result.current.gameModeFormations).toHaveLength(2);
     expect(result.current.gameModeFormations.map((f) => f.id.value)).toEqual([
-      "f-1",
-      "f-2",
+      "4-4-2-flat",
+      "3-5-2",
     ]);
   });
 
@@ -116,8 +116,8 @@ describe("useFormationManagement", () => {
     const { result } = renderFormationHook({
       gameMode: "futsal",
       selectedTeam: {
-        availableFormations: ["4-4-2"],
-        defaultFormation: "4-4-2",
+        availableFormations: ["4-4-2-flat"],
+        defaultFormation: "4-4-2-flat",
       } as never,
     });
 
@@ -130,9 +130,9 @@ describe("useFormationManagement", () => {
     const { result, mockActions, resetHistory, pushCurrentSnapshot } =
       renderFormationHook();
 
-    act(() => result.current.changeFormation("f-1"));
+    act(() => result.current.changeFormation("4-4-2-flat"));
 
-    expect(result.current.currentFormationId).toBe("f-1");
+    expect(result.current.currentFormationId).toBe("4-4-2-flat");
     expect(mockActions.clearManualPositions).toHaveBeenCalledOnce();
     expect(mockActions.resetTactic).toHaveBeenCalledOnce();
     expect(resetHistory).toHaveBeenCalledOnce();
@@ -167,8 +167,8 @@ describe("useFormationManagement", () => {
   it("別チームへ切り替えたときは新しいチームの既定フォーメーションへ再同期する", async () => {
     const teamA = {
       id: { value: "team-a" },
-      availableFormations: ["4-4-2"],
-      defaultFormation: "4-4-2",
+      availableFormations: ["4-4-2-flat"],
+      defaultFormation: "4-4-2-flat",
     } as never;
     const teamB = {
       id: { value: "team-b" },
@@ -194,13 +194,13 @@ describe("useFormationManagement", () => {
     );
 
     await waitFor(() => {
-      expect(result.current.currentFormationId).toBe("f-1");
+      expect(result.current.currentFormationId).toBe("4-4-2-flat");
     });
 
     rerender(teamB);
 
     await waitFor(() => {
-      expect(result.current.currentFormationId).toBe("f-2");
+      expect(result.current.currentFormationId).toBe("3-5-2");
     });
   });
 });

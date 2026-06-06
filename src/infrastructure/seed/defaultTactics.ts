@@ -28,7 +28,7 @@ export const DEFAULT_TACTICS = [
         ],
       ],
       [
-        "4-4-2 Flat",
+        "4-4-2-flat",
         [
           Movement.create(ROLES.WIDE_ATK_L, 2.5, 2, 0, "#ef4444"),
           Movement.create(ROLES.WIDE_DEF_L, 4.5, 2.8, 600, "#3b82f6"),
@@ -79,7 +79,7 @@ export const DEFAULT_TACTICS = [
         ],
       ],
       [
-        "4-4-2 Flat",
+        "4-4-2-flat",
         [
           Movement.create(ROLES.WIDE_ATK_R, -2.5, 2, 0, "#ef4444"),
           Movement.create(ROLES.WIDE_DEF_R, -4.5, 2.8, 600, "#3b82f6"),
@@ -141,7 +141,7 @@ export const DEFAULT_TACTICS = [
         ],
       ],
       [
-        "4-4-2 Flat",
+        "4-4-2-flat",
         [
           Movement.create(ROLES.CENTER_FWD, 0.5, 3.8, 0, "#ef4444"),
           Movement.create(ROLES.SECOND_FWD, -0.5, 3.8, 0, "#ef4444"),
@@ -206,7 +206,7 @@ export const DEFAULT_TACTICS = [
         ],
       ],
       [
-        "4-4-2 Flat",
+        "4-4-2-flat",
         [
           Movement.create(ROLES.CENTER_FWD, 0.5, 4, 0, "#ef4444"),
           Movement.create(ROLES.SECOND_FWD, -0.5, 3.8, 0, "#ef4444"),

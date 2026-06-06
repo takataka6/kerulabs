@@ -206,7 +206,11 @@ export function useTacticsOrchestration(params: {
     clearManualPositions();
     resetTactic();
     const phase = playMode === "field" ? selectedPhase : selectedSetPlayType;
-    tacticCreation.startCreation(currentFormation.name, phase);
+    tacticCreation.startCreation(
+      currentFormation.name,
+      phase,
+      currentFormation.id.value,
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps -- opponentsHook/ballHook/connLines/playerView のセッターは安定したディスパッチャー。ラッパーオブジェクトを含めると連鎖的な再生成が発生する
   }, [
     currentFormation,
@@ -463,11 +467,11 @@ export function useTacticsOrchestration(params: {
   const tacticsForCurrentFormation = useMemo(() => {
     if (!tactics || !currentFormation) return [];
     const formationTactics = tactics.filter((t) =>
-      t.supportsFormation(currentFormation.name),
+      t.supportsFormation(currentFormation.id.value),
     );
     if (!selectedTeam) return formationTactics;
     const whitelist = selectedTeam.getAvailableTacticsForFormation(
-      currentFormation.name,
+      currentFormation.id.value,
     );
     if (!whitelist) return formationTactics;
     return formationTactics.filter(

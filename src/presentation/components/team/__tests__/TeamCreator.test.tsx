@@ -60,6 +60,9 @@ vi.mock("@shared/constants/countries", () => ({
 
 vi.mock("@shared/constants/formations", () => ({
   FORMATION_OPTIONS: ["4-3-3", "4-4-2", "3-5-2"],
+  normalizeFormationKey: (formation: string) => formation,
+  normalizeFormationKeys: (formations: string[]) => formations,
+  getFormationNameById: (formationId: string) => formationId,
 }));
 
 /* ------------------------------------------------------------------ */

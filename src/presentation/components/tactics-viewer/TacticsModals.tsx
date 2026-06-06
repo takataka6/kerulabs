@@ -22,7 +22,7 @@ export function TacticsModals() {
   const { opponentsHook, playModePhase } = useTacticsExecution();
 
   const { opponentTeam } = opponentsHook;
-  const availableOpponentFormationNames = opponentTeam
+  const availableOpponentFormationIds = opponentTeam
     ? new Set(
         getFormationOptionsWithDefault(
           opponentTeam.availableFormations,
@@ -30,9 +30,9 @@ export function TacticsModals() {
         ),
       )
     : null;
-  const availableOpponentFormations = availableOpponentFormationNames
+  const availableOpponentFormations = availableOpponentFormationIds
     ? formationMgmt.gameModeFormations.filter((f) =>
-        availableOpponentFormationNames.has(f.name),
+        availableOpponentFormationIds.has(f.id.value),
       )
     : [];
 
