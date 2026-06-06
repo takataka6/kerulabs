@@ -58,6 +58,8 @@ Football Tactics & Code Lab
 最新の配布物は [GitHub Releases](https://github.com/takataka6/kerulabs/releases) から取得できます。
 
 - 配布物の種類、リリースチャネル、運用ポリシーの詳細は [docs/release.md](docs/release.md) を参照してください
+- **まず試すなら Web 版** を選ぶのが最短です
+- **macOS で常用するなら macOS 版**、**Windows で常用するなら Setup 版** を選んでください
 
 | 配布形態   | 対応環境                           | 取得物                        | 補足                                                            |
 | ---------- | ---------------------------------- | ----------------------------- | --------------------------------------------------------------- |
@@ -65,10 +67,18 @@ Football Tactics & Code Lab
 | macOS 版   | Apple Silicon Mac を想定           | `.dmg`, `.zip`                | Electron アプリ。Developer ID 署名済み、Apple notarization 済み |
 | Windows 版 | Windows 11 を想定                  | `Setup .exe`, `Portable .exe` | Electron アプリ。現在は未署名の preview build                   |
 
+### どれを選べばいいか
+
+- **すぐ試したい**: Web 版
+- **Mac に入れて使いたい**: macOS 版 `.dmg`
+- **Windows に入れて使いたい**: `KeruLabs Setup X.Y.Z.exe`
+- **Windows でインストールせず試したい**: `KeruLabs X.Y.Z.exe`
+
 ### インストール時の注意
 
 - **最も手軽なのは Web 版** です。まず試すだけなら `pnpm dev` か配布済み Web bundle の利用を推奨します。
 - **Windows 版は未署名** のため、SmartScreen 警告が出る場合があります。通常利用は `KeruLabs Setup X.Y.Z.exe`、インストールせず試す場合は `KeruLabs X.Y.Z.exe` を選んでください。
+- **データはローカル保存** です。試用前や移行前にはアプリ内の JSON バックアップを使うと安全です。
 
 ### macOS の初回起動
 

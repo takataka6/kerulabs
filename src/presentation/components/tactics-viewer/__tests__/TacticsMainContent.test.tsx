@@ -12,6 +12,8 @@ import { DEFAULT_SCENE_BACKGROUND } from "@shared/constants";
 let mockUIContext: ReturnType<typeof createMockUIContext>;
 let mockTeamContext: ReturnType<typeof createMockTeamContext>;
 let mockExecutionContext: ReturnType<typeof createMockExecutionContext>;
+const mockPreferencesGet = vi.fn();
+const mockPreferencesSet = vi.fn();
 
 vi.mock("@presentation/contexts/TacticsUIContext", () => ({
   useTacticsUI: () => mockUIContext,
@@ -28,6 +30,14 @@ vi.mock("@presentation/contexts/LanguageContext", () => ({
     t: (key: string) => key,
     tDynamic: (key: string) => key,
     setLanguage: vi.fn(),
+  }),
+}));
+vi.mock("@application/ServiceContainer", () => ({
+  getContainer: () => ({
+    preferencesService: {
+      get: mockPreferencesGet,
+      set: mockPreferencesSet,
+    },
   }),
 }));
 
@@ -345,6 +355,12 @@ describe("TacticsMainContent", () => {
     mockUIContext = createMockUIContext();
     mockTeamContext = createMockTeamContext();
     mockExecutionContext = createMockExecutionContext();
+    mockPreferencesGet.mockReset();
+    mockPreferencesSet.mockReset();
+    mockPreferencesGet.mockImplementation((key: string) => {
+      if (key === "tacticsViewerGuideDismissed") return false;
+      return undefined;
+    });
   });
 
   it("main 要素が id='main-content' で描画される", async () => {
@@ -369,11 +385,42 @@ describe("TacticsMainContent", () => {
     expect(screen.getByTestId("player-view-hud")).toBeInTheDocument();
   });
 
+  it("初回ガイドを表示する", () => {
+    render(<TacticsMainContent />);
+
+    expect(screen.getByText("tactics.guide.title")).toBeInTheDocument();
+    expect(screen.getByText("tactics.guide.stepDrag")).toBeInTheDocument();
+    expect(screen.getByText("tactics.guide.dismiss")).toBeInTheDocument();
+  });
+
+  it("ガイドを閉じると非表示にし、設定へ保存する", () => {
+    render(<TacticsMainContent />);
+
+    fireEvent.click(screen.getByText("tactics.guide.dismiss"));
+
+    expect(screen.queryByText("tactics.guide.title")).not.toBeInTheDocument();
+    expect(mockPreferencesSet).toHaveBeenCalledWith(
+      "tacticsViewerGuideDismissed",
+      true,
+    );
+  });
+
   it("captureMode 時は RightControlsColumn が非表示", () => {
     mockUIContext.ui.captureMode = true;
     render(<TacticsMainContent />);
 
     expect(screen.queryByTestId("right-controls")).not.toBeInTheDocument();
+  });
+
+  it("ガイドを閉じている場合は表示しない", () => {
+    mockPreferencesGet.mockImplementation((key: string) => {
+      if (key === "tacticsViewerGuideDismissed") return true;
+      return undefined;
+    });
+
+    render(<TacticsMainContent />);
+
+    expect(screen.queryByText("tactics.guide.title")).not.toBeInTheDocument();
   });
 
   // ── Callback delegation tests ─────────────────────────

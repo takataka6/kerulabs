@@ -37,6 +37,7 @@ describe("IndexedDBPreferencesService", () => {
   it("IndexedDB から全設定値をキャッシュにロードする", async () => {
     mockGetAll.mockResolvedValue([
       { key: "language", value: "en" },
+      { key: "tacticsViewerGuideDismissed", value: true },
       { key: "pitchColor", value: "#ff0000" },
       { key: "sceneBackground", value: DEFAULT_SCENE_BACKGROUND },
     ]);
@@ -44,6 +45,7 @@ describe("IndexedDBPreferencesService", () => {
     await service.initialize();
 
     expect(service.get("language")).toBe("en");
+    expect(service.get("tacticsViewerGuideDismissed")).toBe(true);
     expect(service.get("pitchColor")).toBe("#ff0000");
     expect(service.get("sceneBackground")).toEqual(DEFAULT_SCENE_BACKGROUND);
   });
@@ -81,6 +83,7 @@ describe("IndexedDBPreferencesService", () => {
 
   it("キャッシュにない場合はデフォルト値を返す", () => {
     expect(service.get("language")).toBe("ja");
+    expect(service.get("tacticsViewerGuideDismissed")).toBe(false);
     expect(service.get("pitchOpacity")).toBe(1);
     expect(service.get("sceneBackground")).toEqual(DEFAULT_SCENE_BACKGROUND);
   });

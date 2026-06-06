@@ -11,6 +11,7 @@ import type { SceneBackgroundPreferenceV1 } from "@shared/types";
 /** 設定キーと値型のマッピング */
 export interface PreferenceMap {
   language: "ja" | "en";
+  tacticsViewerGuideDismissed: boolean;
   sceneBackground: SceneBackgroundPreferenceV1;
   sceneBackgroundImageUrl: string;
   sceneBackgroundImageSaturation: number;
