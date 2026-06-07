@@ -329,13 +329,12 @@ describe("SidebarPanel", () => {
         tactics: { isCreating: true },
         creation: {
           creation: {
-            id: "creation-1",
             nameJa: "新規戦術",
             nameEn: "New Tactic",
             icon: "⚽",
             gamePhase: "attack",
             formationId: "4-3-3",
-            setPlayType: null,
+            formationName: "4-3-3",
             wizardStep: "metadata",
             currentStepIndex: 0,
             steps: [],
