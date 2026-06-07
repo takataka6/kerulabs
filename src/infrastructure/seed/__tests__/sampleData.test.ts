@@ -3,12 +3,20 @@ import { SAMPLE_TEAM_A, SAMPLE_TEAM_B } from "../sampleData";
 import { getFormationNameById } from "@shared/constants/formations";
 
 describe("sampleData", () => {
-  it("sample teams only expose two common formations each", () => {
-    expect(SAMPLE_TEAM_A.availableFormations).toEqual(["5-4-1", "3-4-3"]);
+  it("sample teams expose the expected built-in formations", () => {
+    expect(SAMPLE_TEAM_A.availableFormations).toEqual([
+      "4-3-3",
+      "4-2-2-2",
+      "4-2-3-1",
+    ]);
     expect(SAMPLE_TEAM_B.availableFormations).toEqual([
       "4-4-2-flat",
       "4-2-3-1",
     ]);
+  });
+
+  it("SAMPLE_TEAM_A defaults to 4-3-3", () => {
+    expect(SAMPLE_TEAM_A.defaultFormation).toBe("4-3-3");
   });
 
   it("SAMPLE_TEAM_B uses the normalized 4-4-2-flat id", () => {
