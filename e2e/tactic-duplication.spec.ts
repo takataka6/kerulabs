@@ -90,6 +90,7 @@ test.describe("戦術複製 E2E", () => {
     await page
       .locator('div, li, [role="listitem"]')
       .filter({ hasText: "複製元3ステップ" })
+      .first() // pick the (innermost) container matching the unique name; avoids matching multiple ancestor levels
       .getByTestId("tactic-duplicate-button")
       .click();
     await expect(page.getByText("戦術をコピー")).toBeVisible();
