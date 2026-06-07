@@ -19,6 +19,7 @@ export { type ArrowPreview, type BallPassPreview } from "./tacticCreationTypes";
 export {
   useTacticExecution,
   type BallTrajectoryEntry,
+  type StepExecutionState,
 } from "./useTacticExecution";
 export { useFlowchartGenerator } from "./useFlowchartGenerator";
 export { useManualPositions } from "./useManualPositions";

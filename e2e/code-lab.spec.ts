@@ -3,11 +3,11 @@ import { test, expect } from "@playwright/test";
 test.describe("コードラボページ", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/code-lab");
-    await page.waitForSelector("text=コードラボ", { timeout: 15000 });
+    await expect(page.locator("main")).toBeVisible({ timeout: 15000 });
   });
 
   test("コードラボページが表示される", async ({ page }) => {
-    await expect(page.locator("h1")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   });
 
   test("カテゴリが表示される", async ({ page }) => {

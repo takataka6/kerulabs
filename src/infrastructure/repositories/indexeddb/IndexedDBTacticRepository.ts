@@ -143,6 +143,7 @@ export class IndexedDBTacticRepository implements ITacticRepository {
       updatedAt: new Date(record.updatedAt),
       ballPasses,
       ballPosition: record.ballPosition,
+      stepBoundaries: record.stepBoundaries,
     });
   }
 
@@ -185,6 +186,9 @@ export class IndexedDBTacticRepository implements ITacticRepository {
       movements,
       ballPasses: Object.keys(ballPasses).length > 0 ? ballPasses : undefined,
       ballPosition: tactic.ballPosition,
+      stepBoundaries: tactic.stepBoundaries
+        ? [...tactic.stepBoundaries]
+        : undefined,
       isCustom: tactic.isCustom,
       createdAt: tactic.createdAt.getTime(),
       updatedAt: tactic.updatedAt.getTime(),

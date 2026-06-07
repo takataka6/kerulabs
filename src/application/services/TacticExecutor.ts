@@ -18,6 +18,8 @@ import {
   TacticCompletedEvent,
   TacticCancelledEvent,
   ExecutionPhaseChangedEvent,
+  StepExecutionStartedEvent,
+  StepCompletedEvent,
 } from "@domain/events/TacticEvent";
 
 /** 1回の移動アニメーションにかかる時間 (ms) */
@@ -98,6 +100,7 @@ export class TacticExecutor {
       runMovements,
       ballPasses,
       highlightCondition: true,
+      baseDelayOffset: 0,
     });
 
     // 各動きとボールパスをスケジュール
@@ -130,6 +133,149 @@ export class TacticExecutor {
         );
         this.currentExecutionId = null;
         this.currentTacticId = null;
+      },
+      this.scaleDelay(maxDelay + COMPLETION_BUFFER_MS),
+    );
+
+    this.timeouts.add(completionTimeoutId);
+  }
+
+  executeStep(
+    tactic: Tactic,
+    formation: Formation,
+    initialPositions: Record<number, { x: number; z: number }>,
+    stepIndex: number,
+  ): void {
+    const boundaries = tactic.stepBoundaries;
+    if (!boundaries || boundaries.length <= 1) {
+      this.execute(tactic, formation, initialPositions);
+      return;
+    }
+
+    if (this.currentExecutionId) {
+      this.cancel("Superseded by step execution");
+    }
+
+    const executionId = `${tactic.id.value}-step${stepIndex}-${Date.now()}`;
+    this.currentExecutionId = executionId;
+    this.currentTacticId = tactic.id.value;
+
+    const totalSteps = boundaries.length;
+    if (stepIndex === 0) {
+      this.eventBus.publish(
+        new TacticStartedEvent(tactic.id.value, tactic.getDisplayName("en")),
+      );
+    }
+    this.eventBus.publish(
+      new StepExecutionStartedEvent(tactic.id.value, stepIndex, totalSteps),
+    );
+
+    const allMovements = tactic.getMovementsForFormation(formation.id.value);
+    const allBallPasses = tactic.getBallPassesForFormation(formation.id.value);
+    const stepStartDelay = boundaries[stepIndex] ?? 0;
+    const stepEndDelay =
+      stepIndex < boundaries.length - 1 ? boundaries[stepIndex + 1] : Infinity;
+    const hasSetupBoundary = tactic.hasSetupStepExecution;
+
+    const stepMovements = allMovements.filter((movement) => {
+      if (
+        !hasSetupBoundary &&
+        movement.arrowColor === SET_POSITION_ARROW_COLOR
+      ) {
+        return false;
+      }
+      return movement.delay >= stepStartDelay && movement.delay < stepEndDelay;
+    });
+    const stepBallPasses = allBallPasses.filter(
+      (ballPass) =>
+        ballPass.delay >= stepStartDelay && ballPass.delay < stepEndDelay,
+    );
+    const legacySetPositionMovements =
+      stepIndex === 0 && !hasSetupBoundary
+        ? allMovements.filter(
+            (movement) => movement.arrowColor === SET_POSITION_ARROW_COLOR,
+          )
+        : [];
+    const allStepMovements = [...legacySetPositionMovements, ...stepMovements];
+
+    this.schedulePhaseTransitions({
+      tacticId: tactic.id.value,
+      executionId,
+      setPositionMovements: allStepMovements.filter(
+        (movement) => movement.arrowColor === SET_POSITION_ARROW_COLOR,
+      ),
+      runMovements: allStepMovements.filter(
+        (movement) => movement.arrowColor !== SET_POSITION_ARROW_COLOR,
+      ),
+      ballPasses: stepBallPasses,
+      highlightCondition: !!tactic.ballPosition,
+      baseDelayOffset: stepStartDelay,
+    });
+
+    if (allStepMovements.length === 0 && stepBallPasses.length === 0) {
+      this.eventBus.publish(
+        new StepCompletedEvent(tactic.id.value, stepIndex, totalSteps),
+      );
+      if (stepIndex >= totalSteps - 1) {
+        this.eventBus.publish(new TacticCompletedEvent(tactic.id.value, 0));
+        this.currentExecutionId = null;
+        this.currentTacticId = null;
+      }
+      return;
+    }
+
+    const offsetMovements = allStepMovements.map((movement) => ({
+      ...movement,
+      delay: Math.max(0, movement.delay - stepStartDelay),
+    }));
+    const offsetBallPasses = stepBallPasses.map((ballPass) => ({
+      ...ballPass,
+      delay: Math.max(0, ballPass.delay - stepStartDelay),
+      hasCustomStart: () => ballPass.hasCustomStart(),
+      hasCustomEnd: () => ballPass.hasCustomEnd(),
+    }));
+
+    this.scheduleMovements(
+      offsetMovements,
+      formation,
+      initialPositions,
+      executionId,
+    );
+    this.scheduleBallPasses(
+      offsetBallPasses,
+      formation,
+      initialPositions,
+      executionId,
+    );
+
+    const movementMaxDelay =
+      offsetMovements.length > 0
+        ? Math.max(...offsetMovements.map((movement) => movement.delay))
+        : 0;
+    const ballPassMaxDelay =
+      offsetBallPasses.length > 0
+        ? Math.max(...offsetBallPasses.map((ballPass) => ballPass.delay))
+        : 0;
+    const maxDelay = Math.max(movementMaxDelay, ballPassMaxDelay, 0);
+
+    const completionTimeoutId = window.setTimeout(
+      () => {
+        if (this.currentExecutionId !== executionId) return;
+
+        this.timeouts.forEach((id) => window.clearTimeout(id));
+        this.timeouts.clear();
+
+        this.eventBus.publish(
+          new StepCompletedEvent(tactic.id.value, stepIndex, totalSteps),
+        );
+
+        if (stepIndex >= totalSteps - 1) {
+          this.eventBus.publish(new TacticCompletedEvent(tactic.id.value, 0));
+          this.currentExecutionId = null;
+          this.currentTacticId = null;
+        } else {
+          this.currentExecutionId = null;
+        }
       },
       this.scaleDelay(maxDelay + COMPLETION_BUFFER_MS),
     );
@@ -193,6 +339,7 @@ export class TacticExecutor {
     runMovements: ReadonlyArray<{ readonly delay: number }>;
     ballPasses: ReadonlyArray<{ readonly delay: number }>;
     highlightCondition: boolean;
+    baseDelayOffset: number;
   }): void {
     const {
       tacticId,
@@ -201,6 +348,7 @@ export class TacticExecutor {
       runMovements,
       ballPasses,
       highlightCondition,
+      baseDelayOffset,
     } = params;
 
     const hasSetPositions = setPositionMovements.length > 0;
@@ -214,12 +362,15 @@ export class TacticExecutor {
         this.eventBus.publish(
           new ExecutionPhaseChangedEvent("highlight", tacticId),
         );
-        const setPhaseTimeoutId = window.setTimeout(() => {
-          if (this.currentExecutionId !== executionId) return;
-          this.eventBus.publish(
-            new ExecutionPhaseChangedEvent("set", tacticId),
-          );
-        }, this.scaleDelay(setDelay));
+        const setPhaseTimeoutId = window.setTimeout(
+          () => {
+            if (this.currentExecutionId !== executionId) return;
+            this.eventBus.publish(
+              new ExecutionPhaseChangedEvent("set", tacticId),
+            );
+          },
+          this.scaleDelay(setDelay - baseDelayOffset),
+        );
         this.timeouts.add(setPhaseTimeoutId);
       } else {
         // セット → 実行 の2フェーズ
@@ -232,7 +383,7 @@ export class TacticExecutor {
         ...ballPasses.map((bp) => bp.delay),
       ];
       if (runDelays.length > 0) {
-        const firstRunDelay = Math.min(...runDelays);
+        const firstRunDelay = Math.min(...runDelays) - baseDelayOffset;
         const runPhaseTimeoutId = window.setTimeout(() => {
           if (this.currentExecutionId !== executionId) return;
           this.eventBus.publish(
@@ -248,12 +399,15 @@ export class TacticExecutor {
         this.eventBus.publish(
           new ExecutionPhaseChangedEvent("highlight", tacticId),
         );
-        const setPhaseTimeoutId = window.setTimeout(() => {
-          if (this.currentExecutionId !== executionId) return;
-          this.eventBus.publish(
-            new ExecutionPhaseChangedEvent("set", tacticId),
-          );
-        }, this.scaleDelay(setDelay));
+        const setPhaseTimeoutId = window.setTimeout(
+          () => {
+            if (this.currentExecutionId !== executionId) return;
+            this.eventBus.publish(
+              new ExecutionPhaseChangedEvent("set", tacticId),
+            );
+          },
+          this.scaleDelay(setDelay - baseDelayOffset),
+        );
         this.timeouts.add(setPhaseTimeoutId);
       } else {
         this.eventBus.publish(new ExecutionPhaseChangedEvent("set", tacticId));
