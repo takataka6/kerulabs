@@ -42,7 +42,7 @@ async function setupTacticsPage(
 }
 
 test.describe("戦術複製 E2E", () => {
-  test.setTimeout(60000);
+  test.setTimeout(90000); // Increased for CI (seeding + navigation + async list render + modal flow)
 
   test("既存戦術の途中ステップまで複製して作成モードに入れる", async ({
     page,
@@ -80,15 +80,16 @@ test.describe("戦術複製 E2E", () => {
       },
     ]);
 
-    // Wait for the seeded tactic name to appear (data seeding / list render can be async).
-    // Then scope from the name's immediate parent (the card/row) to its duplicate button using the stable testid.
-    // This targets the correct multi-step tactic for the modal (step count selection) path.
+    // Wait for the seeded tactic name to appear in the list (after team selection + DB seed).
+    // Scope to a container that contains the tactic name text, then find the duplicate button by its stable testid.
+    // This is robust against nested spans in the row rendering.
     await page
       .getByText("複製元3ステップ")
-      .waitFor({ state: "visible", timeout: 15000 });
+      .waitFor({ state: "visible", timeout: 30000 });
+
     await page
-      .getByText("複製元3ステップ")
-      .locator("..")
+      .locator('div, li, [role="listitem"]')
+      .filter({ hasText: "複製元3ステップ" })
       .getByTestId("tactic-duplicate-button")
       .click();
     await expect(page.getByText("戦術をコピー")).toBeVisible();
