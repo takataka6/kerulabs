@@ -279,6 +279,7 @@ export function useTacticExecution(
   const execute = useCallback((tactic: Tactic, formation: Formation) => {
     if (!formation) return;
     setExecutingBallPosition(tactic.ballPosition ?? null);
+    setPlayerPositions(initialPositionsRef.current);
     executorRef.current.execute(tactic, formation, initialPositionsRef.current);
   }, []);
 

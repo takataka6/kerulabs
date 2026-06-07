@@ -23,6 +23,7 @@ import {
 import { useMovementEditor } from "./useMovementEditor";
 import { useBallPassEditor } from "./useBallPassEditor";
 import { useTacticBuilder } from "./useTacticBuilder";
+import { restoreCreationStateFromTactic } from "./restoreCreationStateFromTactic";
 
 // 型の再エクスポート（後方互換性）
 export { phaseKeyToPhaseType } from "./tacticCreationTypes";
@@ -44,6 +45,12 @@ export interface UseTacticCreationReturn {
   startCreation: (
     formationName: string,
     gamePhase: PhaseKey,
+    formationId?: string,
+  ) => void;
+  startCreationFromTactic: (
+    tactic: Tactic,
+    formationName: string,
+    copyUntilStep?: number,
     formationId?: string,
   ) => void;
   cancelCreation: () => void;
@@ -104,7 +111,7 @@ export interface UseTacticCreationReturn {
   resetSetPositions: () => void;
 
   // ビルダー & プレビュー（useTacticBuilder）
-  buildTactic: (formation: Formation) => Tactic;
+  buildTactic: (formation: Formation, stepIndex?: number) => Tactic;
   getPreviewArrows: (formation: Formation) => ArrowPreview[];
   getPreviewBallPasses: (formation: Formation) => BallPassPreview[];
   getStepStartPositions: (
@@ -177,6 +184,25 @@ export function useTacticCreation(): UseTacticCreationReturn {
   const cancelCreation = useCallback(() => {
     setCreation(null);
   }, []);
+
+  const startCreationFromTactic = useCallback(
+    (
+      tactic: Tactic,
+      formationName: string,
+      copyUntilStep?: number,
+      formationId?: string,
+    ) => {
+      setCreation(
+        restoreCreationStateFromTactic({
+          tactic,
+          formationName,
+          formationId,
+          copyUntilStep,
+        }),
+      );
+    },
+    [],
+  );
 
   // ----- ステップ管理 -------------------------------------------------------
 
@@ -318,6 +344,7 @@ export function useTacticCreation(): UseTacticCreationReturn {
     creation,
 
     startCreation,
+    startCreationFromTactic,
     cancelCreation,
 
     setPlayerTarget,

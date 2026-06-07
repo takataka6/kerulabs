@@ -8,7 +8,7 @@
  * - {@link useBallPassCreation} ボールパス作成状態
  * - {@link useMergedTacticDisplay} 表示データのマージ
  */
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import type { Formation } from "@domain/entities/Formation";
 import type { Tactic } from "@domain/entities/Tactic";
 import type { Team } from "@domain/entities/Team";
@@ -34,6 +34,10 @@ import { useManualPositions } from "./useManualPositions";
 import { useBallPassCreation } from "./useBallPassCreation";
 import { useMergedTacticDisplay } from "./useMergedTacticDisplay";
 import { useTacticShareHandlers } from "./useTacticShareHandlers";
+import { createPreviewTacticFromCopyRange } from "./restoreCreationStateFromTactic";
+import { getPlaybackSpeed } from "@shared/stores/playbackSpeedStore";
+
+const COPY_CREATION_COMPLETION_BUFFER_MS = 1500;
 
 function buildDefaultTacticNames(gamePhase: PhaseKey, count: number) {
   const isSetPlayPhase =
@@ -144,6 +148,15 @@ export function useTacticsOrchestration(params: {
     ballTrajectories,
     stepExecution,
   } = useTacticExecution(currentFormation ?? undefined);
+  const tacticCopyPreviewRequestRef = useRef(0);
+  const tacticCopyCreationTimeoutRef = useRef<number | null>(null);
+
+  const clearPendingTacticCopyCreation = useCallback(() => {
+    if (tacticCopyCreationTimeoutRef.current !== null) {
+      window.clearTimeout(tacticCopyCreationTimeoutRef.current);
+      tacticCopyCreationTimeoutRef.current = null;
+    }
+  }, []);
 
   /** タクティクスIDからタクティクスを検索するユーティリティ */
   const findTacticById = useCallback(
@@ -204,6 +217,7 @@ export function useTacticsOrchestration(params: {
   // ── タクティクス作成ハンドラー ──
   const startTacticCreation = useCallback(() => {
     if (!currentFormation) return;
+    clearPendingTacticCopyCreation();
     opponentsHook.setOpponentPlacementMode(false);
     ballHook.setBallPlacementMode(false);
     connLines.resetLineDrawingState();
@@ -227,9 +241,115 @@ export function useTacticsOrchestration(params: {
     resetTactic,
     tacticCreation,
     clearManualPositions,
+    clearPendingTacticCopyCreation,
   ]);
 
+  const startTacticCreationFromCopy = useCallback(
+    (tacticId: string, copyUntilStep?: number) => {
+      if (!currentFormation || stepExecution.isStepMode) return;
+      const tactic = findTacticById(tacticId);
+      if (!tactic) return;
+
+      clearPendingTacticCopyCreation();
+      opponentsHook.setOpponentPlacementMode(false);
+      ballHook.setBallPlacementMode(false);
+      connLines.resetLineDrawingState();
+      playerView.setPlayerViewEnabled(false);
+      playerView.setSelectedPlayerIndex(null);
+      playerView.setSelectedOpponentViewId(null);
+      clearManualPositions();
+      resetTactic();
+      const previewTactic = createPreviewTacticFromCopyRange({
+        tactic,
+        formationKey: currentFormation.id.value,
+        copyUntilStep:
+          copyUntilStep ??
+          (tactic.hasSetupStepExecution
+            ? Math.max(1, tactic.totalSteps - 1)
+            : tactic.totalSteps),
+      });
+      const previewMovements = previewTactic.getMovementsForFormation(
+        currentFormation.id.value,
+      );
+      const previewBallPasses = previewTactic.getBallPassesForFormation(
+        currentFormation.id.value,
+      );
+      const maxDelay = Math.max(
+        0,
+        ...previewMovements.map((movement) => movement.delay),
+        ...previewBallPasses.map((ballPass) => ballPass.delay),
+      );
+
+      executeTactic(previewTactic, currentFormation);
+      tacticCopyCreationTimeoutRef.current = window.setTimeout(
+        () => {
+          tacticCopyCreationTimeoutRef.current = null;
+          resetTactic();
+          tacticCreation.startCreationFromTactic(
+            previewTactic,
+            currentFormation.name,
+            undefined,
+            currentFormation.id.value,
+          );
+        },
+        (maxDelay + COPY_CREATION_COMPLETION_BUFFER_MS) / getPlaybackSpeed(),
+      );
+    },
+    [
+      ballHook,
+      clearPendingTacticCopyCreation,
+      connLines,
+      currentFormation,
+      executeTactic,
+      clearManualPositions,
+      findTacticById,
+      opponentsHook,
+      playerView,
+      resetTactic,
+      stepExecution.isStepMode,
+      tacticCreation,
+    ],
+  );
+
+  const previewTacticCopyRange = useCallback(
+    (tacticId: string, copyUntilStep: number) => {
+      if (!currentFormation || stepExecution.isStepMode) return;
+      const tactic = findTacticById(tacticId);
+      if (!tactic) return;
+
+      tacticCopyPreviewRequestRef.current += 1;
+      const requestId = tacticCopyPreviewRequestRef.current;
+      resetTactic();
+      clearManualPositions();
+      const previewTactic = createPreviewTacticFromCopyRange({
+        tactic,
+        formationKey: currentFormation.id.value,
+        copyUntilStep,
+      });
+      requestAnimationFrame(() => {
+        if (tacticCopyPreviewRequestRef.current !== requestId) return;
+        executeTactic(previewTactic, currentFormation);
+      });
+    },
+    [
+      currentFormation,
+      stepExecution.isStepMode,
+      findTacticById,
+      resetTactic,
+      clearManualPositions,
+      executeTactic,
+    ],
+  );
+
+  const clearTacticCopyPreview = useCallback(() => {
+    clearPendingTacticCopyCreation();
+    tacticCopyPreviewRequestRef.current += 1;
+    resetTactic();
+    clearManualPositions();
+  }, [clearPendingTacticCopyCreation, resetTactic, clearManualPositions]);
+
   const cancelTacticCreation = useCallback(async () => {
+    clearPendingTacticCopyCreation();
     if (
       tacticCreation.creation &&
       !(await confirm({ message: t("tactics.creation.confirmCancel") }))
@@ -238,7 +358,29 @@ export function useTacticsOrchestration(params: {
     tacticCreation.cancelCreation();
     clearManualPositions();
     ballPassState.resetBallPassState();
-  }, [tacticCreation, t, confirm, clearManualPositions, ballPassState]);
+  }, [
+    tacticCreation,
+    t,
+    confirm,
+    clearManualPositions,
+    ballPassState,
+    clearPendingTacticCopyCreation,
+  ]);
+
+  const handleDeleteTactic = useCallback(
+    async (tacticId: string) => {
+      if (
+        !(await confirm({
+          message: t("tactics.creation.deleteConfirm"),
+          variant: "red",
+        }))
+      ) {
+        return;
+      }
+      await deleteTacticMutation.mutateAsync(tacticId);
+    },
+    [confirm, t, deleteTacticMutation],
+  );
 
   const handleSaveTactic = useCallback(async () => {
     if (!tacticCreation.creation || !currentFormation) return;
@@ -291,12 +433,10 @@ export function useTacticsOrchestration(params: {
     if (!hasCreationContent()) return;
 
     try {
-      resetTactic();
-      clearManualPositions();
       const tactic = tacticCreation.buildTactic(currentFormation);
-      requestAnimationFrame(() => {
-        executeTactic(tactic, currentFormation);
-      });
+      clearManualPositions();
+      resetTactic();
+      executeTactic(tactic, currentFormation);
     } catch (error) {
       handleError(error, "ui", "Tactic preview failed", {
         toast: {
@@ -331,24 +471,29 @@ export function useTacticsOrchestration(params: {
   const triggerTactic = useCallback(
     (tacticId: string) => {
       if (isExecuting || stepExecution.isStepMode || !currentFormation) return;
+      clearPendingTacticCopyCreation();
       const tactic = findTacticById(tacticId);
       if (!tactic) return;
       clearManualPositions();
+      resetTactic();
       executeTactic(tactic, currentFormation);
     },
     [
+      clearPendingTacticCopyCreation,
       isExecuting,
       currentFormation,
       findTacticById,
       executeTactic,
       clearManualPositions,
       stepExecution.isStepMode,
+      resetTactic,
     ],
   );
 
   const triggerStepTactic = useCallback(
     (tacticId: string) => {
       if (isExecuting || stepExecution.isStepMode || !currentFormation) return;
+      clearPendingTacticCopyCreation();
       const tactic = findTacticById(tacticId);
       if (!tactic?.supportsStepExecution) return;
       clearManualPositions();
@@ -358,6 +503,7 @@ export function useTacticsOrchestration(params: {
       isExecuting,
       stepExecution.isStepMode,
       currentFormation,
+      clearPendingTacticCopyCreation,
       findTacticById,
       clearManualPositions,
       startStepExecution,
@@ -540,7 +686,11 @@ export function useTacticsOrchestration(params: {
 
     // ── ハンドラー ──
     startTacticCreation,
+    startTacticCreationFromCopy,
+    previewTacticCopyRange,
+    clearTacticCopyPreview,
     cancelTacticCreation,
+    handleDeleteTactic,
     handleSaveTactic,
     handlePreviewTactic,
     handleExportTactics,
