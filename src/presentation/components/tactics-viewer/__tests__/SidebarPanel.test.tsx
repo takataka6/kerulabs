@@ -14,6 +14,7 @@ import type {
   SidebarLayoutProps,
   PhaseProps,
   TacticListProps,
+  TacticCreationProps,
   CaptureModeProps,
   I18nProps,
 } from "../SidebarPanel";
@@ -138,6 +139,7 @@ function renderSidebarPanel(
     layout?: Partial<SidebarLayoutProps>;
     phase?: Partial<PhaseProps>;
     tactics?: Partial<TacticListProps>;
+    creation?: Partial<TacticCreationProps>;
     capture?: Partial<CaptureModeProps>;
     i18n?: Partial<I18nProps>;
   } = {},
@@ -188,6 +190,27 @@ function renderSidebarPanel(
     onSavePng: vi.fn(),
   };
 
+  const defaultCreation: TacticCreationProps = {
+    creation: null,
+    isSetPlayMode: false,
+    onNameJaChange: vi.fn(),
+    onNameEnChange: vi.fn(),
+    onIconChange: vi.fn(),
+    onGamePhaseChange: vi.fn(),
+    onWizardStep: vi.fn(),
+    onSwitchStep: vi.fn(),
+    onAddStep: vi.fn(),
+    onResetStep: vi.fn(),
+    onResetPreview: vi.fn(),
+    onToggleTimeline: vi.fn(),
+    onPreview: vi.fn(),
+    onSave: vi.fn(),
+    onCancelCreation: vi.fn(),
+    ballPassCreationMode: false,
+    ballPassStartPos: null,
+    selectedBallPassTrajectoryType: "low",
+  };
+
   const defaultI18n: I18nProps = {
     language: "ja",
     t: mockT,
@@ -198,6 +221,7 @@ function renderSidebarPanel(
     layout: { ...defaultLayout, ...overrides.layout },
     phase: { ...defaultPhase, ...overrides.phase },
     tactics: { ...defaultTactics, ...overrides.tactics },
+    creation: { ...defaultCreation, ...overrides.creation },
     capture: { ...defaultCapture, ...overrides.capture },
     i18n: { ...defaultI18n, ...overrides.i18n },
   };
@@ -298,6 +322,33 @@ describe("SidebarPanel", () => {
 
       fireEvent.click(screen.getByText("tactics.reset"));
       expect(props.phase.onResetState).toHaveBeenCalled();
+    });
+
+    it("hides reset button while creation mode is active", () => {
+      renderSidebarPanel({
+        tactics: { isCreating: true },
+        creation: {
+          creation: {
+            id: "creation-1",
+            nameJa: "新規戦術",
+            nameEn: "New Tactic",
+            icon: "⚽",
+            gamePhase: "attack",
+            formationId: "4-3-3",
+            setPlayType: null,
+            wizardStep: "metadata",
+            currentStepIndex: 0,
+            steps: [],
+            setPositions: new Map(),
+            ballPosition: null,
+            ballTrajectory: null,
+            timelineOpen: false,
+            movementDelays: {},
+          },
+        },
+      });
+
+      expect(screen.queryByText("tactics.reset")).not.toBeInTheDocument();
     });
 
     it("clicking a set play type button calls onSetPlayTypeChange and onResetTactic", () => {

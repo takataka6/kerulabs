@@ -525,17 +525,6 @@ export const SidebarPanel = memo(function SidebarPanel(
       ) : /* ── 戦術作成モード ── */
       showCreationMode ? (
         <>
-          {/* リセットボタン */}
-          <div className="px-3 py-1.5 border-b border-slate-800/50">
-            <button
-              onClick={phase.onResetState}
-              className="w-full py-1.5 bg-gradient-to-r from-slate-800 to-slate-700 hover:from-slate-700 hover:to-slate-600 rounded-lg transition-all duration-300 flex items-center justify-center gap-1.5 text-slate-300 text-xs font-medium shadow hover:shadow-md hover:scale-[1.02] border border-slate-700/50"
-            >
-              <span className="text-sm">🔄</span>
-              <span className="tracking-wide">{t("tactics.reset")}</span>
-            </button>
-          </div>
-
           {/* 作成ウィザード */}
           <div className="custom-scrollbar">
             <SidebarCreationContent
