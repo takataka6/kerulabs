@@ -15,6 +15,8 @@ import {
   TacticCompletedEvent,
   TacticCancelledEvent,
   ExecutionPhaseChangedEvent,
+  StepExecutionStartedEvent,
+  StepCompletedEvent,
 } from "@domain/events/TacticEvent";
 import type { ExecutionPhase } from "@domain/events/TacticEvent";
 
@@ -25,8 +27,19 @@ export interface BallTrajectoryEntry {
   trajectoryType?: string;
 }
 
+export interface StepExecutionState {
+  isStepMode: boolean;
+  currentStep: number;
+  totalSteps: number;
+  isStepRunning: boolean;
+  tactic: Tactic | null;
+}
+
 interface UseTacticExecutionResult {
   execute: (tactic: Tactic, formation: Formation) => void;
+  startStepExecution: (tactic: Tactic, formation: Formation) => void;
+  executeNextStep: () => void;
+  exitStepMode: () => void;
   cancel: () => void;
   reset: () => void;
   isExecuting: boolean;
@@ -40,6 +53,7 @@ interface UseTacticExecutionResult {
     color: string;
   }>;
   ballTrajectories: BallTrajectoryEntry[];
+  stepExecution: StepExecutionState;
 }
 
 /**
@@ -77,6 +91,13 @@ export function useTacticExecution(
     x: number;
     z: number;
   } | null>(null);
+  const [stepExecution, setStepExecution] = useState<StepExecutionState>({
+    isStepMode: false,
+    currentStep: 0,
+    totalSteps: 1,
+    isStepRunning: false,
+    tactic: null,
+  });
 
   const executorRef = useRef<TacticExecutor>(new TacticExecutor());
   const eventBusRef = useRef<EventBus>(EventBus.getInstance());
@@ -84,6 +105,9 @@ export function useTacticExecution(
     {},
   );
   const formationRef = useRef<Formation | undefined>(formation);
+  const stepPlayerPositionsRef = useRef<
+    Record<number, { x: number; z: number }>
+  >({});
 
   /* eslint-disable react-hooks/set-state-in-effect -- フォーメーション変更時に初期ポジションを同期。実行中は setPlayerPositions でアニメーション更新されるため useState が必要 */
   useEffect(() => {
@@ -118,10 +142,14 @@ export function useTacticExecution(
     const unsubscribeMovement = eventBus.subscribe<PlayerMovementStartedEvent>(
       "PLAYER_MOVEMENT_STARTED",
       (event) => {
-        setPlayerPositions((prev) => ({
-          ...prev,
-          [event.playerIndex]: event.targetPosition,
-        }));
+        setPlayerPositions((prev) => {
+          const next = {
+            ...prev,
+            [event.playerIndex]: event.targetPosition,
+          };
+          stepPlayerPositionsRef.current = next;
+          return next;
+        });
       },
     );
 
@@ -164,14 +192,52 @@ export function useTacticExecution(
       },
     );
 
+    const unsubscribeStepStarted =
+      eventBus.subscribe<StepExecutionStartedEvent>(
+        "STEP_EXECUTION_STARTED",
+        (event) => {
+          setStepExecution((prev) => ({
+            ...prev,
+            currentStep: event.stepIndex,
+            totalSteps: event.totalSteps,
+            isStepRunning: true,
+          }));
+        },
+      );
+
+    const unsubscribeStepCompleted = eventBus.subscribe<StepCompletedEvent>(
+      "STEP_COMPLETED",
+      (event) => {
+        setStepExecution((prev) => ({
+          ...prev,
+          currentStep: event.stepIndex,
+          isStepRunning: false,
+        }));
+        if (event.stepIndex < event.totalSteps - 1) {
+          setIsExecuting(false);
+        }
+      },
+    );
+
     // 戦術完了イベント
     // activeTacticId は保持（戦術フローボタン等で参照するため）
     const unsubscribeCompleted = eventBus.subscribe<TacticCompletedEvent>(
       "TACTIC_COMPLETED",
       () => {
         setIsExecuting(false);
-        setExecutionPhase(null);
         setExecutingBallPosition(null);
+        setStepExecution((prev) => {
+          if (prev.isStepMode) {
+            return { ...prev, isStepRunning: false };
+          }
+          setExecutionPhase(null);
+          return {
+            ...prev,
+            isStepRunning: false,
+            isStepMode: false,
+            tactic: null,
+          };
+        });
       },
     );
 
@@ -183,6 +249,13 @@ export function useTacticExecution(
         setActiveTacticId(null);
         setExecutionPhase(null);
         setExecutingBallPosition(null);
+        setStepExecution({
+          isStepMode: false,
+          currentStep: 0,
+          totalSteps: 1,
+          isStepRunning: false,
+          tactic: null,
+        });
       },
     );
 
@@ -194,6 +267,8 @@ export function useTacticExecution(
       unsubscribeArrow();
       unsubscribeBallPass();
       unsubscribePhase();
+      unsubscribeStepStarted();
+      unsubscribeStepCompleted();
       unsubscribeCompleted();
       unsubscribeCancelled();
       executor.destroy();
@@ -205,6 +280,67 @@ export function useTacticExecution(
     if (!formation) return;
     setExecutingBallPosition(tactic.ballPosition ?? null);
     executorRef.current.execute(tactic, formation, initialPositionsRef.current);
+  }, []);
+
+  const startStepExecution = useCallback(
+    (tactic: Tactic, formation: Formation) => {
+      if (!formation || !tactic.supportsStepExecution) return;
+
+      setExecutingBallPosition(tactic.ballPosition ?? null);
+      stepPlayerPositionsRef.current = { ...initialPositionsRef.current };
+      setStepExecution({
+        isStepMode: true,
+        currentStep: 0,
+        totalSteps: tactic.totalSteps,
+        isStepRunning: false,
+        tactic,
+      });
+      setArrows([]);
+      setBallTrajectories([]);
+      setActiveTacticId(tactic.id.value);
+      executorRef.current.executeStep(
+        tactic,
+        formation,
+        initialPositionsRef.current,
+        0,
+      );
+    },
+    [],
+  );
+
+  const executeNextStep = useCallback(() => {
+    const currentFormation = formationRef.current;
+    if (!currentFormation) return;
+
+    setStepExecution((prev) => {
+      if (!prev.isStepMode || !prev.tactic || prev.isStepRunning) return prev;
+      const nextStep = prev.currentStep + 1;
+      if (nextStep >= prev.totalSteps) return prev;
+
+      setArrows([]);
+      setBallTrajectories([]);
+
+      executorRef.current.executeStep(
+        prev.tactic,
+        currentFormation,
+        stepPlayerPositionsRef.current,
+        nextStep,
+      );
+      return prev;
+    });
+  }, []);
+
+  const exitStepMode = useCallback(() => {
+    executorRef.current.cancel("Step mode exited by user");
+    setExecutionPhase(null);
+    setExecutingBallPosition(null);
+    setStepExecution({
+      isStepMode: false,
+      currentStep: 0,
+      totalSteps: 1,
+      isStepRunning: false,
+      tactic: null,
+    });
   }, []);
 
   // キャンセル
@@ -221,10 +357,20 @@ export function useTacticExecution(
     setArrows([]);
     setBallTrajectories([]);
     setPlayerPositions(initialPositionsRef.current);
+    setStepExecution({
+      isStepMode: false,
+      currentStep: 0,
+      totalSteps: 1,
+      isStepRunning: false,
+      tactic: null,
+    });
   }, []);
 
   return {
     execute,
+    startStepExecution,
+    executeNextStep,
+    exitStepMode,
     cancel,
     reset,
     isExecuting,
@@ -234,5 +380,6 @@ export function useTacticExecution(
     playerPositions,
     arrows,
     ballTrajectories,
+    stepExecution,
   };
 }

@@ -107,6 +107,9 @@ vi.mock("../useTacticCreation", () => ({
 vi.mock("../useTacticExecution", () => ({
   useTacticExecution: () => ({
     execute: mockExecuteTactic,
+    startStepExecution: vi.fn(),
+    executeNextStep: vi.fn(),
+    exitStepMode: vi.fn(),
     reset: mockResetTactic,
     isExecuting: mockIsExecuting,
     activeTacticId: mockActiveTacticId,
@@ -115,6 +118,13 @@ vi.mock("../useTacticExecution", () => ({
     playerPositions: mockPlayerPositions,
     arrows: mockArrows,
     ballTrajectories: mockBallTrajectories,
+    stepExecution: {
+      isStepMode: false,
+      currentStep: 0,
+      totalSteps: 1,
+      isStepRunning: false,
+      tactic: null,
+    },
   }),
 }));
 vi.mock("../queries/useSaveTactic", () => ({

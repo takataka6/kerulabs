@@ -131,6 +131,9 @@ export function useTacticsOrchestration(params: {
   const deleteTacticMutation = useDeleteTactic();
   const {
     execute: executeTactic,
+    startStepExecution,
+    executeNextStep,
+    exitStepMode,
     reset: resetTactic,
     isExecuting,
     activeTacticId,
@@ -139,6 +142,7 @@ export function useTacticsOrchestration(params: {
     playerPositions,
     arrows,
     ballTrajectories,
+    stepExecution,
   } = useTacticExecution(currentFormation ?? undefined);
 
   /** タクティクスIDからタクティクスを検索するユーティリティ */
@@ -326,7 +330,7 @@ export function useTacticsOrchestration(params: {
 
   const triggerTactic = useCallback(
     (tacticId: string) => {
-      if (isExecuting || !currentFormation) return;
+      if (isExecuting || stepExecution.isStepMode || !currentFormation) return;
       const tactic = findTacticById(tacticId);
       if (!tactic) return;
       clearManualPositions();
@@ -338,6 +342,25 @@ export function useTacticsOrchestration(params: {
       findTacticById,
       executeTactic,
       clearManualPositions,
+      stepExecution.isStepMode,
+    ],
+  );
+
+  const triggerStepTactic = useCallback(
+    (tacticId: string) => {
+      if (isExecuting || stepExecution.isStepMode || !currentFormation) return;
+      const tactic = findTacticById(tacticId);
+      if (!tactic?.supportsStepExecution) return;
+      clearManualPositions();
+      startStepExecution(tactic, currentFormation);
+    },
+    [
+      isExecuting,
+      stepExecution.isStepMode,
+      currentFormation,
+      findTacticById,
+      clearManualPositions,
+      startStepExecution,
     ],
   );
 
@@ -526,6 +549,10 @@ export function useTacticsOrchestration(params: {
     handlePlayerDragEnd,
     handleGroupPlayerDragEnd,
     triggerTactic,
+    triggerStepTactic,
+    stepExecution,
+    executeNextStep,
+    exitStepMode,
 
     // ── ツールバーハンドラー ──
     handleWizardStepChange,
