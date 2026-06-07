@@ -84,7 +84,7 @@ export function TacticsSidebarSection() {
           onStartCreationFromTactic: tOrch.startTacticCreationFromCopy,
           onPreviewTacticCopyRange: tOrch.previewTacticCopyRange,
           onClearTacticCopyPreview: tOrch.clearTacticCopyPreview,
-          onDeleteTactic: (id) => tOrch.deleteTacticMutation.mutate(id),
+          onDeleteTactic: tOrch.handleDeleteTactic,
           stepExecution: tOrch.stepExecution,
           onExecuteNextStep: tOrch.executeNextStep,
           onExitStepMode: tOrch.exitStepMode,

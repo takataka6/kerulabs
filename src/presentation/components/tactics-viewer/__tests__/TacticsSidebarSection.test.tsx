@@ -75,6 +75,7 @@ function createMockExecutionContext() {
       hasCustomTactics: false,
       triggerTactic: vi.fn(),
       deleteTacticMutation: { mutate: vi.fn() },
+      handleDeleteTactic: vi.fn(),
       startTacticCreation: vi.fn(),
       cancelTacticCreation: vi.fn(),
       handleImportTactics: vi.fn(),
@@ -238,7 +239,7 @@ describe("TacticsSidebarSection", () => {
       );
     });
 
-    it("tactics.onDeleteTactic delegates to tOrch.deleteTacticMutation.mutate", () => {
+    it("tactics.onDeleteTactic delegates to tOrch.handleDeleteTactic", () => {
       render(<TacticsSidebarSection />);
 
       const tactics = capturedSidebarPanelProps.tactics as {
@@ -246,7 +247,7 @@ describe("TacticsSidebarSection", () => {
       };
       tactics.onDeleteTactic("tactic-2");
       expect(
-        mockExecutionContext.tOrch.deleteTacticMutation.mutate,
+        mockExecutionContext.tOrch.handleDeleteTactic,
       ).toHaveBeenCalledWith("tactic-2");
     });
 

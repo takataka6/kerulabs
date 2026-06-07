@@ -346,7 +346,7 @@
 | TacticsSidebarSection | callback delegation to SidebarPanel | phase.onResetState delegates to playModePhase.handleResetState |
 | TacticsSidebarSection | callback delegation to SidebarPanel | phase.onResetTactic delegates to tOrch.resetTactic |
 | TacticsSidebarSection | callback delegation to SidebarPanel | tactics.onTriggerTactic delegates to tOrch.triggerTactic |
-| TacticsSidebarSection | callback delegation to SidebarPanel | tactics.onDeleteTactic delegates to tOrch.deleteTacticMutation.mutate |
+| TacticsSidebarSection | callback delegation to SidebarPanel | tactics.onDeleteTactic delegates to tOrch.handleDeleteTactic |
 | TacticsSidebarSection | callback delegation to SidebarPanel | tactics.onStartCreation delegates to tOrch.startTacticCreation |
 | TacticsSidebarSection | callback delegation to SidebarPanel | tactics.onImportTactics がモーダルを開く |
 | TacticsSidebarSection | callback delegation to SidebarPanel | tactics.onExportTactics delegates to tOrch.handleExportTactics |
