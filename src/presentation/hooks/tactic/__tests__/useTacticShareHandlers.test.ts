@@ -116,6 +116,14 @@ describe("useTacticShareHandlers", () => {
       const { result } = renderShareHandlers([]);
       expect(result.current.hasCustomTactics).toBe(false);
     });
+
+    it("customTactics にはカスタム戦術だけが含まれる", () => {
+      const custom = createCustomTactic("Custom1");
+      const defaultTactic = createDefaultTactic("Default1");
+      const { result } = renderShareHandlers([custom, defaultTactic]);
+
+      expect(result.current.customTactics).toEqual([custom]);
+    });
   });
 
   // ── handleExportTactics ──
@@ -145,6 +153,19 @@ describe("useTacticShareHandlers", () => {
       });
 
       expect(mockDownloadJson).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("exportTacticsToJson", () => {
+    it("選択した戦術だけをJSON化する", () => {
+      const custom1 = createCustomTactic("Custom1");
+      const custom2 = createCustomTactic("Custom2");
+      const { result } = renderShareHandlers([custom1, custom2]);
+
+      const json = result.current.exportTacticsToJson([custom2]);
+
+      expect(json).toContain("Custom2");
+      expect(json).not.toContain("Custom1");
     });
   });
 

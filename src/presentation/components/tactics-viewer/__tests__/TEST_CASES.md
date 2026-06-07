@@ -349,7 +349,7 @@
 | TacticsSidebarSection | callback delegation to SidebarPanel | tactics.onDeleteTactic delegates to tOrch.handleDeleteTactic |
 | TacticsSidebarSection | callback delegation to SidebarPanel | tactics.onStartCreation delegates to tOrch.startTacticCreation |
 | TacticsSidebarSection | callback delegation to SidebarPanel | tactics.onImportTactics がモーダルを開く |
-| TacticsSidebarSection | callback delegation to SidebarPanel | tactics.onExportTactics delegates to tOrch.handleExportTactics |
+| TacticsSidebarSection | callback delegation to SidebarPanel | tactics.onExportTactics がエクスポートモーダルを開く |
 | TacticsSidebarSection | callback delegation to SidebarPanel | tactics.onTriggerStepTactic delegates to tOrch.triggerStepTactic |
 | TacticsSidebarSection | callback delegation to SidebarPanel | tactics.onExecuteNextStep delegates to tOrch.executeNextStep |
 | TacticsSidebarSection | callback delegation to SidebarPanel | tactics.onExitStepMode delegates to tOrch.exitStepMode |
