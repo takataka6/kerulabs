@@ -24,7 +24,7 @@ import {
 } from "./tacticCreationTypes";
 
 export interface UseTacticBuilderReturn {
-  buildTactic: (formation: Formation) => Tactic;
+  buildTactic: (formation: Formation, stepIndex?: number) => Tactic;
   getPreviewArrows: (formation: Formation) => ArrowPreview[];
   getPreviewBallPasses: (formation: Formation) => BallPassPreview[];
   getStepStartPositions: (
@@ -41,8 +41,50 @@ export interface UseTacticBuilderReturn {
 export function useTacticBuilder(
   creation: CreationState | null,
 ): UseTacticBuilderReturn {
+  const getStepStartPositions = useCallback(
+    (
+      stepIndex: number,
+      formation: Formation,
+    ): Record<number, { x: number; z: number }> => {
+      if (!creation) return {};
+
+      // フォーメーションから基準位置を構築
+      const positions: Record<number, { x: number; z: number }> = {};
+      formation.positions.forEach((pos, idx) => {
+        positions[idx] = { x: pos.position.x, z: pos.position.z };
+      });
+
+      // セットポジションを適用（セットプレー開始位置のオーバーライド）
+      if (creation.setPositions.size > 0) {
+        creation.setPositions.forEach((pos, role) => {
+          const playerIndex = formation.roleMap.get(role);
+          if (playerIndex !== undefined) {
+            positions[playerIndex] = { x: pos.x, z: pos.z };
+          }
+        });
+      }
+
+      if (stepIndex === 0) {
+        return positions;
+      }
+
+      // 前のステップの全移動を適用
+      for (let j = 0; j < stepIndex && j < creation.steps.length; j++) {
+        creation.steps[j].movements.forEach((mov, role) => {
+          const playerIndex = formation.roleMap.get(role);
+          if (playerIndex !== undefined) {
+            positions[playerIndex] = { x: mov.targetX, z: mov.targetZ };
+          }
+        });
+      }
+
+      return positions;
+    },
+    [creation],
+  );
+
   const buildTactic = useCallback(
-    (formation: Formation): Tactic => {
+    (formation: Formation, stepIndex?: number): Tactic => {
       if (!creation) {
         throw new Error("No creation state – call startCreation first");
       }
@@ -51,7 +93,161 @@ export function useTacticBuilder(
       const allBallPasses: BallPass[] = [];
       const stepBoundaries: number[] = [];
 
-      // ハイライトオフセット: ボール位置が存在する場合、セットポジション前にハイライト一時停止を追加
+      const isSingleStepPreview = stepIndex !== undefined;
+
+      if (isSingleStepPreview) {
+        const targetStepIndex = stepIndex!;
+        const startPositions = getStepStartPositions(
+          targetStepIndex,
+          formation,
+        );
+
+        const setPositionOffset = 0;
+
+        // 2. Resolve ball start position for this step
+        let ballStartPos: { x: number; z: number } | undefined = undefined;
+        if (targetStepIndex === 0) {
+          ballStartPos = creation.ballPosition ?? undefined;
+        } else {
+          let found = false;
+          for (let j = targetStepIndex - 1; j >= 0; j--) {
+            const step = creation.steps[j];
+            if (step.ballPasses.length > 0) {
+              const lastPass = step.ballPasses[step.ballPasses.length - 1];
+              if (lastPass.endX !== undefined && lastPass.endZ !== undefined) {
+                ballStartPos = { x: lastPass.endX, z: lastPass.endZ };
+                found = true;
+                break;
+              }
+            }
+          }
+          if (!found) {
+            if (creation.ballTrajectory) {
+              ballStartPos = {
+                x: creation.ballTrajectory.endX,
+                z: creation.ballTrajectory.endZ,
+              };
+            } else if (creation.ballPosition) {
+              ballStartPos = creation.ballPosition;
+            }
+          }
+        }
+
+        // 3. Add setup ball trajectory: only if targetStepIndex is 0 and setup ball trajectory exists
+        const hasBall =
+          targetStepIndex === 0 &&
+          !!(creation.ballPosition && creation.ballTrajectory);
+        if (hasBall) {
+          allBallPasses.push(
+            BallPass.create({
+              startRole: "",
+              endRole: "",
+              delay: setPositionOffset,
+              color: creation.ballTrajectory!.color,
+              endX: creation.ballTrajectory!.endX,
+              endZ: creation.ballTrajectory!.endZ,
+              startX: creation.ballPosition!.x,
+              startZ: creation.ballPosition!.z,
+              trajectoryType: creation.ballTrajectory!.trajectoryType,
+            }),
+          );
+        }
+
+        // 4. Add targeted step movements and ball passes
+        const step = creation.steps[targetStepIndex];
+        if (step) {
+          // Player movements
+          step.movements.forEach((mov, role) => {
+            const individualDelay =
+              creation.movementDelays[step.id]?.[role] ?? 0;
+            allMovements.push(
+              Movement.create(
+                role,
+                mov.targetX,
+                mov.targetZ,
+                setPositionOffset + individualDelay,
+                mov.color,
+              ),
+            );
+          });
+
+          // Ball passes
+          for (const bp of step.ballPasses) {
+            let startX = bp.startX;
+            let startZ = bp.startZ;
+            if (
+              bp.startRole &&
+              (startX === undefined || startZ === undefined)
+            ) {
+              const startPlayerIndex = formation.roleMap.get(bp.startRole);
+              if (startPlayerIndex !== undefined) {
+                const playerStartPos = startPositions[startPlayerIndex];
+                if (playerStartPos) {
+                  startX = playerStartPos.x;
+                  startZ = playerStartPos.z;
+                }
+              }
+            }
+
+            let endX = bp.endX;
+            let endZ = bp.endZ;
+            if (bp.endRole && (endX === undefined || endZ === undefined)) {
+              const endPlayerIndex = formation.roleMap.get(bp.endRole);
+              if (endPlayerIndex !== undefined) {
+                const playerEndPos = startPositions[endPlayerIndex];
+                if (playerEndPos) {
+                  endX = playerEndPos.x;
+                  endZ = playerEndPos.z;
+                }
+              }
+            }
+
+            allBallPasses.push(
+              BallPass.create({
+                startRole: bp.startRole,
+                endRole: bp.endRole,
+                delay: setPositionOffset,
+                color: bp.color,
+                endX,
+                endZ,
+                startX,
+                startZ,
+                trajectoryType: bp.trajectoryType,
+              }),
+            );
+          }
+        }
+
+        const movementsMap = new Map<string, Movement[]>();
+        movementsMap.set(
+          creation.formationId || formation.id.value,
+          allMovements,
+        );
+
+        const ballPassesMap = new Map<string, BallPass[]>();
+        ballPassesMap.set(
+          creation.formationId || formation.id.value,
+          allBallPasses,
+        );
+
+        const phaseType = phaseKeyToPhaseType(creation.gamePhase);
+        const tacticName: Record<string, string> = {
+          ja: (creation.nameJa || "") + " (Preview)",
+          en: (creation.nameEn || "") + " (Preview)",
+        };
+
+        return Tactic.create({
+          name: tacticName,
+          icon: creation.icon,
+          phase: Phase.fromString(phaseType),
+          movements: movementsMap,
+          ballPasses: ballPassesMap,
+          ballPosition: ballStartPos,
+          stepBoundaries: undefined,
+        });
+      }
+
+      // --- Original Tactic Construction ---
       const hasBall = !!(creation.ballPosition && creation.ballTrajectory);
       const highlightOffset = hasBall ? BALL_HIGHLIGHT_PAUSE_MS : 0;
 
@@ -183,7 +379,7 @@ export function useTacticBuilder(
         stepBoundaries: stepBoundaries.length > 1 ? stepBoundaries : undefined,
       });
     },
-    [creation],
+    [creation, getStepStartPositions],
   );
 
   // ----- プレビューヘルパー ----------------------------------------------------
@@ -280,48 +476,6 @@ export function useTacticBuilder(
       }
 
       return result;
-    },
-    [creation],
-  );
-
-  const getStepStartPositions = useCallback(
-    (
-      stepIndex: number,
-      formation: Formation,
-    ): Record<number, { x: number; z: number }> => {
-      if (!creation) return {};
-
-      // フォーメーションから基準位置を構築
-      const positions: Record<number, { x: number; z: number }> = {};
-      formation.positions.forEach((pos, idx) => {
-        positions[idx] = { x: pos.position.x, z: pos.position.z };
-      });
-
-      // セットポジションを適用（セットプレー開始位置のオーバーライド）
-      if (creation.setPositions.size > 0) {
-        creation.setPositions.forEach((pos, role) => {
-          const playerIndex = formation.roleMap.get(role);
-          if (playerIndex !== undefined) {
-            positions[playerIndex] = { x: pos.x, z: pos.z };
-          }
-        });
-      }
-
-      if (stepIndex === 0) {
-        return positions;
-      }
-
-      // 前のステップの全移動を適用
-      for (let j = 0; j < stepIndex && j < creation.steps.length; j++) {
-        creation.steps[j].movements.forEach((mov, role) => {
-          const playerIndex = formation.roleMap.get(role);
-          if (playerIndex !== undefined) {
-            positions[playerIndex] = { x: mov.targetX, z: mov.targetZ };
-          }
-        });
-      }
-
-      return positions;
     },
     [creation],
   );

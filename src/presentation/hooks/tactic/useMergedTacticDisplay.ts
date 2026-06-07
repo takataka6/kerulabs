@@ -82,22 +82,29 @@ export function useMergedTacticDisplay(
     const result: Record<number, { x: number; z: number }> = {
       ...executionPlayerPositions,
     };
-    if (
-      tacticCreation.creation &&
-      currentFormation &&
-      !isExecuting &&
-      !activeTacticId
-    ) {
+    const creation = tacticCreation.creation;
+    const isCreating = !!creation;
+    const shouldMerge = isCreating
+      ? !isExecuting
+      : !isExecuting && !activeTacticId;
+
+    if (creation && currentFormation && !isExecuting && !activeTacticId) {
+      const stepIndex =
+        creation.wizardStep === "confirm"
+          ? creation.steps.length
+          : creation.currentStepIndex;
       const stepStart = tacticCreation.getStepStartPositions(
-        tacticCreation.creation.currentStepIndex,
+        stepIndex,
         currentFormation,
       );
       for (const [key, pos] of Object.entries(stepStart)) {
         result[Number(key)] = pos;
       }
     }
-    for (const [key, pos] of Object.entries(manualPlayerPositions)) {
-      result[Number(key)] = pos;
+    if (shouldMerge) {
+      for (const [key, pos] of Object.entries(manualPlayerPositions)) {
+        result[Number(key)] = pos;
+      }
     }
     return result;
   }, [
@@ -112,9 +119,9 @@ export function useMergedTacticDisplay(
   // ── 作成矢印 ──
   const creationArrows = useMemo(() => {
     if (!tacticCreation.creation || !currentFormation) return [];
-    if (isExecuting || activeTacticId) return [];
+    if (isExecuting) return [];
     return tacticCreation.getPreviewArrows(currentFormation);
-  }, [tacticCreation, currentFormation, isExecuting, activeTacticId]);
+  }, [tacticCreation, currentFormation, isExecuting]);
 
   const mergedArrows = useMemo(() => {
     return [...executionArrows, ...creationArrows];
@@ -142,9 +149,9 @@ export function useMergedTacticDisplay(
 
   const creationBallPassPreviews = useMemo(() => {
     if (!tacticCreation.creation || !currentFormation) return [];
-    if (isExecuting || activeTacticId) return [];
+    if (isExecuting) return [];
     return tacticCreation.getPreviewBallPasses(currentFormation);
-  }, [tacticCreation, currentFormation, isExecuting, activeTacticId]);
+  }, [tacticCreation, currentFormation, isExecuting]);
 
   const pendingBallPassPreview = useMemo(() => {
     if (!ballPassStartPos || !ballPassPendingEndPos) return [];
