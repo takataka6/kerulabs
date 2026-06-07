@@ -13,6 +13,7 @@ import { useLanguage } from "@presentation/contexts/LanguageContext";
 import type { TrajectoryType } from "@domain/entities/BallPass";
 import { SidebarPanel } from "./SidebarPanel";
 import { TacticImportModal } from "./TacticImportModal";
+import { TacticExportModal } from "./TacticExportModal";
 
 export function TacticsSidebarSection() {
   const { ui } = useTacticsUI();
@@ -25,6 +26,7 @@ export function TacticsSidebarSection() {
   } = useTacticsExecution();
   const { t, tDynamic, language } = useLanguage();
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   return (
     <>
@@ -84,13 +86,13 @@ export function TacticsSidebarSection() {
           onStartCreationFromTactic: tOrch.startTacticCreationFromCopy,
           onPreviewTacticCopyRange: tOrch.previewTacticCopyRange,
           onClearTacticCopyPreview: tOrch.clearTacticCopyPreview,
-          onDeleteTactic: (id) => tOrch.deleteTacticMutation.mutate(id),
+          onDeleteTactic: tOrch.handleDeleteTactic,
           stepExecution: tOrch.stepExecution,
           onExecuteNextStep: tOrch.executeNextStep,
           onExitStepMode: tOrch.exitStepMode,
           onStartCreation: tOrch.startTacticCreation,
           onImportTactics: () => setIsImportModalOpen(true),
-          onExportTactics: tOrch.handleExportTactics,
+          onExportTactics: () => setIsExportModalOpen(true),
         }}
         creation={
           tOrch.tacticCreation.creation
@@ -164,6 +166,16 @@ export function TacticsSidebarSection() {
           onClose={() => setIsImportModalOpen(false)}
           t={t}
           gameMode={playModePhase.gameMode}
+        />
+      )}
+      {isExportModalOpen && (
+        <TacticExportModal
+          customTactics={tOrch.customTactics}
+          language={language}
+          t={t}
+          onClose={() => setIsExportModalOpen(false)}
+          buildExportJson={tOrch.exportTacticsToJson}
+          downloadExportJson={tOrch.downloadExportJson}
         />
       )}
     </>

@@ -73,6 +73,21 @@ describe("Tactic", () => {
       expect(tactic.id.value).toBe("default-1");
       expect(tactic.isCustom).toBe(false);
     });
+
+    it("デフォルト戦術でもステップ実行用の境界を保持できる", () => {
+      const movements = createMovements();
+      const tactic = Tactic.createDefault(new TacticId("default-step"), {
+        name: { ja: "ステップ戦術", en: "Step Tactic" },
+        icon: "🎯",
+        phase: Phase.attack(),
+        movements,
+        stepBoundaries: [0, 100],
+      });
+
+      expect(tactic.stepBoundaries).toEqual([0, 100]);
+      expect(tactic.supportsStepExecution).toBe(true);
+      expect(tactic.totalSteps).toBe(2);
+    });
   });
 
   describe("getDisplayName", () => {

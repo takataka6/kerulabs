@@ -12,6 +12,7 @@ export const DEFAULT_TACTICS = [
     name: { ja: "左オーバーラップ", en: "Left Overlap" },
     icon: "↖️",
     phase: Phase.attack(),
+    stepBoundaries: [0, 600],
     movements: new Map([
       [
         "4-3-3",
@@ -63,6 +64,7 @@ export const DEFAULT_TACTICS = [
     name: { ja: "右オーバーラップ", en: "Right Overlap" },
     icon: "↗️",
     phase: Phase.attack(),
+    stepBoundaries: [0, 600],
     movements: new Map([
       [
         "4-3-3",

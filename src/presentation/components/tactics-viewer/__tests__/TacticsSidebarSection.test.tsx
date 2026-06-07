@@ -36,6 +36,9 @@ vi.mock("../SidebarPanel", () => ({
 vi.mock("../TacticImportModal", () => ({
   TacticImportModal: () => <div data-testid="tactic-import-modal" />,
 }));
+vi.mock("../TacticExportModal", () => ({
+  TacticExportModal: () => <div data-testid="tactic-export-modal" />,
+}));
 
 function createMockUIContext() {
   return {
@@ -75,11 +78,15 @@ function createMockExecutionContext() {
       hasCustomTactics: false,
       triggerTactic: vi.fn(),
       deleteTacticMutation: { mutate: vi.fn() },
+      handleDeleteTactic: vi.fn(),
       startTacticCreation: vi.fn(),
       cancelTacticCreation: vi.fn(),
       handleImportTactics: vi.fn(),
       handleImportFromJson: vi.fn(),
       handleExportTactics: vi.fn(),
+      customTactics: [],
+      exportTacticsToJson: vi.fn(),
+      downloadExportJson: vi.fn(),
       handleWizardStepChange: vi.fn(),
       handleSwitchStep: vi.fn(),
       handleAddStep: vi.fn(),
@@ -238,7 +245,7 @@ describe("TacticsSidebarSection", () => {
       );
     });
 
-    it("tactics.onDeleteTactic delegates to tOrch.deleteTacticMutation.mutate", () => {
+    it("tactics.onDeleteTactic delegates to tOrch.handleDeleteTactic", () => {
       render(<TacticsSidebarSection />);
 
       const tactics = capturedSidebarPanelProps.tactics as {
@@ -246,7 +253,7 @@ describe("TacticsSidebarSection", () => {
       };
       tactics.onDeleteTactic("tactic-2");
       expect(
-        mockExecutionContext.tOrch.deleteTacticMutation.mutate,
+        mockExecutionContext.tOrch.handleDeleteTactic,
       ).toHaveBeenCalledWith("tactic-2");
     });
 
@@ -273,14 +280,17 @@ describe("TacticsSidebarSection", () => {
       expect(screen.getByTestId("tactic-import-modal")).toBeTruthy();
     });
 
-    it("tactics.onExportTactics delegates to tOrch.handleExportTactics", () => {
-      render(<TacticsSidebarSection />);
+    it("tactics.onExportTactics がモーダルを開く", () => {
+      const { queryByTestId } = render(<TacticsSidebarSection />);
+      expect(queryByTestId("tactic-export-modal")).toBeNull();
 
       const tactics = capturedSidebarPanelProps.tactics as {
         onExportTactics: () => void;
       };
-      tactics.onExportTactics();
-      expect(mockExecutionContext.tOrch.handleExportTactics).toHaveBeenCalled();
+      act(() => {
+        tactics.onExportTactics();
+      });
+      expect(screen.getByTestId("tactic-export-modal")).toBeTruthy();
     });
 
     it("capture.onSavePng delegates to handleSavePng", () => {

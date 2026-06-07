@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { SAMPLE_TEAM_A, SAMPLE_TEAM_B } from "../sampleData";
+import { DEFAULT_TACTICS } from "../defaultTactics";
 import { getFormationNameById } from "@shared/constants/formations";
 
 describe("sampleData", () => {
@@ -24,5 +25,15 @@ describe("sampleData", () => {
     expect(SAMPLE_TEAM_B.availableFormations).not.toContain("4-4-2");
     expect(getFormationNameById("4-4-2-flat")).toBe("4-4-2 Flat");
     expect(SAMPLE_TEAM_B.defaultFormation).toBe("4-4-2-flat");
+  });
+
+  it("default tactics include step-executable samples", () => {
+    const stepTacticIds = DEFAULT_TACTICS.filter(
+      (tactic) => tactic.supportsStepExecution,
+    ).map((tactic) => tactic.id.value);
+
+    expect(stepTacticIds).toEqual(
+      expect.arrayContaining(["LEFT_SB_OVERLAP", "RIGHT_SB_OVERLAP"]),
+    );
   });
 });

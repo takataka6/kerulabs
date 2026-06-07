@@ -19,19 +19,34 @@ export function useTacticShareHandlers(params: {
   t: (key: TranslationKey) => string;
 }) {
   const { tactics, saveTacticMutation, showToast, t } = params;
+  const customTactics = useMemo(
+    () => (tactics || []).filter((t) => t.isCustom),
+    [tactics],
+  );
 
   const hasCustomTactics = useMemo(() => {
-    return (tactics || []).some((t) => t.isCustom);
-  }, [tactics]);
+    return customTactics.length > 0;
+  }, [customTactics]);
+
+  const exportTacticsToJson = useCallback((targetTactics: Tactic[]) => {
+    if (targetTactics.length === 0) return "";
+    return TacticShareService.export(targetTactics);
+  }, []);
+
+  const downloadExportJson = useCallback(
+    (targetTactics: Tactic[]) => {
+      if (targetTactics.length === 0) return;
+      const json = exportTacticsToJson(targetTactics);
+      const date = getDateStamp();
+      const { fileService } = getContainer();
+      fileService.downloadJson(json, `tactics-${date}.json`);
+    },
+    [exportTacticsToJson],
+  );
 
   const handleExportTactics = useCallback(() => {
-    const customTactics = (tactics || []).filter((t) => t.isCustom);
-    if (customTactics.length === 0) return;
-    const json = TacticShareService.export(customTactics);
-    const date = getDateStamp();
-    const { fileService } = getContainer();
-    fileService.downloadJson(json, `tactics-${date}.json`);
-  }, [tactics]);
+    downloadExportJson(customTactics);
+  }, [customTactics, downloadExportJson]);
 
   const handleImportTactics = useCallback(async () => {
     try {
@@ -75,8 +90,11 @@ export function useTacticShareHandlers(params: {
   );
 
   return {
+    customTactics,
     hasCustomTactics,
     handleExportTactics,
+    exportTacticsToJson,
+    downloadExportJson,
     handleImportTactics,
     handleImportFromJson,
   };

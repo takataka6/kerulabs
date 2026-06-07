@@ -457,8 +457,11 @@ export function useTacticsOrchestration(params: {
   ]);
 
   const {
+    customTactics,
     hasCustomTactics,
     handleExportTactics,
+    exportTacticsToJson,
+    downloadExportJson,
     handleImportTactics,
     handleImportFromJson,
   } = useTacticShareHandlers({
@@ -712,7 +715,10 @@ export function useTacticsOrchestration(params: {
     handleResetPreview,
 
     // ── フィルタ済みタクティクス ──
+    customTactics,
     hasCustomTactics,
+    exportTacticsToJson,
+    downloadExportJson,
     tacticsForCurrentFormation,
   };
 }
