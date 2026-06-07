@@ -191,10 +191,7 @@ export class Tactic {
    * @param input - 戦術作成に必要な情報
    * @returns 新しいTacticインスタンス
    */
-  static createDefault(
-    id: TacticId,
-    input: Omit<CreateTacticInput, "ballPosition">,
-  ): Tactic {
+  static createDefault(id: TacticId, input: CreateTacticInput): Tactic {
     const now = new Date();
     return new Tactic({
       id,
@@ -206,6 +203,8 @@ export class Tactic {
       createdAt: now,
       updatedAt: now,
       ballPasses: input.ballPasses,
+      ballPosition: input.ballPosition,
+      stepBoundaries: input.stepBoundaries,
     });
   }
 
