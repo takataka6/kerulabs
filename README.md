@@ -1,4 +1,4 @@
-# KeruLabs
+# KeruLabs（ケルラブズ）
 
 [![CI](https://github.com/takataka6/kerulabs/actions/workflows/ci.yml/badge.svg)](https://github.com/takataka6/kerulabs/actions/workflows/ci.yml)
 [![Release](https://github.com/takataka6/kerulabs/actions/workflows/release.yml/badge.svg)](https://github.com/takataka6/kerulabs/actions/workflows/release.yml)
