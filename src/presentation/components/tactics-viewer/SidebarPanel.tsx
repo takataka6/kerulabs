@@ -379,6 +379,64 @@ function TacticDuplicateModal({
   );
 }
 
+function TacticCreationEntryModal({
+  t,
+  onClose,
+  onCreateNew,
+  onCreateFromExisting,
+}: {
+  t: (key: TranslationKey) => string;
+  onClose: () => void;
+  onCreateNew: () => void;
+  onCreateFromExisting: () => void;
+}) {
+  return (
+    <AccessibleModal
+      isOpen={true}
+      onClose={onClose}
+      ariaLabel={t("tactics.creation.entry.title")}
+      overlayClassName="fixed inset-0 bg-black/20 backdrop-blur-[2px] flex items-center justify-center z-50 p-4 pointer-events-none"
+      className="w-full max-w-sm rounded-2xl border border-slate-700/60 bg-slate-950/40 p-4 text-slate-100 shadow-2xl ring-1 ring-white/10 backdrop-blur-md pointer-events-auto"
+    >
+      <div className="space-y-4">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-emerald-300/80">
+            {t("tactics.creation.create")}
+          </p>
+          <h2 className="mt-1 text-base font-semibold text-white">
+            {t("tactics.creation.entry.title")}
+          </h2>
+          <p className="mt-2 text-sm text-slate-400">
+            {t("tactics.creation.entry.description")}
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <button
+            onClick={onCreateNew}
+            className="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 px-3 py-3 text-left text-sm font-semibold text-white transition-all duration-200 hover:from-emerald-500 hover:to-emerald-400"
+          >
+            {t("tactics.creation.entry.new")}
+          </button>
+          <button
+            onClick={onCreateFromExisting}
+            className="w-full rounded-xl border border-slate-700/50 bg-white/[0.03] px-3 py-3 text-left text-sm font-medium text-slate-200 transition-all duration-200 hover:bg-white/[0.06]"
+          >
+            {t("tactics.creation.entry.fromExisting")}
+          </button>
+        </div>
+
+        <button
+          onClick={onClose}
+          className="w-full rounded-xl border border-slate-700/50 bg-white/[0.03] px-3 py-2 text-sm font-medium text-slate-300 transition-all duration-200 hover:bg-white/[0.06]"
+        >
+          {t("tactics.creation.cancel")}
+        </button>
+      </div>
+    </AccessibleModal>
+  );
+}
+
 // ── メインコンポーネント ────────────────────────────────
 
 /**
@@ -401,12 +459,24 @@ export const SidebarPanel = memo(function SidebarPanel(
   const onExecuteNextStep = tactics.onExecuteNextStep ?? (() => {});
   const onExitStepMode = tactics.onExitStepMode ?? (() => {});
   const [duplicateTarget, setDuplicateTarget] = useState<Tactic | null>(null);
+  const [creationEntryOpen, setCreationEntryOpen] = useState(false);
+  const [sourceSelectionMode, setSourceSelectionMode] = useState(false);
 
   const playbackSpeed = useSyncExternalStore(
     subscribePlaybackSpeed,
     getPlaybackSpeed,
   );
   const showCreationMode = tactics.isCreating && creation?.creation != null;
+
+  const handleSelectSourceTactic = (tactic: Tactic) => {
+    const totalSteps = getVisibleTacticStepCount(tactic);
+    if (totalSteps <= 1) {
+      onStartCreationFromTactic(tactic.id.value, 1);
+      setSourceSelectionMode(false);
+      return;
+    }
+    setDuplicateTarget(tactic);
+  };
 
   return (
     <aside
@@ -659,6 +729,26 @@ export const SidebarPanel = memo(function SidebarPanel(
                     </button>
                   ))}
                 </div>
+                {sourceSelectionMode && (
+                  <div className="mb-2 rounded-lg border border-emerald-700/40 bg-gradient-to-r from-emerald-900/30 to-emerald-800/20 p-2.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">
+                          {t("tactics.creation.entry.fromExisting")}
+                        </p>
+                        <p className="mt-1 text-xs text-emerald-100/90">
+                          {t("tactics.creation.entry.selectSource")}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => setSourceSelectionMode(false)}
+                        className="rounded-md bg-slate-800/70 px-2 py-1 text-[11px] text-slate-300 transition hover:bg-slate-700"
+                      >
+                        {t("tactics.creation.cancel")}
+                      </button>
+                    </div>
+                  </div>
+                )}
                 {tactics.tacticsLoading ? (
                   <div className="text-slate-400 text-sm text-center py-12 flex flex-col items-center gap-3">
                     <div className="w-10 h-10 border-3 border-slate-700 border-t-blue-500 rounded-full animate-spin"></div>
@@ -688,9 +778,13 @@ export const SidebarPanel = memo(function SidebarPanel(
                         className="flex items-center gap-1"
                       >
                         <button
-                          onClick={() =>
-                            tactics.onTriggerTactic(tactic.id.value)
-                          }
+                          onClick={() => {
+                            if (sourceSelectionMode) {
+                              handleSelectSourceTactic(tactic);
+                              return;
+                            }
+                            tactics.onTriggerTactic(tactic.id.value);
+                          }}
                           disabled={
                             tactics.isExecuting || stepExecution.isStepMode
                           }
@@ -737,36 +831,6 @@ export const SidebarPanel = memo(function SidebarPanel(
                             </svg>
                           </button>
                         )}
-                        <button
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            const totalSteps =
-                              getVisibleTacticStepCount(tactic);
-                            if (totalSteps <= 1) {
-                              onStartCreationFromTactic(tactic.id.value, 1);
-                              return;
-                            }
-                            setDuplicateTarget(tactic);
-                          }}
-                          disabled={
-                            tactics.isExecuting || stepExecution.isStepMode
-                          }
-                          className="shrink-0 rounded-lg p-1.5 text-slate-500 transition-all duration-200 hover:bg-emerald-500/10 hover:text-emerald-300 disabled:cursor-not-allowed disabled:opacity-40"
-                          title={t("tactics.duplicate.start")}
-                          aria-label={t("tactics.duplicate.start")}
-                          data-testid="tactic-duplicate-button"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-3.5 w-3.5"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                            aria-hidden="true"
-                          >
-                            <path d="M4 4a2 2 0 012-2h6a2 2 0 012 2v1H8a3 3 0 00-3 3v8H4a2 2 0 01-2-2V4z" />
-                            <path d="M8 7a2 2 0 012-2h6a2 2 0 012 2v9a2 2 0 01-2 2h-6a2 2 0 01-2-2V7z" />
-                          </svg>
-                        </button>
                         {tactic.isCustom && (
                           <button
                             onClick={(e) => {
@@ -803,7 +867,7 @@ export const SidebarPanel = memo(function SidebarPanel(
                 {/* 戦術作成/インポート/エクスポート */}
                 <div className="mt-3 pt-3 border-t border-slate-800/40 space-y-1.5">
                   <button
-                    onClick={tactics.onStartCreation}
+                    onClick={() => setCreationEntryOpen(true)}
                     disabled={tactics.isCreating || tactics.isExecuting}
                     className={`w-full py-1.5 px-2.5 rounded-xl text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 ${
                       tactics.isCreating
@@ -878,12 +942,28 @@ export const SidebarPanel = memo(function SidebarPanel(
           onClose={() => setDuplicateTarget(null)}
           onConfirm={(copyUntilStep) => {
             onStartCreationFromTactic(duplicateTarget.id.value, copyUntilStep);
+            setSourceSelectionMode(false);
             setDuplicateTarget(null);
           }}
           onPreview={(copyUntilStep) =>
             onPreviewTacticCopyRange(duplicateTarget.id.value, copyUntilStep)
           }
           onClearPreview={onClearTacticCopyPreview}
+        />
+      )}
+      {creationEntryOpen && (
+        <TacticCreationEntryModal
+          t={t}
+          onClose={() => setCreationEntryOpen(false)}
+          onCreateNew={() => {
+            setCreationEntryOpen(false);
+            setSourceSelectionMode(false);
+            tactics.onStartCreation();
+          }}
+          onCreateFromExisting={() => {
+            setCreationEntryOpen(false);
+            setSourceSelectionMode(true);
+          }}
         />
       )}
     </aside>
