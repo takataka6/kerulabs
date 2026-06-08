@@ -81,20 +81,20 @@ test.describe("戦術複製 E2E", () => {
     ]);
 
     // Wait for the seeded tactic name to appear in the list (after team selection + DB seed).
-    // Scope to a container that contains the tactic name text, then find the duplicate button by its stable testid.
-    // This is robust against nested spans in the row rendering.
     await page
       .getByText("複製元3ステップ")
       .waitFor({ state: "visible", timeout: 30000 });
 
-    // Target the exact per-tactic row div (class="flex items-center gap-1") that contains the unique name.
-    // This scopes tightly to the item containing both the name and its duplicate button,
-    // avoiding broad ancestor matches that include multiple buttons from the whole list.
-    await page
-      .locator("div.flex.items-center.gap-1")
-      .filter({ hasText: "複製元3ステップ" })
-      .getByTestId("tactic-duplicate-button")
-      .click();
+    // Open the unified creation entry and switch to "create from existing" mode.
+    await page.getByRole("button", { name: "戦術作成" }).click();
+    await expect(page.getByText("作成方法を選択")).toBeVisible();
+    await page.getByRole("button", { name: "既存から作成" }).click();
+    await expect(
+      page.getByText("コピー元にする戦術を選択してください。"),
+    ).toBeVisible();
+
+    // Select the source tactic from the list, then continue through the existing step-range dialog.
+    await page.getByRole("button", { name: /複製元3ステップ/ }).click();
     await expect(page.getByText("戦術をコピー")).toBeVisible();
 
     await page.getByRole("button", { name: "1~2" }).click();
