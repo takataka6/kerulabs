@@ -13,6 +13,7 @@ import type { TrajectoryType } from "@domain/entities/BallPass";
 import type { Tactic } from "@domain/entities/Tactic";
 import type { Formation } from "@domain/entities/Formation";
 import type { PhaseKey } from "@shared/constants/phases";
+import { PHASE_CONFIG } from "@shared/constants/phases";
 import {
   createEmptyStep,
   type CreationState,
@@ -138,6 +139,11 @@ export interface UseTacticCreationReturn {
 export function useTacticCreation(): UseTacticCreationReturn {
   const [creation, setCreation] = useState<CreationState | null>(null);
 
+  const getPhaseIcon = useCallback(
+    (phase: PhaseKey) => PHASE_CONFIG[phase].icon,
+    [],
+  );
+
   // ----- 子フック合成 ---------------------------------------------------------
 
   const { setPlayerTarget, removePlayerTarget, resetCurrentStep } =
@@ -164,7 +170,7 @@ export function useTacticCreation(): UseTacticCreationReturn {
       setCreation({
         nameJa: "",
         nameEn: "",
-        icon: "\u26BD",
+        icon: getPhaseIcon(gamePhase),
         gamePhase,
         formationId: formationId ?? formationName,
         formationName,
@@ -178,7 +184,7 @@ export function useTacticCreation(): UseTacticCreationReturn {
         setPositions: new Map(),
       });
     },
-    [],
+    [getPhaseIcon],
   );
 
   const cancelCreation = useCallback(() => {
@@ -242,9 +248,23 @@ export function useTacticCreation(): UseTacticCreationReturn {
     setCreation((prev) => (prev ? { ...prev, icon } : prev));
   }, []);
 
-  const setGamePhase = useCallback((phase: PhaseKey) => {
-    setCreation((prev) => (prev ? { ...prev, gamePhase: phase } : prev));
-  }, []);
+  const setGamePhase = useCallback(
+    (phase: PhaseKey) => {
+      setCreation((prev) => {
+        if (!prev) return prev;
+
+        const currentPhaseIcon = getPhaseIcon(prev.gamePhase);
+        const nextPhaseIcon = getPhaseIcon(phase);
+
+        return {
+          ...prev,
+          gamePhase: phase,
+          icon: prev.icon === currentPhaseIcon ? nextPhaseIcon : prev.icon,
+        };
+      });
+    },
+    [getPhaseIcon],
+  );
 
   // ----- ウィザードステップ ---------------------------------------------------
 

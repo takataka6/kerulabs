@@ -144,6 +144,16 @@ describe("useTacticCreation", () => {
     expect(c!.setPositions.size).toBe(0);
   });
 
+  it("startCreation: ゲームフェーズのアイコンをデフォルトにする", () => {
+    const { result } = renderHook(() => useTacticCreation());
+
+    act(() => {
+      result.current.startCreation("4-3-3", "defense");
+    });
+
+    expect(result.current.creation!.icon).toBe("\uD83D\uDEE1\uFE0F");
+  });
+
   it("cancelCreation: creation を null に戻す", () => {
     const { result } = renderHook(() => useTacticCreation());
 
@@ -391,6 +401,18 @@ describe("useTacticCreation", () => {
 
     act(() => result.current.setGamePhase("defense"));
     expect(result.current.creation!.gamePhase).toBe("defense");
+    expect(result.current.creation!.icon).toBe("\uD83D\uDEE1\uFE0F");
+  });
+
+  it("setGamePhase: カスタムアイコン選択後は上書きしない", () => {
+    const { result } = renderHook(() => useTacticCreation());
+    act(() => result.current.startCreation("4-3-3", "attack"));
+    act(() => result.current.setIcon("\uD83D\uDD25"));
+
+    act(() => result.current.setGamePhase("defense"));
+
+    expect(result.current.creation!.gamePhase).toBe("defense");
+    expect(result.current.creation!.icon).toBe("\uD83D\uDD25");
   });
 
   // ---------------------------------------------------------------------------
