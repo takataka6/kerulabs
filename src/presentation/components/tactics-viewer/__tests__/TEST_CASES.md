@@ -170,7 +170,9 @@
 | SidebarPanel | phase callbacks | clicking a set play type button calls onSetPlayTypeChange and onResetTactic |
 | SidebarPanel | tactics callbacks | clicking a tactic button calls onTriggerTactic |
 | SidebarPanel | tactics callbacks | clicking delete button on custom tactic calls onDeleteTactic |
-| SidebarPanel | tactics callbacks | clicking create button calls onStartCreation |
+| SidebarPanel | tactics callbacks | clicking create button opens the creation entry modal and selecting new calls onStartCreation |
+| SidebarPanel | tactics callbacks | selecting create from existing shows source selection guidance |
+| SidebarPanel | tactics callbacks | source selection mode uses tactic click to call onStartCreationFromTactic |
 | SidebarPanel | tactics callbacks | clicking import button calls onImportTactics |
 | SidebarPanel | tactics callbacks | clicking export button calls onExportTactics when custom tactics exist |
 | SidebarPanel | capture mode callbacks | clicking save PNG button calls onSavePng |

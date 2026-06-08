@@ -170,6 +170,7 @@ function renderSidebarPanel(
     isCreating: false,
     hasCustomTactics: false,
     onTriggerTactic: vi.fn(),
+    onStartCreationFromTactic: vi.fn(),
     onDeleteTactic: vi.fn(),
     onStartCreation: vi.fn(),
     onImportTactics: vi.fn(),
@@ -402,11 +403,52 @@ describe("SidebarPanel", () => {
       );
     });
 
-    it("clicking create button calls onStartCreation", () => {
+    it("clicking create button opens entry modal and selecting new calls onStartCreation", () => {
       const { props } = renderSidebarPanel();
 
       fireEvent.click(screen.getByText("tactics.creation.create"));
+      expect(
+        screen.getByText("tactics.creation.entry.title"),
+      ).toBeInTheDocument();
+      fireEvent.click(screen.getByText("tactics.creation.entry.new"));
       expect(props.tactics.onStartCreation).toHaveBeenCalled();
+    });
+
+    it("selecting create from existing shows source selection guidance", () => {
+      renderSidebarPanel();
+
+      fireEvent.click(screen.getByText("tactics.creation.create"));
+      fireEvent.click(screen.getByText("tactics.creation.entry.fromExisting"));
+
+      expect(
+        screen.getByText("tactics.creation.entry.selectSource"),
+      ).toBeInTheDocument();
+    });
+
+    it("source selection mode uses tactic click to call onStartCreationFromTactic", () => {
+      const tacticsList = [
+        {
+          id: { value: "tactic-1" },
+          icon: "T",
+          isCustom: false,
+          supportsStepExecution: false,
+          hasSetupStepExecution: false,
+          totalSteps: 1,
+          getDisplayName: () => "Test Tactic",
+        },
+      ];
+      const { props } = renderSidebarPanel({
+        tactics: { tacticsForCurrentFormation: tacticsList as never[] },
+      });
+
+      fireEvent.click(screen.getByText("tactics.creation.create"));
+      fireEvent.click(screen.getByText("tactics.creation.entry.fromExisting"));
+      fireEvent.click(screen.getByText("tactics.name.tactic-1"));
+
+      expect(props.tactics.onStartCreationFromTactic).toHaveBeenCalledWith(
+        "tactic-1",
+        1,
+      );
     });
 
     it("clicking import button calls onImportTactics", () => {
