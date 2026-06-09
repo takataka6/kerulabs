@@ -101,6 +101,8 @@ export interface SceneProps {
   pitchConfig?: PitchConfig;
   /** フィールド固定（カメラ操作無効化） */
   fieldLocked?: boolean;
+  /** フィールド右脇の固定トグル */
+  onToggleFieldLock?: () => void;
   /** タッチライン水平固定（水平回転のみロック） */
   touchlineLocked?: boolean;
   /** シーン背景設定 */

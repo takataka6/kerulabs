@@ -84,7 +84,6 @@ vi.mock("@application/schemas", () => {
         )
         .optional()
         .default([]),
-      availableTactics: z.record(z.array(z.string())).optional(),
     }),
   };
 });

@@ -148,9 +148,6 @@
 | Team | updateSelectedSquad | スカッドを更新できる |
 | Team | updateManager | 監督名を設定できる |
 | Team | updateManager | 空文字を渡すとundefinedになる |
-| Team | availableTactics | フォーメーション別の戦術を設定・取得できる |
-| Team | availableTactics | 戦術が設定されていないフォーメーションはundefined |
-| Team | availableTactics | 空の戦術配列はクリーンアップされる |
 
 ## entities/TeamManual.test.ts
 

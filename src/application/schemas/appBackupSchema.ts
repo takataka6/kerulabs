@@ -39,7 +39,6 @@ const teamRecordSchema = z.object({
   manager: z.string().optional(),
   playerCards: z.record(z.coerce.number(), z.string()).optional(),
   managerCard: z.string().optional(),
-  availableTactics: z.record(z.string(), z.array(z.string())).optional(),
 });
 
 const playerRecordSchema = z.object({

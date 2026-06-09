@@ -4,6 +4,7 @@
  */
 import { useRef, useEffect, useCallback, useMemo, memo } from "react";
 import { useThree, type ThreeEvent } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
 import { CanvasText as Text } from "./CanvasText";
 import { Pitch } from "./Pitch";
 import { Player } from "./Player";
@@ -101,6 +102,7 @@ export const Scene = memo(function Scene({
   onLinePointerMove,
   pitchConfig,
   fieldLocked = false,
+  onToggleFieldLock,
   touchlineLocked = false,
   sceneBackground,
   sceneBackgroundImageUrl,
@@ -380,6 +382,28 @@ export const Scene = memo(function Scene({
         pitchColor={pitchColor}
         pitchOpacity={pitchOpacity}
       />
+
+      {onToggleFieldLock && (
+        <Html position={[bounds.minX - 0.8, 0.14, 0]} center>
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onToggleFieldLock();
+            }}
+            aria-label={
+              fieldLocked ? "tactics.unlockField" : "tactics.lockField"
+            }
+            className={`flex h-8 w-8 items-center justify-center rounded-full text-lg leading-none transition-all duration-300 hover:-translate-y-[1px] ${
+              fieldLocked
+                ? "text-emerald-200"
+                : "text-slate-300 hover:text-white"
+            }`}
+          >
+            <span aria-hidden="true">{fieldLocked ? "🔒" : "🔓"}</span>
+          </button>
+        </Html>
+      )}
 
       {/* 空フィールドクリックで選択解除（配置モード時は不要） */}
       {onEmptyFieldClick &&
