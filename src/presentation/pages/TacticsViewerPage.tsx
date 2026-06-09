@@ -264,7 +264,6 @@ export function TacticsViewerPage() {
     handleSquadCardCycle,
     handleSaveManager,
     handleCycleManagerCard,
-    handleSavePng,
   } = useBridgeCallbacks({
     connLines,
     playerView,
@@ -273,7 +272,6 @@ export function TacticsViewerPage() {
     teamMgmt,
     managerEditor,
     pushCurrentSnapshot,
-    teams,
   });
 
   // ── Canvas memoized computed values ──
@@ -393,7 +391,6 @@ export function TacticsViewerPage() {
     handleSquadCardCycle,
     handleSaveManager,
     handleCycleManagerCard,
-    handleSavePng,
     generateFlowchart,
     teams,
     tacticsLoading,

@@ -17,13 +17,8 @@ import { TacticExportModal } from "./TacticExportModal";
 
 export function TacticsSidebarSection() {
   const { ui } = useTacticsUI();
-  const {
-    playModePhase,
-    tOrch,
-    lineupAnimation,
-    tacticsLoading,
-    handleSavePng,
-  } = useTacticsExecution();
+  const { playModePhase, tOrch, lineupAnimation, tacticsLoading } =
+    useTacticsExecution();
   const { t, tDynamic, language } = useLanguage();
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
@@ -37,7 +32,15 @@ export function TacticsSidebarSection() {
           ui.sidebarOpen ? t("a11y.closeSidebar") : t("a11y.openSidebar")
         }
         aria-expanded={ui.sidebarOpen}
-        className={`sidebar-toggle fixed z-40 ${ui.captureMode || !ui.headerVisible ? "top-2" : "top-[88px] sm:top-[104px]"} w-7 sm:w-8 h-9 sm:h-10 bg-[linear-gradient(180deg,rgba(30,41,59,0.96)_0%,rgba(15,23,42,0.96)_100%)] backdrop-blur-xl border border-slate-600/45 rounded-r-2xl flex items-center justify-center text-slate-300 hover:text-white hover:border-slate-500/60 transition-all duration-300 ease-in-out shadow-[0_8px_18px_rgba(2,6,23,0.14),0_2px_4px_rgba(2,6,23,0.08)] ring-1 ring-white/5 ${
+        className={`sidebar-toggle fixed z-40 ${
+          ui.captureMode
+            ? "top-2"
+            : ui.sidebarOpen
+              ? !ui.headerVisible
+                ? "top-2"
+                : "top-[88px] sm:top-[104px]"
+              : "top-auto bottom-4 sm:bottom-6"
+        } w-7 sm:w-8 h-9 sm:h-10 bg-[linear-gradient(180deg,rgba(30,41,59,0.96)_0%,rgba(15,23,42,0.96)_100%)] backdrop-blur-xl border border-slate-600/45 rounded-r-2xl flex items-center justify-center text-slate-300 hover:text-white hover:border-slate-500/60 transition-all duration-300 ease-in-out shadow-[0_8px_18px_rgba(2,6,23,0.14),0_2px_4px_rgba(2,6,23,0.08)] ring-1 ring-white/5 ${
           ui.sidebarOpen ? "left-60 xl:left-72" : "left-0"
         }`}
         style={lineupAnimation.isActive ? { display: "none" } : undefined}
@@ -147,6 +150,10 @@ export function TacticsSidebarSection() {
         }
         capture={{
           captureMode: ui.captureMode,
+          selectedImagePresetId: ui.selectedImagePresetId,
+          onSelectImagePreset: (presetId) => {
+            ui.setSelectedImagePresetId(presetId);
+          },
           lineupAnimation,
           showPlayerNames: ui.showPlayerNames,
           onTogglePlayerNames: () => {
@@ -154,8 +161,14 @@ export function TacticsSidebarSection() {
             ui.setShowPlayerNames(next);
             if (next) ui.setHiddenPlayerIndices(new Set());
           },
-          onExitCaptureMode: () => ui.setCaptureMode(false),
-          onSavePng: handleSavePng,
+          showPlayerNumbers: ui.showPlayerNumbers,
+          onTogglePlayerNumbers: () => {
+            ui.setShowPlayerNumbers((prev) => !prev);
+          },
+          onExitCaptureMode: () => {
+            ui.setCaptureMode(false);
+            ui.setSelectedImagePresetId("none");
+          },
         }}
         i18n={{ language, t, tDynamic }}
       />

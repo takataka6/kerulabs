@@ -105,6 +105,8 @@ export interface TacticCreationProps {
 /** キャプチャモード */
 export interface CaptureModeProps {
   captureMode: boolean;
+  selectedImagePresetId: string;
+  onSelectImagePreset: (presetId: string) => void;
   lineupAnimation: {
     isActive: boolean;
     selectedPresetId: string;
@@ -113,8 +115,9 @@ export interface CaptureModeProps {
   };
   showPlayerNames: boolean;
   onTogglePlayerNames: () => void;
+  showPlayerNumbers: boolean;
+  onTogglePlayerNumbers: () => void;
   onExitCaptureMode: () => void;
-  onSavePng: () => void;
 }
 
 /** 国際化 */
@@ -153,6 +156,20 @@ const EMPTY_STEP_EXECUTION: StepExecutionState = {
   isStepRunning: false,
   tactic: null,
 };
+
+const IMAGE_PRESETS: { id: string; nameKey: TranslationKey }[] = [
+  { id: "field-only", nameKey: "tactics.capture.preset.field-only" },
+  { id: "squad-and-sub", nameKey: "tactics.capture.preset.squad-and-sub" },
+  {
+    id: "split-field-squad",
+    nameKey: "tactics.capture.preset.split-field-squad",
+  },
+  { id: "cinematic-all", nameKey: "tactics.capture.preset.cinematic-all" },
+  {
+    id: "magazine-showcase",
+    nameKey: "tactics.capture.preset.magazine-showcase",
+  },
+];
 
 // ── サブコンポーネント ──────────────────────────────────
 
@@ -493,18 +510,11 @@ export const SidebarPanel = memo(function SidebarPanel(
             <div className="px-2.5 pt-2.5">
               <div className={SIDEBAR_SECTION_HEADER_CLASS}>
                 <span className="w-1 h-3 bg-blue-500 rounded-full"></span>
-                {t("tactics.capture")}
+                {t("tactics.capture.options")}
               </div>
             </div>
             <div className={SIDEBAR_SECTION_BODY_CLASS}>
               <div className="space-y-1.5">
-                <button
-                  onClick={capture.onSavePng}
-                  className="w-full py-2.5 px-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm font-semibold hover:scale-[1.02]"
-                >
-                  <span>💾</span>
-                  <span>{t("tactics.capture.savePng")}</span>
-                </button>
                 <button
                   onClick={capture.onTogglePlayerNames}
                   className={`w-full py-2.5 px-3 ${
@@ -520,12 +530,55 @@ export const SidebarPanel = memo(function SidebarPanel(
                       : t("tactics.showNames")}
                   </span>
                 </button>
+
+                <button
+                  onClick={capture.onTogglePlayerNumbers}
+                  className={`w-full py-2.5 px-3 ${
+                    capture.showPlayerNumbers
+                      ? "bg-white/[0.04] text-slate-300 hover:bg-white/[0.07] border border-slate-700/35"
+                      : "bg-orange-600 hover:bg-orange-500 text-white shadow-lg"
+                  } rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm font-semibold hover:scale-[1.02]`}
+                >
+                  <span>{capture.showPlayerNumbers ? "🔢" : "🔤"}</span>
+                  <span>
+                    {capture.showPlayerNumbers
+                      ? t("tactics.hideNumbers")
+                      : t("tactics.showNumbers")}
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* セクション: 画像撮影レイアウト */}
+          <div className={SIDEBAR_SECTION_CLASS}>
+            <div className="px-2.5 pt-2.5">
+              <div className={SIDEBAR_SECTION_HEADER_CLASS}>
+                <span className="w-1 h-3 bg-blue-500 rounded-full"></span>
+                {t("tactics.capture.imageLayouts")}
+              </div>
+            </div>
+            <div className={SIDEBAR_SECTION_BODY_CLASS}>
+              <div className="space-y-1.5">
+                {IMAGE_PRESETS.map((preset) => (
+                  <button
+                    key={preset.id}
+                    onClick={() => capture.onSelectImagePreset(preset.id)}
+                    className={`w-full py-2 px-3 rounded-xl text-xs font-medium transition-all duration-200 text-left ${
+                      capture.selectedImagePresetId === preset.id
+                        ? "bg-blue-600 text-white shadow-lg"
+                        : "bg-white/[0.04] text-slate-300 hover:bg-white/[0.07] border border-slate-700/35"
+                    }`}
+                  >
+                    {t(preset.nameKey)}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
 
           {/* セクション: スタメン発表 */}
-          <div className={SIDEBAR_SECTION_FIRST_CLASS}>
+          <div className={SIDEBAR_SECTION_CLASS}>
             <div className="px-2.5 pt-2.5">
               <div className={SIDEBAR_SECTION_HEADER_CLASS}>
                 <span className="w-1 h-3 bg-emerald-500 rounded-full"></span>
@@ -580,7 +633,7 @@ export const SidebarPanel = memo(function SidebarPanel(
           </div>
 
           {/* 撮影終了ボタン */}
-          <div className={SIDEBAR_SECTION_FIRST_CLASS}>
+          <div className={`${SIDEBAR_SECTION_CLASS} mt-4`}>
             <div className={SIDEBAR_SECTION_BODY_CLASS}>
               <button
                 onClick={capture.onExitCaptureMode}

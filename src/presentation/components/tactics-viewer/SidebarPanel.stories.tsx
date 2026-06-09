@@ -42,6 +42,8 @@ const meta = {
     },
     capture: {
       captureMode: false,
+      selectedImagePresetId: "none",
+      onSelectImagePreset: fn(),
       lineupAnimation: {
         isActive: false,
         selectedPresetId: "classic-tv-reveal",

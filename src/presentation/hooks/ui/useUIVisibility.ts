@@ -21,6 +21,7 @@ export function useUIVisibility() {
 
   // ── 名前表示 ──
   const [showPlayerNames, setShowPlayerNames] = useState(true);
+  const [showPlayerNumbers, setShowPlayerNumbers] = useState(true);
   const [showNameSettings, setShowNameSettings] = useState(false);
   const [hiddenPlayerIndices, setHiddenPlayerIndices] = useState<Set<number>>(
     new Set(),
@@ -42,6 +43,8 @@ export function useUIVisibility() {
 
   // ── キャプチャモード ──
   const [captureMode, setCaptureMode] = useState(false);
+  const [selectedImagePresetId, setSelectedImagePresetId] =
+    useState<string>("none");
 
   // ── マーカーサイズ ──
   const [playerMarkerScale, setPlayerMarkerScale] = useState(1);
@@ -74,6 +77,8 @@ export function useUIVisibility() {
     // 名前表示
     showPlayerNames,
     setShowPlayerNames,
+    showPlayerNumbers,
+    setShowPlayerNumbers,
     showNameSettings,
     setShowNameSettings,
     hiddenPlayerIndices,
@@ -102,6 +107,8 @@ export function useUIVisibility() {
     // キャプチャ
     captureMode,
     setCaptureMode,
+    selectedImagePresetId,
+    setSelectedImagePresetId,
 
     // マーカー
     playerMarkerScale,

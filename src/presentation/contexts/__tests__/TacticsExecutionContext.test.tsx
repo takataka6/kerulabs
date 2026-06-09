@@ -35,7 +35,6 @@ const mockValue: TacticsExecutionContextType = {
   canvasCallbacks: {} as TacticsExecutionContextType["canvasCallbacks"],
   handlePlayerClick: vi.fn(),
   handleOpponentClick: vi.fn(),
-  handleSavePng: vi.fn(),
   generateFlowchart: vi.fn().mockReturnValue(""),
 };
 
@@ -106,7 +105,6 @@ describe("TacticsExecutionContext", () => {
     expect(result.current.handleOpponentClick).toBe(
       mockValue.handleOpponentClick,
     );
-    expect(result.current.handleSavePng).toBe(mockValue.handleSavePng);
     expect(result.current.generateFlowchart).toBe(mockValue.generateFlowchart);
   });
 });

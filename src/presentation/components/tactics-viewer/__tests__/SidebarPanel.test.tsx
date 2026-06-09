@@ -179,6 +179,8 @@ function renderSidebarPanel(
 
   const defaultCapture: CaptureModeProps = {
     captureMode: false,
+    selectedImagePresetId: "none",
+    onSelectImagePreset: vi.fn(),
     lineupAnimation: {
       isActive: false,
       selectedPresetId: "preset-1",
@@ -187,8 +189,9 @@ function renderSidebarPanel(
     },
     showPlayerNames: true,
     onTogglePlayerNames: vi.fn(),
+    showPlayerNumbers: true,
+    onTogglePlayerNumbers: vi.fn(),
     onExitCaptureMode: vi.fn(),
-    onSavePng: vi.fn(),
   };
 
   const defaultCreation: TacticCreationProps = {
@@ -259,7 +262,6 @@ describe("SidebarPanel", () => {
 
     // Capture section
     expect(screen.getByText("tactics.capture")).toBeInTheDocument();
-    expect(screen.getByText("tactics.capture.savePng")).toBeInTheDocument();
     expect(screen.getByText("tactics.hideNames")).toBeInTheDocument();
     expect(screen.getByText("tactics.capture.close")).toBeInTheDocument();
 
@@ -469,13 +471,6 @@ describe("SidebarPanel", () => {
   });
 
   describe("capture mode callbacks", () => {
-    it("clicking save PNG button calls onSavePng", () => {
-      const { props } = renderSidebarPanel({ capture: { captureMode: true } });
-
-      fireEvent.click(screen.getByText("tactics.capture.savePng"));
-      expect(props.capture.onSavePng).toHaveBeenCalled();
-    });
-
     it("clicking toggle player names button calls onTogglePlayerNames", () => {
       const { props } = renderSidebarPanel({ capture: { captureMode: true } });
 

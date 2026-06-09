@@ -227,6 +227,7 @@ vi.mock("../../hooks/ui", () => ({
     showPlayerManagement: false,
     showSquadBuilder: false,
     captureMode: false,
+    selectedImagePresetId: "none",
     showPlayerNames: true,
     showNameSettings: false,
     showFlowchart: false,
@@ -244,6 +245,7 @@ vi.mock("../../hooks/ui", () => ({
     setShowPlayerManagement: vi.fn(),
     setShowSquadBuilder: vi.fn(),
     setCaptureMode: vi.fn(),
+    setSelectedImagePresetId: vi.fn(),
     setShowPlayerNames: vi.fn(),
     setShowNameSettings: vi.fn(),
     setShowFlowchart: vi.fn(),
@@ -362,7 +364,6 @@ vi.mock("../../hooks/canvas", () => ({
     handleSquadCardCycle: vi.fn(),
     handleSaveManager: vi.fn(),
     handleCycleManagerCard: vi.fn(),
-    handleSavePng: vi.fn(),
   }),
 }));
 

@@ -162,7 +162,7 @@ export const TacticsHeader = memo(function TacticsHeader() {
           >
             <span aria-hidden="true">📸</span>
             <span className="hidden xl:inline tracking-wide">
-              {t("tactics.capture")}
+              {t("tactics.captureMode")}
             </span>
           </button>
           <div className="w-px h-5 bg-slate-700/50"></div>
