@@ -33,6 +33,19 @@ function resolveSquadFromTeam(team: Team): (Player | null)[] {
   return [];
 }
 
+/** 既存のスカッド順を保ったまま、最新の Team.players 参照へ差し替える */
+function remapSquadPlayers(
+  squad: (Player | null)[],
+  team: Team,
+): (Player | null)[] {
+  const playersById = new Map(
+    team.players.map((player) => [player.id.value, player]),
+  );
+  return squad.map((player) =>
+    player ? (playersById.get(player.id.value) ?? null) : null,
+  );
+}
+
 /**
  * スカッドと交代を管理する。
  *
@@ -53,12 +66,12 @@ export function useSquadManagement(params: {
   const { selectedTeam, queryClient, showToast, t } = params;
 
   // ── チーム変更時のスカッド同期 ──
-  // チームIDをキーにして、変更時にローカルステートをリセットする
+  // チームID変更時はローカルステートをリセットし、
+  // 同一チーム内の更新時は既存スカッド順を維持して最新参照へ差し替える
   const teamKey = selectedTeam?.id.value ?? "";
   const initialSquad = useMemo(
     () => (selectedTeam ? resolveSquadFromTeam(selectedTeam) : []),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- teamKey の変更でのみ再計算
-    [teamKey],
+    [selectedTeam],
   );
 
   const [customSquad, setCustomSquad] = useState<(Player | null)[]>([]);
@@ -66,12 +79,19 @@ export function useSquadManagement(params: {
     { inPlayer: Player; outPlayer: Player }[]
   >([]);
   const [appliedTeamKey, setAppliedTeamKey] = useState("");
+  const [appliedTeam, setAppliedTeam] = useState<Team | undefined>(undefined);
 
   // チーム変更を検出してステートをリセット（レンダー中の同期パターン）
   if (teamKey !== appliedTeamKey) {
     setAppliedTeamKey(teamKey);
+    setAppliedTeam(selectedTeam);
     setCustomSquad(initialSquad);
     setSubstitutionRecords([]);
+  } else if (selectedTeam && selectedTeam !== appliedTeam) {
+    setAppliedTeam(selectedTeam);
+    setCustomSquad((prev) =>
+      prev.length > 0 ? remapSquadPlayers(prev, selectedTeam) : initialSquad,
+    );
   }
 
   const handleUpdateSquad = useCallback(
