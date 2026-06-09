@@ -665,6 +665,152 @@ describe("useTeamManagement", () => {
       expect(cardMgmt.setPlayerCards).toHaveBeenCalledWith({});
       expect(cardMgmt.setManagerCard).toHaveBeenCalledWith("none");
     });
+
+    it("同じ teamId の再取得時に customSquad の選手参照を最新化する", () => {
+      const team = createTestTeam("t1", "Team A", 2);
+      team.updateSelectedSquad(team.players.map((player) => player.id.value));
+      const params = createDefaultParams({ teams: [team] });
+      const { result, rerender } = renderHook(
+        (hookParams: ReturnType<typeof createDefaultParams>) =>
+          useTeamManagement(hookParams),
+        { initialProps: params },
+      );
+
+      act(() => {
+        result.current.setSelectedTeamId("t1");
+      });
+
+      expect(result.current.customSquad[0]?.imageUrl).toBeUndefined();
+
+      const refreshedTeam = createTestTeam("t1", "Team A", 0, [
+        team.players[0].id.value,
+        team.players[1].id.value,
+      ]);
+      const refreshedPlayers = team.players.map((player, index) => {
+        const nextPlayer = new Player({
+          id: player.id,
+          teamId: player.teamId,
+          name: player.name,
+          number: player.number,
+          position: player.position,
+          createdAt: player.createdAt,
+          updatedAt: new Date(player.updatedAt.getTime() + 1000),
+          imageUrl:
+            index === 0
+              ? "https://example.com/updated-player-1.png"
+              : undefined,
+          mainVisualImageUrl: player.mainVisualImageUrl,
+          nationality: player.nationality,
+          club: player.club,
+          leagueCountry: player.leagueCountry,
+          note: player.note,
+          status: player.status,
+        });
+        return nextPlayer;
+      });
+      const nextTeams = [
+        new Team({
+          id: refreshedTeam.id,
+          name: refreshedTeam.name,
+          subtitle: refreshedTeam.subtitle,
+          colors: refreshedTeam.colors as Team["colors"],
+          availableFormations: [...refreshedTeam.availableFormations],
+          players: refreshedPlayers,
+          flagType: refreshedTeam.flagType,
+          headerGradient: refreshedTeam.headerGradient,
+          createdAt: refreshedTeam.createdAt,
+          updatedAt: new Date(refreshedTeam.updatedAt.getTime() + 1000),
+          country: refreshedTeam.country,
+          defaultFormation: refreshedTeam.defaultFormation,
+          selectedSquad: [...(refreshedTeam.selectedSquad ?? [])],
+          manager: refreshedTeam.manager,
+        }),
+      ];
+
+      rerender(createDefaultParams({ ...params, teams: nextTeams }));
+
+      expect(result.current.customSquad[0]?.imageUrl).toBe(
+        "https://example.com/updated-player-1.png",
+      );
+      expect(result.current.customSquad[1]?.id.value).toBe(
+        team.players[1].id.value,
+      );
+    });
+
+    it("同じ teamId の再取得でも交代済みの並びは維持する", () => {
+      const team = createTestTeam("t1", "Team A", 15);
+      team.updateSelectedSquad(team.players.map((player) => player.id.value));
+      const params = createDefaultParams({ teams: [team] });
+      const { result, rerender } = renderHook(
+        (hookParams: ReturnType<typeof createDefaultParams>) =>
+          useTeamManagement(hookParams),
+        { initialProps: params },
+      );
+
+      act(() => {
+        result.current.setSelectedTeamId("t1");
+      });
+
+      act(() => {
+        result.current.handleSubstitution(11, 0);
+      });
+
+      const refreshedPlayers = team.players.map(
+        (player) =>
+          new Player({
+            id: player.id,
+            teamId: player.teamId,
+            name: player.name,
+            number: player.number,
+            position: player.position,
+            createdAt: player.createdAt,
+            updatedAt: new Date(player.updatedAt.getTime() + 1000),
+            imageUrl: player.imageUrl,
+            mainVisualImageUrl:
+              player.id.value === team.players[11].id.value
+                ? "https://example.com/substitute.png"
+                : player.mainVisualImageUrl,
+            nationality: player.nationality,
+            club: player.club,
+            leagueCountry: player.leagueCountry,
+            note: player.note,
+            status: player.status,
+          }),
+      );
+
+      rerender(
+        createDefaultParams({
+          ...params,
+          teams: [
+            new Team({
+              id: team.id,
+              name: team.name,
+              subtitle: team.subtitle,
+              colors: team.colors as Team["colors"],
+              availableFormations: [...team.availableFormations],
+              players: refreshedPlayers,
+              flagType: team.flagType,
+              headerGradient: team.headerGradient,
+              createdAt: team.createdAt,
+              updatedAt: new Date(team.updatedAt.getTime() + 1000),
+              country: team.country,
+              defaultFormation: team.defaultFormation,
+              selectedSquad: [...(team.selectedSquad ?? [])],
+              manager: team.manager,
+            }),
+          ],
+        }),
+      );
+
+      expect(result.current.customSquad[0]?.id.value).toBe(
+        team.players[11].id.value,
+      );
+      expect(result.current.customSquad[0]?.mainVisualImageUrl).toBe(
+        "https://example.com/substitute.png",
+      );
+      expect(result.current.customSquad[11]).toBeNull();
+      expect(result.current.substitutionRecords).toHaveLength(1);
+    });
   });
 
   // ── 一括インポート ──────────────────────────────────────
