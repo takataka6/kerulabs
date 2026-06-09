@@ -9,8 +9,6 @@ type CameraAction = "topDown" | "sideView" | "sideViewReverse" | "reset";
 
 interface ViewLockPanelProps {
   onCameraAction: (action: CameraAction) => void;
-  fieldLocked: boolean;
-  onToggleFieldLock: () => void;
   touchlineLocked: boolean;
   onToggleTouchlineLock: () => void;
   disabled: boolean;
@@ -34,8 +32,6 @@ const VIEWS: {
 
 export const ViewLockPanel = memo(function ViewLockPanel({
   onCameraAction,
-  fieldLocked,
-  onToggleFieldLock,
   touchlineLocked,
   onToggleTouchlineLock,
   disabled,
@@ -109,26 +105,6 @@ export const ViewLockPanel = memo(function ViewLockPanel({
                 {touchlineLocked
                   ? t("tactics.touchlineUnlock")
                   : t("tactics.touchlineLock")}
-              </span>
-            </button>
-            <button
-              onClick={onToggleFieldLock}
-              className={`${actionClass} ${
-                fieldLocked
-                  ? "bg-emerald-600/18 text-emerald-200"
-                  : "bg-white/[0.04] text-slate-300 hover:bg-white/[0.07] hover:text-white"
-              }`}
-              aria-label={
-                fieldLocked ? t("tactics.unlockField") : t("tactics.lockField")
-              }
-            >
-              <span className="text-base" aria-hidden="true">
-                {fieldLocked ? "🔒" : "🔓"}
-              </span>
-              <span className="text-[10px] font-semibold tracking-wide whitespace-nowrap hidden sm:block">
-                {fieldLocked
-                  ? t("tactics.unlockField")
-                  : t("tactics.lockField")}
               </span>
             </button>
           </div>

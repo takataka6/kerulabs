@@ -103,6 +103,8 @@ export interface SceneProps {
   fieldLocked?: boolean;
   /** フィールド右脇の固定トグル */
   onToggleFieldLock?: () => void;
+  /** フィールド横の固定トグル表示可否 */
+  showFieldLockButton?: boolean;
   /** タッチライン水平固定（水平回転のみロック） */
   touchlineLocked?: boolean;
   /** シーン背景設定 */

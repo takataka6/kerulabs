@@ -244,6 +244,9 @@ function createMockExecutionContext() {
       opponentPlacementMode: false,
       opponentTeamId: null,
       opponentTeam: null,
+      selectedOpponentPlayerId: null,
+      showOpponentFormationSelect: false,
+      showOpponentSquadBuilder: false,
       showOpponentNames: false,
       handleOpponentDrag: noop,
       handleOpponentRemove: noop,
@@ -416,6 +419,13 @@ describe("TacticsMainContent", () => {
     expect(screen.queryByTestId("right-controls")).not.toBeInTheDocument();
   });
 
+  it("captureMode 時はフィールド横のロックボタンを表示しない", () => {
+    mockUIContext.ui.captureMode = true;
+    render(<TacticsMainContent />);
+
+    expect(capturedTacticsCanvasProps.showFieldLockButton).toBe(false);
+  });
+
   it("ガイドを閉じている場合は表示しない", () => {
     mockPreferencesGet.mockImplementation((key: string) => {
       if (key === "tacticsViewerGuideDismissed") return true;
@@ -425,6 +435,33 @@ describe("TacticsMainContent", () => {
     render(<TacticsMainContent />);
 
     expect(screen.queryByText("tactics.guide.title")).not.toBeInTheDocument();
+  });
+
+  it("ポップアップ表示中はフィールド横のロックボタンを表示しない", () => {
+    mockExecutionContext.bgSettings.showSceneBgSettings = true;
+
+    render(<TacticsMainContent />);
+
+    expect(capturedTacticsCanvasProps.showFieldLockButton).toBe(false);
+  });
+
+  it("戦術実行中はフィールド横のロックボタンを表示しない", () => {
+    mockExecutionContext.tOrch.isExecuting = true;
+
+    render(<TacticsMainContent />);
+
+    expect(capturedTacticsCanvasProps.showFieldLockButton).toBe(false);
+  });
+
+  it("通常時はフィールド横のロックボタンを表示する", () => {
+    mockPreferencesGet.mockImplementation((key: string) => {
+      if (key === "tacticsViewerGuideDismissed") return true;
+      return undefined;
+    });
+
+    render(<TacticsMainContent />);
+
+    expect(capturedTacticsCanvasProps.showFieldLockButton).toBe(true);
   });
 
   // ── Callback delegation tests ─────────────────────────
@@ -545,14 +582,6 @@ describe("TacticsMainContent", () => {
       ) => void;
       onCameraAction("topDown");
       expect(mockUIContext.ui.setCameraAction).toHaveBeenCalledWith("topDown");
-    });
-
-    it("ViewLockPanel onToggleFieldLock toggles fieldLocked via context", () => {
-      render(<TacticsMainContent />);
-
-      const toggle = capturedViewLockPanelProps.onToggleFieldLock as () => void;
-      toggle();
-      expect(mockUIContext.ui.setFieldLocked).toHaveBeenCalled();
     });
 
     it("ViewLockPanel onToggleTouchlineLock toggles touchlineLocked via context", () => {
