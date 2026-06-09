@@ -22,8 +22,6 @@ function renderViewLockPanel(
 ) {
   const props = {
     onCameraAction: vi.fn(),
-    fieldLocked: false,
-    onToggleFieldLock: vi.fn(),
     touchlineLocked: false,
     onToggleTouchlineLock: vi.fn(),
     disabled: false,
@@ -48,16 +46,6 @@ describe("ViewLockPanel", () => {
       expect(screen.getByText("⬇️")).toBeInTheDocument();
       expect(screen.getByText("➡️")).toBeInTheDocument();
       expect(screen.getByText("⬅️")).toBeInTheDocument();
-    });
-
-    it("フィールドロックボタンが表示される（未ロック状態）", () => {
-      renderViewLockPanel({ fieldLocked: false });
-      expect(screen.getByText("🔓")).toBeInTheDocument();
-    });
-
-    it("フィールドロックボタンが表示される（ロック状態）", () => {
-      renderViewLockPanel({ fieldLocked: true });
-      expect(screen.getByText("🔒")).toBeInTheDocument();
     });
   });
 
@@ -96,23 +84,11 @@ describe("ViewLockPanel", () => {
   // ── ロックトグル ────────────────────────────────────────
 
   describe("ロックトグル", () => {
-    it("フィールドロックボタンクリックで onToggleFieldLock が呼ばれる", () => {
-      const { onToggleFieldLock } = renderViewLockPanel();
-
-      fireEvent.click(screen.getByLabelText("tactics.lockField"));
-      expect(onToggleFieldLock).toHaveBeenCalledTimes(1);
-    });
-
     it("タッチラインロックボタンクリックで onToggleTouchlineLock が呼ばれる", () => {
       const { onToggleTouchlineLock } = renderViewLockPanel();
 
       fireEvent.click(screen.getByLabelText("tactics.touchlineLock"));
       expect(onToggleTouchlineLock).toHaveBeenCalledTimes(1);
-    });
-
-    it("fieldLocked 時のラベルが unlockField になる", () => {
-      renderViewLockPanel({ fieldLocked: true });
-      expect(screen.getByLabelText("tactics.unlockField")).toBeInTheDocument();
     });
 
     it("touchlineLocked 時のラベルが touchlineUnlock になる", () => {

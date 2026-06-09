@@ -103,6 +103,7 @@ export const Scene = memo(function Scene({
   pitchConfig,
   fieldLocked = false,
   onToggleFieldLock,
+  showFieldLockButton = true,
   touchlineLocked = false,
   sceneBackground,
   sceneBackgroundImageUrl,
@@ -383,7 +384,7 @@ export const Scene = memo(function Scene({
         pitchOpacity={pitchOpacity}
       />
 
-      {onToggleFieldLock && (
+      {onToggleFieldLock && showFieldLockButton && (
         <Html position={[bounds.minX - 0.8, 0.14, 0]} center>
           <button
             type="button"
@@ -394,10 +395,10 @@ export const Scene = memo(function Scene({
             aria-label={
               fieldLocked ? "tactics.unlockField" : "tactics.lockField"
             }
-            className={`flex h-8 w-8 items-center justify-center rounded-full text-lg leading-none transition-all duration-300 hover:-translate-y-[1px] ${
+            className={`flex h-8 w-8 items-center justify-center rounded-full text-[13px] leading-none transition-all duration-300 hover:-translate-y-[1px] backdrop-blur-xl ring-1 ring-white/5 shadow-[0_4px_12px_rgba(2,6,23,0.12),0_1px_3px_rgba(2,6,23,0.08)] ${
               fieldLocked
-                ? "text-emerald-200"
-                : "text-slate-300 hover:text-white"
+                ? "bg-[linear-gradient(180deg,rgba(16,185,129,0.2)_0%,rgba(4,120,87,0.25)_100%)] border border-emerald-500/50 text-emerald-200 hover:border-emerald-400/60 hover:text-emerald-100"
+                : "bg-[linear-gradient(180deg,rgba(15,23,42,0.92)_0%,rgba(2,6,23,0.9)_100%)] border border-slate-600/40 text-slate-300 hover:border-slate-500/50 hover:text-slate-100"
             }`}
           >
             <span aria-hidden="true">{fieldLocked ? "🔒" : "🔓"}</span>

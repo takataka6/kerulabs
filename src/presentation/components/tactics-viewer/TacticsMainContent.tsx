@@ -61,6 +61,7 @@ export function TacticsMainContent() {
     handleSaveManager,
     handleCycleManagerCard,
   } = useTacticsTeam();
+
   const {
     playModePhase,
     tOrch,
@@ -82,6 +83,18 @@ export function TacticsMainContent() {
   const [showGuide, setShowGuide] = useState(
     () => !preferencesService.get("tacticsViewerGuideDismissed"),
   );
+  const hasOpenPopup =
+    showGuide ||
+    bgSettings.showSceneBgSettings ||
+    (!!teams?.length &&
+      (opponentsHook.opponentPlacementMode ||
+        !!opponentsHook.selectedOpponentPlayerId) &&
+      !opponentsHook.showOpponentFormationSelect &&
+      !opponentsHook.showOpponentSquadBuilder) ||
+    tOrch.isExecuting ||
+    !!tOrch.tacticCreation.creation?.timelineOpen ||
+    (ui.showFlowchart && !!tOrch.activeTactic) ||
+    lineupAnimation.isActive;
 
   const { playersData, colorsData, lineupPlayers, lineupTeamInfo } =
     displayData;
@@ -345,6 +358,7 @@ export function TacticsMainContent() {
           onLinePointerMove={canvasCallbacks.handleLinePointerMove}
           fieldLocked={ui.fieldLocked}
           onToggleFieldLock={() => ui.setFieldLocked((prev) => !prev)}
+          showFieldLockButton={!ui.captureMode && !hasOpenPopup}
           touchlineLocked={ui.touchlineLocked}
           sceneBackground={bgSettings.sceneBackground}
           sceneBackgroundImageUrl={bgSettings.sceneBackgroundImageUrl}
@@ -489,8 +503,6 @@ export function TacticsMainContent() {
       {!ui.captureMode && !playerView.playerViewEnabled && (
         <ViewLockPanel
           onCameraAction={ui.setCameraAction}
-          fieldLocked={ui.fieldLocked}
-          onToggleFieldLock={() => ui.setFieldLocked((prev) => !prev)}
           touchlineLocked={ui.touchlineLocked}
           onToggleTouchlineLock={() => ui.setTouchlineLocked((prev) => !prev)}
           disabled={false}
