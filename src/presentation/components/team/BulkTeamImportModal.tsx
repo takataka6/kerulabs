@@ -23,7 +23,6 @@ const TEAM_TYPE_DEFINITION = `type TeamImportData = {
   flagType?: string;
   headerGradient?: string;
   manager?: string;
-  availableTactics?: Record<string, string[]>;
   players?: Array<{
     name: string;
     number: number;  // 0–99
@@ -93,14 +92,6 @@ export function BulkTeamImportModal({
         flagType: "jp",
         headerGradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
         manager: "Manager Name",
-        availableTactics: {
-          "4-3-3": [
-            "LEFT_SB_OVERLAP",
-            "RIGHT_SB_OVERLAP",
-            "TIKI_TAKA",
-            "HIGH_PRESS",
-          ],
-        },
         players: [
           {
             name: "Player 1",
@@ -189,10 +180,6 @@ export function BulkTeamImportModal({
             </p>
             <p>
               • <strong>manager</strong>: {t("team.import.fieldManager")}
-            </p>
-            <p>
-              • <strong>availableTactics</strong>:{" "}
-              {t("team.import.fieldTactics")}
             </p>
             <p>
               • <strong>players</strong>: {t("team.import.fieldPlayers")}

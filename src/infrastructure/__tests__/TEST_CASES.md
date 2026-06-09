@@ -159,15 +159,12 @@
 | IndexedDBTeamRepository | mapToDomain | selectedSquadが復元される |
 | IndexedDBTeamRepository | mapToDomain | playerCardsが復元される |
 | IndexedDBTeamRepository | mapToDomain | managerCardが復元される |
-| IndexedDBTeamRepository | mapToDomain | availableTacticsが復元される |
 | IndexedDBTeamRepository | mapToPersistence | Teamエンティティをレコードに変換できる |
 | IndexedDBTeamRepository | mapToPersistence | 選手データがシリアライズされる |
 | IndexedDBTeamRepository | mapToPersistence | selectedSquadがシリアライズされる |
 | IndexedDBTeamRepository | mapToPersistence | selectedSquadが未設定の場合はundefined |
 | IndexedDBTeamRepository | mapToPersistence | playerCardsがシリアライズされる |
 | IndexedDBTeamRepository | mapToPersistence | playerCardsが未設定の場合はundefined |
-| IndexedDBTeamRepository | mapToPersistence | availableTacticsがシリアライズされる |
-| IndexedDBTeamRepository | mapToPersistence | availableTacticsが未設定の場合はundefined |
 | IndexedDBTeamRepository | mapToPersistence | 選手のオプショナルフィールドがすべてシリアライズされる |
 | IndexedDBTeamRepository | mapToPersistence | managerCardがシリアライズされる |
 | IndexedDBTeamRepository | ラウンドトリップ（mapToPersistence -> mapToDomain） | 変換して戻しても値が保持される |

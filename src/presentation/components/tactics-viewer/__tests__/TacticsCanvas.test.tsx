@@ -123,6 +123,7 @@ function createDefaultProps(): React.ComponentProps<typeof TacticsCanvas> {
     lineTrackingActive: false,
     onLinePointerMove: vi.fn(),
     fieldLocked: false,
+    onToggleFieldLock: vi.fn(),
     touchlineLocked: false,
     sceneBackground: DEFAULT_SCENE_BACKGROUND,
     pitchColor: "#16a34a",

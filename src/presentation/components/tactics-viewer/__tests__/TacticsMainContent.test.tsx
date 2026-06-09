@@ -45,6 +45,7 @@ vi.mock("@application/ServiceContainer", () => ({
 let capturedRightControlsProps: Record<string, unknown> = {};
 let capturedSquadPanelProps: Record<string, unknown> = {};
 let capturedViewLockPanelProps: Record<string, unknown> = {};
+let capturedTacticsCanvasProps: Record<string, unknown> = {};
 
 vi.mock("../RightControlsColumn", () => ({
   RightControlsColumn: (props: Record<string, unknown>) => {
@@ -53,7 +54,10 @@ vi.mock("../RightControlsColumn", () => ({
   },
 }));
 vi.mock("../TacticsCanvas", () => ({
-  TacticsCanvas: () => <div data-testid="tactics-canvas" />,
+  TacticsCanvas: (props: Record<string, unknown>) => {
+    capturedTacticsCanvasProps = props;
+    return <div data-testid="tactics-canvas" />;
+  },
 }));
 vi.mock("../FlowchartPanel", () => ({
   FlowchartPanel: () => <div data-testid="flowchart-panel" />,
@@ -558,6 +562,14 @@ describe("TacticsMainContent", () => {
         capturedViewLockPanelProps.onToggleTouchlineLock as () => void;
       toggle();
       expect(mockUIContext.ui.setTouchlineLocked).toHaveBeenCalled();
+    });
+
+    it("TacticsCanvas にフィールド固定トグルが渡される", () => {
+      render(<TacticsMainContent />);
+
+      const toggle = capturedTacticsCanvasProps.onToggleFieldLock as () => void;
+      toggle();
+      expect(mockUIContext.ui.setFieldLocked).toHaveBeenCalled();
     });
 
     it("onChangeFormation delegates to formationMgmt.changeFormation", () => {

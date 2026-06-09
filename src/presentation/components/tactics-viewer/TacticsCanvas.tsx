@@ -112,6 +112,7 @@ interface TacticsCanvasProps {
 
   // カメラ＆シーン
   fieldLocked: boolean;
+  onToggleFieldLock?: () => void;
   touchlineLocked: boolean;
   sceneBackground: SceneBackgroundPreferenceV1;
   sceneBackgroundImageUrl?: string;
@@ -207,6 +208,7 @@ export const TacticsCanvas = memo(function TacticsCanvas(
     lineTrackingActive,
     onLinePointerMove,
     fieldLocked,
+    onToggleFieldLock,
     touchlineLocked,
     sceneBackground,
     sceneBackgroundImageUrl,
@@ -421,6 +423,7 @@ export const TacticsCanvas = memo(function TacticsCanvas(
           lineTrackingActive={lineTrackingActive}
           onLinePointerMove={onLinePointerMove}
           fieldLocked={fieldLocked}
+          onToggleFieldLock={onToggleFieldLock}
           touchlineLocked={touchlineLocked}
           sceneBackground={sceneBackground}
           sceneBackgroundImageUrl={sceneBackgroundImageUrl}

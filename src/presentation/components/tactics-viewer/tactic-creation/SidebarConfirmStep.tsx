@@ -30,6 +30,7 @@ export const SidebarConfirmStep = memo(function SidebarConfirmStep({
   onPreview,
   onSave,
 }: SidebarConfirmStepProps) {
+  const canPreview = creation.steps.length > 1;
   const totalMovements = creation.steps.reduce(
     (sum, s) => sum + s.movements.size,
     0,
@@ -86,20 +87,24 @@ export const SidebarConfirmStep = memo(function SidebarConfirmStep({
       {/* ボタン */}
       <div className="px-3 py-2 space-y-1.5">
         {/* Preview + Timeline */}
-        <div className="grid grid-cols-2 gap-1.5">
-          <button
-            type="button"
-            onClick={onPreview}
-            disabled={isExecuting}
-            className={`py-1.5 rounded-lg text-[11px] font-medium transition-all duration-200 flex items-center justify-center gap-1 ${
-              isExecuting
-                ? "bg-slate-800/40 text-slate-600 cursor-not-allowed"
-                : "bg-slate-800/60 text-slate-300 hover:bg-slate-800 hover:text-white"
-            }`}
-          >
-            <span>▶</span>
-            <span>{t("tactics.creation.preview")}</span>
-          </button>
+        <div
+          className={`grid gap-1.5 ${canPreview ? "grid-cols-2" : "grid-cols-1"}`}
+        >
+          {canPreview && (
+            <button
+              type="button"
+              onClick={onPreview}
+              disabled={isExecuting}
+              className={`py-1.5 rounded-lg text-[11px] font-medium transition-all duration-200 flex items-center justify-center gap-1 ${
+                isExecuting
+                  ? "bg-slate-800/40 text-slate-600 cursor-not-allowed"
+                  : "bg-slate-800/60 text-slate-300 hover:bg-slate-800 hover:text-white"
+              }`}
+            >
+              <span>▶</span>
+              <span>{t("tactics.creation.preview")}</span>
+            </button>
+          )}
           <button
             type="button"
             onClick={onToggleTimeline}

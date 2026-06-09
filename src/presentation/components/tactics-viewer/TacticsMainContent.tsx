@@ -344,6 +344,7 @@ export function TacticsMainContent() {
           lineTrackingActive={canvasMemo.canvasLineTrackingActive}
           onLinePointerMove={canvasCallbacks.handleLinePointerMove}
           fieldLocked={ui.fieldLocked}
+          onToggleFieldLock={() => ui.setFieldLocked((prev) => !prev)}
           touchlineLocked={ui.touchlineLocked}
           sceneBackground={bgSettings.sceneBackground}
           sceneBackgroundImageUrl={bgSettings.sceneBackgroundImageUrl}

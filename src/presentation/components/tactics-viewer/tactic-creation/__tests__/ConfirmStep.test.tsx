@@ -106,10 +106,22 @@ describe("ConfirmStep", () => {
       expect(screen.getByText("tactics.creation.confirm")).toBeInTheDocument();
     });
 
-    it("プレビューボタンが表示される", () => {
-      renderComponent();
+    it("複数ステップ時にプレビューボタンが表示される", () => {
+      renderComponent({
+        creation: createCreationState({
+          steps: [createStep(), createStep({ id: 2 })],
+        }),
+      });
 
       expect(screen.getByText("tactics.creation.preview")).toBeInTheDocument();
+    });
+
+    it("ステップ1のみの場合はプレビューボタンを表示しない", () => {
+      renderComponent();
+
+      expect(
+        screen.queryByText("tactics.creation.preview"),
+      ).not.toBeInTheDocument();
     });
 
     it("タイムラインボタンが表示される", () => {
@@ -205,7 +217,12 @@ describe("ConfirmStep", () => {
 
     it("プレビューボタンをクリックするとonPreviewが呼ばれる", () => {
       const onPreview = vi.fn();
-      renderComponent({ onPreview });
+      renderComponent({
+        onPreview,
+        creation: createCreationState({
+          steps: [createStep(), createStep({ id: 2 })],
+        }),
+      });
 
       fireEvent.click(screen.getByText("tactics.creation.preview"));
 
@@ -246,7 +263,12 @@ describe("ConfirmStep", () => {
 
   describe("実行中の状態", () => {
     it("isExecutingがtrueの場合、プレビューボタンが無効になる", () => {
-      renderComponent({ isExecuting: true });
+      renderComponent({
+        isExecuting: true,
+        creation: createCreationState({
+          steps: [createStep(), createStep({ id: 2 })],
+        }),
+      });
 
       const previewBtn = screen
         .getByText("tactics.creation.preview")
@@ -255,7 +277,12 @@ describe("ConfirmStep", () => {
     });
 
     it("isExecutingがfalseの場合、プレビューボタンが有効になる", () => {
-      renderComponent({ isExecuting: false });
+      renderComponent({
+        isExecuting: false,
+        creation: createCreationState({
+          steps: [createStep(), createStep({ id: 2 })],
+        }),
+      });
 
       const previewBtn = screen
         .getByText("tactics.creation.preview")

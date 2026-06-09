@@ -543,13 +543,30 @@ describe("SidebarCreationContent", () => {
       ).toBeInTheDocument();
     });
 
-    it("プレビューボタンが表示される", () => {
+    it("複数ステップ時にプレビューボタンが表示される", () => {
+      const props = defaultProps({
+        creation: makeCreationState({
+          wizardStep: "confirm",
+          steps: [
+            { id: 1, movements: new Map(), ballPasses: [], duration: 1000 },
+            { id: 2, movements: new Map(), ballPasses: [], duration: 1000 },
+          ],
+        }),
+      });
+      render(<SidebarCreationContent {...props} />);
+
+      expect(screen.getByText("tactics.creation.preview")).toBeInTheDocument();
+    });
+
+    it("ステップ1のみの場合はプレビューボタンが表示されない", () => {
       const props = defaultProps({
         creation: makeCreationState({ wizardStep: "confirm" }),
       });
       render(<SidebarCreationContent {...props} />);
 
-      expect(screen.getByText("tactics.creation.preview")).toBeInTheDocument();
+      expect(
+        screen.queryByText("tactics.creation.preview"),
+      ).not.toBeInTheDocument();
     });
 
     it("タイムラインボタンが表示される", () => {
@@ -572,7 +589,13 @@ describe("SidebarCreationContent", () => {
 
     it("実行中の場合、プレビューボタンが無効になる", () => {
       const props = defaultProps({
-        creation: makeCreationState({ wizardStep: "confirm" }),
+        creation: makeCreationState({
+          wizardStep: "confirm",
+          steps: [
+            { id: 1, movements: new Map(), ballPasses: [], duration: 1000 },
+            { id: 2, movements: new Map(), ballPasses: [], duration: 1000 },
+          ],
+        }),
         isExecuting: true,
       });
       render(<SidebarCreationContent {...props} />);

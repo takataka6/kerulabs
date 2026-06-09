@@ -36,6 +36,7 @@ export const ConfirmStep = memo(function ConfirmStep({
   onPreview,
   onSave,
 }: ConfirmStepProps) {
+  const canPreview = creation.steps.length > 1;
   const totalMovements = creation.steps.reduce(
     (sum, s) => sum + s.movements.size,
     0,
@@ -103,19 +104,21 @@ export const ConfirmStep = memo(function ConfirmStep({
 
         {/* 操作ボタン行 */}
         <div className="flex items-center gap-1.5 mb-3">
-          <button
-            type="button"
-            onClick={onPreview}
-            disabled={isExecuting}
-            className={`h-8 px-3 rounded-lg text-xs font-medium transition-all duration-200 flex items-center gap-1.5 ${
-              isExecuting
-                ? "bg-slate-800/40 text-slate-600 cursor-not-allowed"
-                : "bg-slate-800/60 text-slate-300 hover:bg-slate-800 hover:text-white"
-            }`}
-          >
-            <span>▶</span>
-            <span>{t("tactics.creation.preview")}</span>
-          </button>
+          {canPreview && (
+            <button
+              type="button"
+              onClick={onPreview}
+              disabled={isExecuting}
+              className={`h-8 px-3 rounded-lg text-xs font-medium transition-all duration-200 flex items-center gap-1.5 ${
+                isExecuting
+                  ? "bg-slate-800/40 text-slate-600 cursor-not-allowed"
+                  : "bg-slate-800/60 text-slate-300 hover:bg-slate-800 hover:text-white"
+              }`}
+            >
+              <span>▶</span>
+              <span>{t("tactics.creation.preview")}</span>
+            </button>
+          )}
 
           <button
             type="button"
