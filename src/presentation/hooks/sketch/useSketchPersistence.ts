@@ -5,7 +5,8 @@
  */
 import { useRef, useCallback, useEffect } from "react";
 import type { SketchLayer } from "./types";
-import { SketchStorage } from "@infrastructure/repositories/indexeddb/SketchStorage";
+import { getContainer } from "@application/ServiceContainer";
+import type { ISketchStorage } from "@application/ports/output/services";
 import { handleError } from "@shared/errors/handleError";
 
 const SAVE_DEBOUNCE_MS = 1_000;
@@ -30,7 +31,7 @@ export interface UseSketchPersistenceReturn {
 export function useSketchPersistence(
   activeLayerId: number,
 ): UseSketchPersistenceReturn {
-  const storageRef = useRef<SketchStorage | null>(null);
+  const storageRef = useRef<ISketchStorage | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // デバウンス中にレイヤーが切り替わっても最新値を使えるよう ref で追跡
   const activeLayerIdRef = useRef(activeLayerId);
@@ -40,7 +41,7 @@ export function useSketchPersistence(
 
   const getStorage = useCallback(() => {
     if (!storageRef.current) {
-      storageRef.current = new SketchStorage();
+      storageRef.current = getContainer().sketchStorage;
     }
     return storageRef.current;
   }, []);

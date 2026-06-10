@@ -7,6 +7,7 @@ import type { IPluginRepository } from "./ports/output/repositories/IPluginRepos
 import type { IBackupService } from "./ports/output/services/IBackupService";
 import type { IFileService } from "./ports/output/services/IFileService";
 import type { IPreferencesService } from "./ports/output/services/IPreferencesService";
+import type { ISketchStorage } from "./ports/output/services/ISketchStorage";
 import type { ITacticInputPort } from "./ports/input/ITacticInputPort";
 import type { ITeamInputPort } from "./ports/input/ITeamInputPort";
 import type { IFormationInputPort } from "./ports/input/IFormationInputPort";
@@ -27,6 +28,7 @@ export interface Container {
   backupService: IBackupService;
   fileService: IFileService;
   preferencesService: IPreferencesService;
+  sketchStorage: ISketchStorage;
 
   // Input Ports（Presentation 層が利用するユースケースの抽象）
   tacticInteractor: ITacticInputPort;
