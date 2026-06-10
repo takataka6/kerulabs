@@ -38,6 +38,7 @@ vi.mock("@presentation/contexts/LanguageContext", () => ({
 
 vi.mock("@presentation/components/ui", () => ({
   useToast: () => ({ showToast: vi.fn() }),
+  useConfirm: () => ({ confirm: vi.fn().mockResolvedValue(false) }),
 }));
 
 /* ---- Data query hooks ---- */

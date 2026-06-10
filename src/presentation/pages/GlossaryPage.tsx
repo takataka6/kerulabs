@@ -31,6 +31,7 @@ import {
 } from "@presentation/components/ui/LineIcons";
 import { STAGGER_DELAY_MS } from "@shared/constants";
 import { useEntityPageState } from "@presentation/hooks/useEntityPageState";
+import { useSeedSampleData } from "@presentation/hooks/useSeedSampleData";
 
 const GLOSSARY_I18N_KEYS = {
   deleteConfirm: "glossary.deleteConfirm" as const,
@@ -77,6 +78,15 @@ export function GlossaryPage() {
     serializeForExport: serializeGlossary,
     i18nKeys: GLOSSARY_I18N_KEYS,
   });
+
+  const { handleSeed: handleSeedGlossary, isSeeding: isSeedingGlossary } =
+    useSeedSampleData(showToast, t, { glossary: true });
+
+  const handleSeedSample = async () => {
+    if (await confirm({ message: t("app.seed.glossary.confirm") })) {
+      await handleSeedGlossary();
+    }
+  };
 
   const handleCreate = async (name: string, description: string) => {
     try {
@@ -211,8 +221,15 @@ export function GlossaryPage() {
         {isLoading ? (
           <CardListSkeleton count={4} />
         ) : glossaries.length === 0 ? (
-          <div className="text-center py-20">
+          <div className="text-center py-20 flex flex-col items-center gap-4">
             <p className="text-slate-400 text-lg">{t("glossary.empty")}</p>
+            <button
+              onClick={handleSeedSample}
+              disabled={isSeedingGlossary}
+              className="inline-flex items-center gap-2 px-5 py-2.5 border-2 border-dashed border-emerald-500/60 hover:border-emerald-400 text-emerald-400 hover:text-emerald-300 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {t("app.seed.trySample")}
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">

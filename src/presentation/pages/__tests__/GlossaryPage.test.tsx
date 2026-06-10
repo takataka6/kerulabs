@@ -55,6 +55,14 @@ vi.mock("@presentation/hooks/queries", () => ({
   useDeleteGlossary: () => mockDeleteGlossary,
 }));
 
+const mockHandleSeedGlossary = vi.fn().mockResolvedValue(undefined);
+vi.mock("@presentation/hooks/useSeedSampleData", () => ({
+  useSeedSampleData: () => ({
+    handleSeed: mockHandleSeedGlossary,
+    isSeeding: false,
+  }),
+}));
+
 vi.mock("@presentation/components/glossary", () => ({
   GlossaryDetail: ({ onBack }: { onBack: () => void }) => (
     <div data-testid="glossary-detail">
@@ -148,6 +156,36 @@ describe("GlossaryPage", () => {
       render(<GlossaryPage />);
 
       expect(screen.getByText(/glossary\.import/)).toBeInTheDocument();
+    });
+
+    it("サンプルデータで試すボタンが表示される", () => {
+      render(<GlossaryPage />);
+
+      expect(screen.getByText("app.seed.trySample")).toBeInTheDocument();
+    });
+
+    it("サンプルデータで試すボタンをクリックすると確認後にseedが実行される", async () => {
+      mockConfirm.mockResolvedValueOnce(true);
+      render(<GlossaryPage />);
+
+      fireEvent.click(screen.getByText("app.seed.trySample"));
+
+      await waitFor(() => {
+        expect(mockConfirm).toHaveBeenCalled();
+        expect(mockHandleSeedGlossary).toHaveBeenCalled();
+      });
+    });
+
+    it("サンプルボタンで確認キャンセル時はseedを実行しない", async () => {
+      mockConfirm.mockResolvedValueOnce(false);
+      render(<GlossaryPage />);
+
+      fireEvent.click(screen.getByText("app.seed.trySample"));
+
+      await waitFor(() => {
+        expect(mockConfirm).toHaveBeenCalled();
+      });
+      expect(mockHandleSeedGlossary).not.toHaveBeenCalled();
     });
   });
 

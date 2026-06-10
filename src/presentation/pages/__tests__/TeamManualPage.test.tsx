@@ -54,6 +54,14 @@ vi.mock("@presentation/hooks/queries", () => ({
   useDeleteTeamManual: () => mockDeleteManual,
 }));
 
+const mockHandleSeedManual = vi.fn().mockResolvedValue(undefined);
+vi.mock("@presentation/hooks/useSeedSampleData", () => ({
+  useSeedSampleData: () => ({
+    handleSeed: mockHandleSeedManual,
+    isSeeding: false,
+  }),
+}));
+
 vi.mock("@presentation/components/team-manual", () => ({
   ManualDetail: ({ onBack }: { onBack: () => void }) => (
     <div data-testid="manual-detail">
@@ -174,6 +182,36 @@ describe("TeamManualPage", () => {
       render(<TeamManualPage />);
 
       expect(screen.getByText(/manual\.import/)).toBeInTheDocument();
+    });
+
+    it("サンプルデータで試すボタンが表示される", () => {
+      render(<TeamManualPage />);
+
+      expect(screen.getByText("app.seed.trySample")).toBeInTheDocument();
+    });
+
+    it("サンプルデータで試すボタンをクリックすると確認後にseedが実行される", async () => {
+      mockConfirm.mockResolvedValueOnce(true);
+      render(<TeamManualPage />);
+
+      fireEvent.click(screen.getByText("app.seed.trySample"));
+
+      await waitFor(() => {
+        expect(mockConfirm).toHaveBeenCalled();
+        expect(mockHandleSeedManual).toHaveBeenCalled();
+      });
+    });
+
+    it("サンプルボタンで確認キャンセル時はseedを実行しない", async () => {
+      mockConfirm.mockResolvedValueOnce(false);
+      render(<TeamManualPage />);
+
+      fireEvent.click(screen.getByText("app.seed.trySample"));
+
+      await waitFor(() => {
+        expect(mockConfirm).toHaveBeenCalled();
+      });
+      expect(mockHandleSeedManual).not.toHaveBeenCalled();
     });
 
     it("ホームへ戻るボタンが表示される", () => {

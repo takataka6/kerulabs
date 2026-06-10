@@ -31,6 +31,7 @@ import {
 } from "@presentation/components/ui/LineIcons";
 import { STAGGER_DELAY_MS } from "@shared/constants";
 import { useEntityPageState } from "@presentation/hooks/useEntityPageState";
+import { useSeedSampleData } from "@presentation/hooks/useSeedSampleData";
 
 const MANUAL_I18N_KEYS = {
   deleteConfirm: "manual.deleteConfirm" as const,
@@ -82,6 +83,15 @@ export function TeamManualPage() {
     serializeForExport: serializeManual,
     i18nKeys: MANUAL_I18N_KEYS,
   });
+
+  const { handleSeed: handleSeedManual, isSeeding: isSeedingManual } =
+    useSeedSampleData(showToast, t, { manual: true });
+
+  const handleSeedSample = async () => {
+    if (await confirm({ message: t("app.seed.manual.confirm") })) {
+      await handleSeedManual();
+    }
+  };
 
   const handleCreate = async (name: string, description: string) => {
     try {
@@ -217,8 +227,15 @@ export function TeamManualPage() {
         {isLoading ? (
           <CardListSkeleton count={4} />
         ) : manuals.length === 0 ? (
-          <div className="text-center py-20">
+          <div className="text-center py-20 flex flex-col items-center gap-4">
             <p className="text-slate-400 text-lg">{t("manual.empty")}</p>
+            <button
+              onClick={handleSeedSample}
+              disabled={isSeedingManual}
+              className="inline-flex items-center gap-2 px-5 py-2.5 border-2 border-dashed border-amber-500/60 hover:border-amber-400 text-amber-400 hover:text-amber-300 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {t("app.seed.trySample")}
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">

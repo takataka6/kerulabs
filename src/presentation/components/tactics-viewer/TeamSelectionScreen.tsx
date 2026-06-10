@@ -36,6 +36,8 @@ interface TeamSelectionScreenProps {
   onEditTeam: (teamId: string, event: React.MouseEvent) => void;
   onCloseEditTeam: () => void;
   onUpdateTeam: (team: Team) => Promise<void>;
+  onSeedSampleData?: () => void;
+  isSeedingData?: boolean;
   t: TranslationFn;
 }
 
@@ -57,6 +59,8 @@ export const TeamSelectionScreen = memo(function TeamSelectionScreen({
   onEditTeam,
   onCloseEditTeam,
   onUpdateTeam,
+  onSeedSampleData,
+  isSeedingData = false,
   t,
 }: TeamSelectionScreenProps) {
   const sortedTeams = teams
@@ -131,7 +135,7 @@ export const TeamSelectionScreen = memo(function TeamSelectionScreen({
           </button>
           <button
             onClick={onShowTeamCreator}
-            className="inline-flex items-center gap-1.5 px-4 py-2 bg-green-600/80 hover:bg-green-500 text-white rounded-lg text-sm font-semibold transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600/80 hover:bg-blue-500 text-white rounded-lg text-sm font-semibold transition-colors"
             {...(IS_ELECTRON && {
               style: { WebkitAppRegion: "no-drag" } as React.CSSProperties,
             })}
@@ -142,10 +146,24 @@ export const TeamSelectionScreen = memo(function TeamSelectionScreen({
 
         <div className="max-w-7xl mx-auto">
           {teams?.length === 0 ? (
-            <div className="text-center py-20">
+            <div className="text-center py-20 flex flex-col items-center gap-4">
               <p className="text-slate-400 text-lg">
                 {t("tactics.emptyTeams")}
               </p>
+              {onSeedSampleData && (
+                <button
+                  onClick={onSeedSampleData}
+                  disabled={isSeedingData}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 border-2 border-dashed border-blue-500/60 hover:border-blue-400 text-blue-400 hover:text-blue-300 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  {...(IS_ELECTRON && {
+                    style: {
+                      WebkitAppRegion: "no-drag",
+                    } as React.CSSProperties,
+                  })}
+                >
+                  {t("app.seed.trySample")}
+                </button>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
