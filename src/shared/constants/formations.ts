@@ -131,16 +131,16 @@ export function normalizeFormationKey(key: string): string {
   return getFormationIdByName(key) ?? key;
 }
 
-export function normalizeFormationKeys(keys: readonly string[]): string[] {
-  return [...new Set(keys.map(normalizeFormationKey))];
+export function normalizeFormationKeys(keys: readonly string[] = []): string[] {
+  return [...new Set((keys || []).map(normalizeFormationKey))];
 }
 
 export function getFormationOptionsWithDefault(
-  formations: readonly string[],
+  formations: readonly string[] = [],
   gameMode: GameMode,
 ): string[] {
   const options = new Set(getFormationIds(gameMode));
-  const gameModeFormations = normalizeFormationKeys(formations).filter(
+  const gameModeFormations = normalizeFormationKeys(formations || []).filter(
     (formationId) => options.has(formationId),
   );
 
@@ -152,10 +152,10 @@ export function getFormationOptionsWithDefault(
 }
 
 export function ensureFormationDefaultForGameMode(
-  formations: readonly string[],
+  formations: readonly string[] = [],
   gameMode: GameMode,
 ): string[] {
-  const normalized = normalizeFormationKeys(formations);
+  const normalized = normalizeFormationKeys(formations || []);
   const options = new Set(getFormationIds(gameMode));
   const hasGameModeFormation = normalized.some((formationId) =>
     options.has(formationId),

@@ -66,7 +66,7 @@ export const TacticsRightSidebar = memo(function TacticsRightSidebar() {
   // チームが選択可能なフォーメーションのみ、team.availableFormations の登録順で表示
   const availableFormations = useMemo(() => {
     const orderedIds = getFormationOptionsWithDefault(
-      selectedTeam.availableFormations,
+      selectedTeam?.availableFormations ?? [],
       gameMode,
     );
     const formationMap = new Map(
