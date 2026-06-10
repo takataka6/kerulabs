@@ -7,6 +7,14 @@
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-06-10
+
+### Fixed
+
+- **Code Lab レッスンのロードフリーズ**: Electron 環境での動的インポート（`import()`）がフリーズを引き起こす問題を静的インポートへの切り替えで解消しました。
+- **フォーメーションキー正規化の TypeError**: `formations` が `null` / `undefined` のときに発生する TypeError を修正しました（デフォルト引数の追加）。
+- **テストカバレッジの関数閾値**: 別の作業で 79 に引き下げられていた `functions` カバレッジ閾値を正しく 80 に戻しました。
+
 ## [0.8.0] - 2026-06-10
 
 ### Added
@@ -197,7 +205,8 @@
 - **Husky + lint-staged**: コミット時の自動リント・フォーマット
 - **GitHub Actions CI**: 型チェック・リント・テストの自動実行
 
-[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.8.1...HEAD
+[0.8.1]: https://github.com/takataka6/kerulabs/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/takataka6/kerulabs/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/takataka6/kerulabs/compare/v0.6.0...v0.7.0
 [0.5.0]: https://github.com/takataka6/kerulabs/compare/v0.4.3...v0.5.0
