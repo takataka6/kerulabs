@@ -537,7 +537,7 @@ export function HomePage() {
               <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-emerald-400 animate-pulse" />
               <span>Open Source</span>
               <span className="mx-0.5 text-slate-600">·</span>
-              <span>Soccer Tactics</span>
+              <span>Football Tactics</span>
             </div>
           </div>
 
