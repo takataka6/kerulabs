@@ -17,7 +17,7 @@ export const SAMPLE_TEAM_A: CreateTeamInput = {
   name: "[Sample] Team 01",
   subtitle: "サンプルチーム 01",
   colors: { gk: "#FFD700", main: "#1E90FF" },
-  availableFormations: ["4-3-3", "4-2-2-2", "4-2-3-1"],
+  availableFormations: ["4-3-3", "4-2-3-1"],
   defaultFormation: "4-3-3",
   flagType: "none",
   headerGradient: "from-blue-600 to-cyan-500",

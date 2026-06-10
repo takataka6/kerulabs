@@ -31,6 +31,7 @@ Football Tactics & Code Lab
 
 ## 想定ユーザー
 
+- サッカー観戦者（戦術の分析や整理、観戦の理解を深めたい方）
 - サッカー / フットサルのコーチ、アナリスト、教育担当
 - チーム内で戦術や用語を共通化したい人
 - React + TypeScript + Clean Architecture の実例を読みたい開発者
@@ -98,10 +99,6 @@ Football Tactics & Code Lab
 | チーム用語辞典: チーム内の言葉と定義を揃える             | ![Glossary overview](docs/assets/readme/glossary-overview.png)                   |
 | チームマニュアル: 原則、図解、共有メモを一箇所にまとめる | ![Team manual overview](docs/assets/readme/team-manual-overview.png)             |
 | コードラボ: 実装と設計判断を教材として読む               | ![Code Lab overview](docs/assets/readme/code-lab-overview.png)                   |
-
-### Demo Clip
-
-![KeruLabs product demo](docs/assets/readme/product-demo.gif)
 
 ## Quick Start
 

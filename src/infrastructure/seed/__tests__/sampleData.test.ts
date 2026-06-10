@@ -5,11 +5,7 @@ import { getFormationNameById } from "@shared/constants/formations";
 
 describe("sampleData", () => {
   it("sample teams expose the expected built-in formations", () => {
-    expect(SAMPLE_TEAM_A.availableFormations).toEqual([
-      "4-3-3",
-      "4-2-2-2",
-      "4-2-3-1",
-    ]);
+    expect(SAMPLE_TEAM_A.availableFormations).toEqual(["4-3-3", "4-2-3-1"]);
     expect(SAMPLE_TEAM_B.availableFormations).toEqual([
       "4-4-2-flat",
       "4-2-3-1",
