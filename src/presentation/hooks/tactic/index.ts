@@ -26,3 +26,4 @@ export { useManualPositions } from "./useManualPositions";
 export { useBallPassCreation } from "./useBallPassCreation";
 export { useMergedTacticDisplay } from "./useMergedTacticDisplay";
 export { useTacticShareHandlers } from "./useTacticShareHandlers";
+export { useTacticsModeReset } from "./useTacticsModeReset";

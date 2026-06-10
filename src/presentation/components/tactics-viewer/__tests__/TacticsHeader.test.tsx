@@ -137,6 +137,9 @@ function createDefaultContexts(overrides: ContextOverrides = {}) {
       },
       playerView: {
         exitPlayerView: mockExitPlayerView,
+        setPlayerViewEnabled: vi.fn(),
+        setSelectedPlayerIndex: vi.fn(),
+        setSelectedOpponentViewId: vi.fn(),
       },
       multiSelect: {
         clearSelection: mockClearSelection,

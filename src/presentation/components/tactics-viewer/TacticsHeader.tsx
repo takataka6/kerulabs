@@ -14,6 +14,7 @@ import { useTacticsUI } from "@presentation/contexts/TacticsUIContext";
 import { useTacticsTeam } from "@presentation/contexts/TacticsTeamContext";
 import { useTacticsExecution } from "@presentation/contexts/TacticsExecutionContext";
 import { useLanguage } from "@presentation/contexts/LanguageContext";
+import { useTacticsModeReset } from "@presentation/hooks/tactic";
 
 export const TacticsHeader = memo(function TacticsHeader() {
   const { ui } = useTacticsUI();
@@ -32,15 +33,24 @@ export const TacticsHeader = memo(function TacticsHeader() {
   const { captureMode, headerVisible } = ui;
   const isHidden = captureMode || !headerVisible;
 
+  // Phase 3: Use centralized mode reset
+  const { resetInteractionModes } = useTacticsModeReset({
+    opponentsHook,
+    ballHook,
+    connLines,
+    playerView,
+    clearManualPositions: tOrch.clearManualPositions,
+    resetTactic: tOrch.resetTactic,
+  });
+
   const handleBackToTeamSelection = () => {
-    tOrch.clearManualPositions();
-    tOrch.resetTactic();
+    // Phase 3: Use centralized reset for interaction modes
+    resetInteractionModes();
+
+    // Additional header-specific resets (not covered by the general mode reset)
     connLines.clearConnectionLines();
-    connLines.resetLineDrawingState();
     ballHook.setBallPosition(null);
-    ballHook.setBallPlacementMode(false);
     opponentsHook.clearOpponents();
-    opponentsHook.setOpponentPlacementMode(false);
     opponentsHook.setOpponentTeamId(null);
     opponentsHook.setSelectedOpponentPlayerId(null);
     opponentsHook.setShowOpponentFormationSelect(false);

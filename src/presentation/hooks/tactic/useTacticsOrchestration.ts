@@ -36,6 +36,7 @@ import { useMergedTacticDisplay } from "./useMergedTacticDisplay";
 import { useTacticShareHandlers } from "./useTacticShareHandlers";
 import { createPreviewTacticFromCopyRange } from "./restoreCreationStateFromTactic";
 import { getPlaybackSpeed } from "@shared/stores/playbackSpeedStore";
+import { useTacticsModeReset } from "./useTacticsModeReset";
 
 const COPY_CREATION_COMPLETION_BUFFER_MS = 1500;
 
@@ -153,6 +154,50 @@ export function useTacticsOrchestration(params: {
   const tacticCopyPreviewRequestRef = useRef(0);
   const tacticCopyCreationTimeoutRef = useRef<number | null>(null);
 
+  // インタラクティブモードの一括リセットを一元管理（Phase 3 で重複を削減）
+  const { resetInteractionModes } = useTacticsModeReset({
+    opponentsHook,
+    ballHook,
+    connLines,
+    playerView,
+    clearManualPositions,
+    resetTactic,
+  });
+
+  // 小さなヘルパー: ステップ変更時の共通リセット（Phase 3 thinning）
+  const resetForStepChange = useCallback(() => {
+    resetTactic();
+    clearManualPositions();
+  }, [resetTactic, clearManualPositions]);
+
+  // 作成中へのドラッグ適用ロジックを抽出（重複削減）
+  const applyDragToCreation = useCallback(
+    (playerIndex: number, playerPos: { x: number; z: number }) => {
+      if (!tacticCreation.creation || !currentFormation) return;
+
+      const roleMap = currentFormation.roleMap;
+      let role: string | null = null;
+      roleMap.forEach((mappedIndex, roleKey) => {
+        if (mappedIndex === playerIndex) role = roleKey;
+      });
+      if (!role) return;
+
+      if (tacticCreation.creation.wizardStep === "setPosition") {
+        tacticCreation.setSetPosition(role, playerPos.x, playerPos.z);
+      } else {
+        const cat = currentFormation.positions[playerIndex]?.category;
+        tacticCreation.setPlayerTarget(
+          role,
+          playerPos.x,
+          playerPos.z,
+          POSITION_HEX_COLORS[cat as keyof typeof POSITION_HEX_COLORS] ||
+            POSITION_FALLBACK_HEX_COLOR,
+        );
+      }
+    },
+    [tacticCreation, currentFormation],
+  );
+
   const clearPendingTacticCopyCreation = useCallback(() => {
     if (tacticCopyCreationTimeoutRef.current !== null) {
       window.clearTimeout(tacticCopyCreationTimeoutRef.current);
@@ -222,29 +267,20 @@ export function useTacticsOrchestration(params: {
   const startTacticCreation = useCallback(() => {
     if (!currentFormation) return;
     clearPendingTacticCopyCreation();
-    opponentsHook.setOpponentPlacementMode(false);
-    ballHook.setBallPlacementMode(false);
-    connLines.resetLineDrawingState();
-    playerView.setPlayerViewEnabled(false);
-    playerView.setSelectedPlayerIndex(null);
-    playerView.setSelectedOpponentViewId(null);
-    clearManualPositions();
-    resetTactic();
+    resetInteractionModes();
     const phase = playMode === "field" ? selectedPhase : selectedSetPlayType;
     tacticCreation.startCreation(
       currentFormation.name,
       phase,
       currentFormation.id.value,
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- opponentsHook/ballHook/connLines/playerView のセッターは安定したディスパッチャー。ラッパーオブジェクトを含めると連鎖的な再生成が発生する
   }, [
     currentFormation,
     selectedPhase,
     selectedSetPlayType,
     playMode,
-    resetTactic,
+    resetInteractionModes,
     tacticCreation,
-    clearManualPositions,
     clearPendingTacticCopyCreation,
   ]);
 
@@ -255,14 +291,7 @@ export function useTacticsOrchestration(params: {
       if (!tactic) return;
 
       clearPendingTacticCopyCreation();
-      opponentsHook.setOpponentPlacementMode(false);
-      ballHook.setBallPlacementMode(false);
-      connLines.resetLineDrawingState();
-      playerView.setPlayerViewEnabled(false);
-      playerView.setSelectedPlayerIndex(null);
-      playerView.setSelectedOpponentViewId(null);
-      clearManualPositions();
-      resetTactic();
+      resetInteractionModes();
       const previewTactic = createPreviewTacticFromCopyRange({
         tactic,
         formationKey: currentFormation.id.value,
@@ -307,6 +336,7 @@ export function useTacticsOrchestration(params: {
       executeTactic,
       clearManualPositions,
       findTacticById,
+      resetInteractionModes,
       opponentsHook,
       playerView,
       resetTactic,
@@ -520,43 +550,11 @@ export function useTacticsOrchestration(params: {
   // ── プレイヤードラッグ終了 ──
   const handlePlayerDragEnd = useCallback(
     (index: number, pos: { x: number; z: number }) => {
-      const applyPlayerDrag = (
-        playerIndex: number,
-        playerPos: { x: number; z: number },
-      ) => {
-        if (tacticCreation.creation && currentFormation) {
-          const roleMap = currentFormation.roleMap;
-          let role: string | null = null;
-          roleMap.forEach((mappedIndex, roleKey) => {
-            if (mappedIndex === playerIndex) role = roleKey;
-          });
-          if (role) {
-            if (tacticCreation.creation.wizardStep === "setPosition") {
-              tacticCreation.setSetPosition(role, playerPos.x, playerPos.z);
-            } else {
-              const cat = currentFormation.positions[playerIndex]?.category;
-              tacticCreation.setPlayerTarget(
-                role,
-                playerPos.x,
-                playerPos.z,
-                POSITION_HEX_COLORS[cat as keyof typeof POSITION_HEX_COLORS] ||
-                  POSITION_FALLBACK_HEX_COLOR,
-              );
-            }
-          }
-        }
-      };
-
-      applyPlayerDrag(index, pos);
+      applyDragToCreation(index, pos);
       setManualPlayerPositions((prev) => ({ ...prev, [index]: pos }));
       pushCurrentSnapshot();
     },
-    [
-      tacticCreation,
-      currentFormation,
-      pushCurrentSnapshot,
-      setManualPlayerPositions,
-    ],
+    [applyDragToCreation, setManualPlayerPositions, pushCurrentSnapshot],
   );
 
   const handleGroupPlayerDragEnd = useCallback(
@@ -569,39 +567,14 @@ export function useTacticsOrchestration(params: {
       const nextPositions: Record<number, { x: number; z: number }> = {};
 
       for (const { index, pos } of positions) {
-        if (tacticCreation.creation && currentFormation) {
-          const roleMap = currentFormation.roleMap;
-          let role: string | null = null;
-          roleMap.forEach((mappedIndex, roleKey) => {
-            if (mappedIndex === index) role = roleKey;
-          });
-          if (role) {
-            if (tacticCreation.creation.wizardStep === "setPosition") {
-              tacticCreation.setSetPosition(role, pos.x, pos.z);
-            } else {
-              const cat = currentFormation.positions[index]?.category;
-              tacticCreation.setPlayerTarget(
-                role,
-                pos.x,
-                pos.z,
-                POSITION_HEX_COLORS[cat as keyof typeof POSITION_HEX_COLORS] ||
-                  POSITION_FALLBACK_HEX_COLOR,
-              );
-            }
-          }
-        }
+        applyDragToCreation(index, pos);
         nextPositions[index] = pos;
       }
 
       setManualPlayerPositions((prev) => ({ ...prev, ...nextPositions }));
       pushCurrentSnapshot();
     },
-    [
-      tacticCreation,
-      currentFormation,
-      pushCurrentSnapshot,
-      setManualPlayerPositions,
-    ],
+    [applyDragToCreation, setManualPlayerPositions, pushCurrentSnapshot],
   );
 
   // ── タクティクス作成ツールバーハンドラー ──
@@ -620,17 +593,15 @@ export function useTacticsOrchestration(params: {
   const handleSwitchStep = useCallback(
     (index: number) => {
       tacticCreation.switchToStep(index);
-      resetTactic();
-      clearManualPositions();
+      resetForStepChange();
     },
-    [tacticCreation, resetTactic, clearManualPositions],
+    [tacticCreation, resetForStepChange],
   );
 
   const handleAddStep = useCallback(() => {
     tacticCreation.addStep();
-    resetTactic();
-    clearManualPositions();
-  }, [tacticCreation, resetTactic, clearManualPositions]);
+    resetForStepChange();
+  }, [tacticCreation, resetForStepChange]);
 
   const handleResetStep = useCallback(() => {
     tacticCreation.resetCurrentStep();
@@ -638,9 +609,8 @@ export function useTacticsOrchestration(params: {
   }, [tacticCreation, clearManualPositions]);
 
   const handleResetPreview = useCallback(() => {
-    resetTactic();
-    clearManualPositions();
-  }, [resetTactic, clearManualPositions]);
+    resetForStepChange();
+  }, [resetForStepChange]);
 
   // ── フィルタ済みタクティクス ──
   const tacticsForCurrentFormation = useMemo(() => {

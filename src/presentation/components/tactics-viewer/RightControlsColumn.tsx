@@ -23,6 +23,7 @@ import { getFormationOptionsWithDefault } from "@shared/constants/formations";
 import {
   BackgroundSettingsPanel,
   ConnectionLinesButton,
+  RightHistoryPanel,
 } from "./right-controls";
 
 const PRIMARY_PANEL_CLASS =
@@ -289,45 +290,15 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                 </div>
               </div>
 
-              {/* Undo / Redo - sm+のみ表示 */}
-              <div
-                className={`hidden sm:flex ${SECONDARY_PANEL_CLASS} ${HEADER_ACTION_CARD_HEIGHT_CLASS} w-[88px] xl:w-[96px] self-stretch flex-col`}
-              >
-                <div className="bg-gradient-to-r from-slate-800/95 via-slate-800/90 to-slate-700/85 px-1 py-1 sm:py-1.5 border-b border-slate-600/60 flex items-center justify-center xl:justify-start xl:px-2">
-                  <div className={PANEL_CAPTION_CLASS}>
-                    <span className="w-1 h-3.5 bg-blue-500 rounded-full hidden xl:block"></span>
-                    <span>History</span>
-                  </div>
-                </div>
-                <div className="px-1.5 py-1 sm:p-2 flex items-center justify-center gap-1 sm:gap-1.5 flex-1">
-                  <button
-                    onClick={onUndo}
-                    disabled={!canUndo || !undoRedoEnabled}
-                    className={`h-7 w-7 sm:h-8 sm:w-8 xl:h-9 xl:w-9 rounded-xl text-xs font-bold transition-all duration-300 flex items-center justify-center ${
-                      canUndo && undoRedoEnabled
-                        ? "bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] hover:text-white border border-white/5 hover:scale-105"
-                        : "bg-white/[0.03] border border-white/5 opacity-25 cursor-not-allowed"
-                    }`}
-                    title={`${t("tactics.undo")} (${navigator.platform?.includes("Mac") ? "⌘" : "Ctrl"}+Z)`}
-                    aria-label={t("tactics.undo")}
-                  >
-                    <span aria-hidden="true">↩️</span>
-                  </button>
-                  <button
-                    onClick={onRedo}
-                    disabled={!canRedo || !undoRedoEnabled}
-                    className={`h-7 w-7 sm:h-8 sm:w-8 xl:h-9 xl:w-9 rounded-xl text-xs font-bold transition-all duration-300 flex items-center justify-center ${
-                      canRedo && undoRedoEnabled
-                        ? "bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] hover:text-white border border-white/5 hover:scale-105"
-                        : "bg-white/[0.03] border border-white/5 opacity-25 cursor-not-allowed"
-                    }`}
-                    title={`${t("tactics.redo")} (${navigator.platform?.includes("Mac") ? "⌘" : "Ctrl"}+Shift+Z)`}
-                    aria-label={t("tactics.redo")}
-                  >
-                    <span aria-hidden="true">↪️</span>
-                  </button>
-                </div>
-              </div>
+              {/* Undo / Redo - sm+のみ表示 (extracted in Phase 3) */}
+              <RightHistoryPanel
+                canUndo={canUndo}
+                canRedo={canRedo}
+                undoRedoEnabled={undoRedoEnabled}
+                onUndo={onUndo}
+                onRedo={onRedo}
+                t={t}
+              />
             </div>
 
             {/* トグルボタングリッド（モバイル: 2列、sm以上: 1列） */}

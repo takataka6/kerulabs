@@ -4,3 +4,4 @@ export { OpponentSquadSelector } from "./OpponentSquadSelector";
 export { OpponentSquadSelectorPopup } from "./OpponentSquadSelectorPopup";
 export { CameraControlsGrid } from "./CameraControlsGrid";
 export { ConnectionLinesButton } from "./ConnectionLinesButton";
+export { RightHistoryPanel } from "./RightHistoryPanel";
