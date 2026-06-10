@@ -31,6 +31,12 @@ vi.mock("@infrastructure/repositories", () => ({
   IndexedDBClient: {
     getInstance: () => ({ getDB: mockGetDB }),
   },
+  // Phase 1 以降、bootstrap が SketchStorage もこの barrel から取得するようになったためモック追加
+  SketchStorage: vi.fn().mockImplementation(() => ({
+    loadSketch: vi.fn().mockResolvedValue(null),
+    saveSketch: vi.fn().mockResolvedValue(undefined),
+    clearSketch: vi.fn().mockResolvedValue(undefined),
+  })),
 }));
 
 // ── IndexedDBPreferencesService ──
@@ -339,6 +345,7 @@ describe("App", () => {
       expect(containerArg).toHaveProperty("backupService");
       expect(containerArg).toHaveProperty("fileService");
       expect(containerArg).toHaveProperty("preferencesService");
+      expect(containerArg).toHaveProperty("sketchStorage");
       expect(containerArg).toHaveProperty("tacticInteractor");
       expect(containerArg).toHaveProperty("teamInteractor");
       expect(containerArg).toHaveProperty("formationInteractor");

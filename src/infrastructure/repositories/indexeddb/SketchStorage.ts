@@ -5,6 +5,7 @@
 import { IndexedDBClient } from "./IndexedDBClient";
 import { withDB } from "./withDB";
 import type { SketchRecord } from "@domain/types/Sketch";
+import type { ISketchStorage } from "@application/ports/output/services/ISketchStorage";
 
 const SKETCH_KEY = "current";
 
@@ -13,7 +14,7 @@ const SKETCH_KEY = "current";
  *
  * シングルトンキー `"current"` で1レコードのみ管理する。
  */
-export class SketchStorage {
+export class SketchStorage implements ISketchStorage {
   private client = IndexedDBClient.getInstance();
 
   /** 保存済みスケッチを読み込む（未保存なら null） */

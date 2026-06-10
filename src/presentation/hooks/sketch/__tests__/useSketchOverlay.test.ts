@@ -59,17 +59,23 @@ function createPointerEvent(
   } as unknown as React.PointerEvent;
 }
 
-// ── SketchStorage モック ─────────────────────────────────────
+// ── sketchStorage (via ServiceContainer) モック ─────────────────
+// 旧来の直接 new SketchStorage 依存を排除した後のアーキテクチャに合わせ、
+// ServiceContainer 経由で ISketchStorage を提供する形をモックする。
 const mockLoadSketch = vi.fn().mockResolvedValue(null);
 const mockSaveSketch = vi.fn().mockResolvedValue(undefined);
 const mockClearSketch = vi.fn().mockResolvedValue(undefined);
 
-vi.mock("@infrastructure/repositories/indexeddb/SketchStorage", () => ({
-  SketchStorage: vi.fn().mockImplementation(() => ({
-    loadSketch: mockLoadSketch,
-    saveSketch: mockSaveSketch,
-    clearSketch: mockClearSketch,
-  })),
+vi.mock("@application/ServiceContainer", () => ({
+  getContainer: () => ({
+    sketchStorage: {
+      loadSketch: mockLoadSketch,
+      saveSketch: mockSaveSketch,
+      clearSketch: mockClearSketch,
+    },
+    // 他のテストで必要になる最小限のプロパティ（存在しなくても getContainer 内のアクセスで落ちないようガード）
+    preferencesService: { get: vi.fn(), set: vi.fn() },
+  }),
 }));
 
 import { useSketchOverlay } from "../useSketchOverlay";

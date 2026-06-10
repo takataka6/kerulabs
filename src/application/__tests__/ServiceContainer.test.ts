@@ -61,6 +61,7 @@ function createMockContainer(): Container {
     backupService: {} as Container["backupService"],
     fileService: {} as Container["fileService"],
     preferencesService: {} as Container["preferencesService"],
+    sketchStorage: {} as Container["sketchStorage"],
     tacticInteractor: {} as Container["tacticInteractor"],
     teamInteractor: {} as Container["teamInteractor"],
     formationInteractor: {} as Container["formationInteractor"],
