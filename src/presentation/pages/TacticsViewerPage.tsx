@@ -12,7 +12,7 @@ import {
   useTeams,
 } from "../hooks/queries";
 import { useLanguage } from "@presentation/contexts/LanguageContext";
-import { useToast } from "@presentation/components/ui";
+import { useToast, useConfirm } from "@presentation/components/ui";
 import type { OrchestratorActions } from "@presentation/components/tactics-viewer";
 
 // 抽出済みフック
@@ -20,6 +20,7 @@ import {
   useTacticsOrchestration,
   useFlowchartGenerator,
 } from "../hooks/tactic";
+import { useSeedSampleData } from "../hooks/useSeedSampleData";
 import {
   useFormationManagement,
   useOpponents,
@@ -76,6 +77,7 @@ export function TacticsViewerPage() {
   const queryClient = useQueryClient();
   const { t, tDynamic, language } = useLanguage();
   const { showToast } = useToast();
+  const { confirm } = useConfirm();
   const { data: teams, isLoading: teamsLoading } = useTeams();
   const { data: formations, isLoading: formationsLoading } = useFormations();
 
@@ -91,6 +93,16 @@ export function TacticsViewerPage() {
   const cardMgmt = useCardManagement();
   const lineupAnimation = useLineupAnimation();
   const sketch = useSketchOverlay();
+
+  // ── Sample data seed for empty team state ──
+  const { handleSeed: handleSeedTeams, isSeeding: isSeedingTeams } =
+    useSeedSampleData(showToast, t, { teams: true });
+
+  const handleSeedTeamsSample = async () => {
+    if (await confirm({ message: t("app.seed.teams.confirm") })) {
+      await handleSeedTeams();
+    }
+  };
 
   // ── Snapshot management (undo/redo) ──
   // ref ベースなので pushCurrentSnapshot / resetHistory はフック呼び出し直後から利用可能
@@ -336,6 +348,8 @@ export function TacticsViewerPage() {
         onCloseBulkTeamImport={() => teamMgmt.setShowBulkTeamImport(false)}
         onCreateTeam={teamMgmt.handleCreateTeam}
         onBulkImport={teamMgmt.handleBulkTeamImport}
+        onSeedSampleData={handleSeedTeamsSample}
+        isSeedingData={isSeedingTeams}
         editingTeam={teamMgmt.editingTeam}
         onEditTeam={(teamId, event) => {
           event.stopPropagation();
