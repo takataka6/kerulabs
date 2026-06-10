@@ -85,6 +85,7 @@ export function useTacticsOrchestration(params: {
   currentFormation: Formation | undefined;
   selectedTeam: Team | undefined;
   tactics: Tactic[] | undefined;
+  allTactics?: Tactic[] | undefined;
   playMode: "field" | "setPlay";
   selectedPhase: PhaseKey;
   selectedSetPlayType: SetPlayType;
@@ -106,6 +107,7 @@ export function useTacticsOrchestration(params: {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     selectedTeam: _selectedTeam,
     tactics,
+    allTactics,
     playMode,
     selectedPhase,
     selectedSetPlayType,
@@ -160,8 +162,10 @@ export function useTacticsOrchestration(params: {
 
   /** タクティクスIDからタクティクスを検索するユーティリティ */
   const findTacticById = useCallback(
-    (tacticId: string) => tactics?.find((t) => t.id.value === tacticId),
-    [tactics],
+    (tacticId: string) =>
+      tactics?.find((t) => t.id.value === tacticId) ??
+      allTactics?.find((t) => t.id.value === tacticId),
+    [tactics, allTactics],
   );
 
   const activeTactic = findTacticById(activeTacticId ?? "");

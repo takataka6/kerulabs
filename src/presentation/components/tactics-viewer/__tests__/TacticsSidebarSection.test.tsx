@@ -46,13 +46,19 @@ function createMockUIContext() {
       sidebarOpen: true,
       sidebarAnimating: false,
       captureMode: false,
+      selectedImagePresetId: "none",
       headerVisible: true,
       showPlayerNames: true,
+      showPlayerNumbers: true,
       toggleSidebar: vi.fn(),
       setSidebarAnimating: vi.fn(),
       setShowPlayerNames: vi.fn(),
+      setShowPlayerNumbers: vi.fn(),
       setHiddenPlayerIndices: vi.fn(),
       setCaptureMode: vi.fn(),
+      setSelectedImagePresetId: vi.fn(),
+      setCameraAction: vi.fn(),
+      setRightSidebarOpen: vi.fn(),
     },
   };
 }
@@ -120,7 +126,6 @@ function createMockExecutionContext() {
       start: vi.fn(),
     },
     tacticsLoading: false,
-    handleSavePng: vi.fn(),
   };
 }
 
@@ -293,17 +298,7 @@ describe("TacticsSidebarSection", () => {
       expect(screen.getByTestId("tactic-export-modal")).toBeTruthy();
     });
 
-    it("capture.onSavePng delegates to handleSavePng", () => {
-      render(<TacticsSidebarSection />);
-
-      const capture = capturedSidebarPanelProps.capture as {
-        onSavePng: () => void;
-      };
-      capture.onSavePng();
-      expect(mockExecutionContext.handleSavePng).toHaveBeenCalled();
-    });
-
-    it("capture.onExitCaptureMode calls setCaptureMode(false)", () => {
+    it("capture.onExitCaptureMode calls setCaptureMode(false) and setSelectedImagePresetId('none')", () => {
       render(<TacticsSidebarSection />);
 
       const capture = capturedSidebarPanelProps.capture as {
@@ -311,6 +306,27 @@ describe("TacticsSidebarSection", () => {
       };
       capture.onExitCaptureMode();
       expect(mockUIContext.ui.setCaptureMode).toHaveBeenCalledWith(false);
+      expect(mockUIContext.ui.setSelectedImagePresetId).toHaveBeenCalledWith(
+        "none",
+      );
+    });
+
+    it("capture.onSelectImagePreset updates preset", () => {
+      render(<TacticsSidebarSection />);
+
+      const capture = capturedSidebarPanelProps.capture as {
+        onSelectImagePreset: (id: string) => void;
+      };
+
+      capture.onSelectImagePreset("split-field-squad");
+      expect(mockUIContext.ui.setSelectedImagePresetId).toHaveBeenCalledWith(
+        "split-field-squad",
+      );
+
+      capture.onSelectImagePreset("field-only");
+      expect(mockUIContext.ui.setSelectedImagePresetId).toHaveBeenCalledWith(
+        "field-only",
+      );
     });
 
     it("capture.onTogglePlayerNames toggles showPlayerNames and resets hiddenPlayerIndices when enabling", () => {
@@ -337,6 +353,16 @@ describe("TacticsSidebarSection", () => {
       expect(mockUIContext.ui.setShowPlayerNames).toHaveBeenCalled();
       // next = !true = false, so hiddenPlayerIndices should NOT be reset
       expect(mockUIContext.ui.setHiddenPlayerIndices).not.toHaveBeenCalled();
+    });
+
+    it("capture.onTogglePlayerNumbers toggles showPlayerNumbers", () => {
+      render(<TacticsSidebarSection />);
+
+      const capture = capturedSidebarPanelProps.capture as {
+        onTogglePlayerNumbers: () => void;
+      };
+      capture.onTogglePlayerNumbers();
+      expect(mockUIContext.ui.setShowPlayerNumbers).toHaveBeenCalled();
     });
 
     it("モバイルオーバーレイクリックで toggleSidebar が呼ばれる", () => {

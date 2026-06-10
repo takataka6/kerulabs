@@ -21,6 +21,7 @@ export function useUIVisibility() {
 
   // ── 名前表示 ──
   const [showPlayerNames, setShowPlayerNames] = useState(true);
+  const [showPlayerNumbers, setShowPlayerNumbers] = useState(true);
   const [showNameSettings, setShowNameSettings] = useState(false);
   const [hiddenPlayerIndices, setHiddenPlayerIndices] = useState<Set<number>>(
     new Set(),
@@ -34,6 +35,10 @@ export function useUIVisibility() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sidebarAnimating, setSidebarAnimating] = useState(false);
 
+  // ── 右サイドバー ──
+  const [rightSidebarOpen, setRightSidebarOpen] = useState(true);
+  const [rightSidebarAnimating, setRightSidebarAnimating] = useState(false);
+
   // ── スカッドパネル ──
   const [squadPanelOpen, setSquadPanelOpen] = useState(true);
 
@@ -42,6 +47,8 @@ export function useUIVisibility() {
 
   // ── キャプチャモード ──
   const [captureMode, setCaptureMode] = useState(false);
+  const [selectedImagePresetId, setSelectedImagePresetId] =
+    useState<string>("none");
 
   // ── マーカーサイズ ──
   const [playerMarkerScale, setPlayerMarkerScale] = useState(1);
@@ -62,6 +69,12 @@ export function useUIVisibility() {
     setSidebarOpen((prev) => !prev);
   }, []);
 
+  // ── 右サイドバー開閉 ──
+  const toggleRightSidebar = useCallback(() => {
+    setRightSidebarAnimating(true);
+    setRightSidebarOpen((prev) => !prev);
+  }, []);
+
   return {
     // モーダル / パネル
     showPlayerManagement,
@@ -74,6 +87,8 @@ export function useUIVisibility() {
     // 名前表示
     showPlayerNames,
     setShowPlayerNames,
+    showPlayerNumbers,
+    setShowPlayerNumbers,
     showNameSettings,
     setShowNameSettings,
     hiddenPlayerIndices,
@@ -87,9 +102,17 @@ export function useUIVisibility() {
 
     // サイドバー
     sidebarOpen,
+    setSidebarOpen,
     sidebarAnimating,
     setSidebarAnimating,
     toggleSidebar,
+
+    // 右サイドバー
+    rightSidebarOpen,
+    setRightSidebarOpen,
+    rightSidebarAnimating,
+    setRightSidebarAnimating,
+    toggleRightSidebar,
 
     // スカッドパネル
     squadPanelOpen,
@@ -102,6 +125,8 @@ export function useUIVisibility() {
     // キャプチャ
     captureMode,
     setCaptureMode,
+    selectedImagePresetId,
+    setSelectedImagePresetId,
 
     // マーカー
     playerMarkerScale,

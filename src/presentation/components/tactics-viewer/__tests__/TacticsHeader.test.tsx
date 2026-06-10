@@ -74,6 +74,8 @@ interface ContextOverrides {
     setShowSquadBuilder: typeof vi.fn;
     setCaptureMode: typeof vi.fn;
     setHeaderVisible: typeof vi.fn;
+    setSidebarOpen: typeof vi.fn;
+    setRightSidebarOpen: typeof vi.fn;
   }>;
   playModePhase?: Partial<{
     playMode: "field" | "setPlay";
@@ -96,6 +98,8 @@ function createDefaultContexts(overrides: ContextOverrides = {}) {
         setShowSquadBuilder: mockSetShowSquadBuilder,
         setCaptureMode: mockSetCaptureMode,
         setHeaderVisible: mockSetHeaderVisible,
+        setSidebarOpen: vi.fn(),
+        setRightSidebarOpen: vi.fn(),
         ...overrides.ui,
       },
     },

@@ -151,7 +151,13 @@ export const TacticsHeader = memo(function TacticsHeader() {
           </button>
           <div className="w-px h-5 bg-slate-700/50"></div>
           <button
-            onClick={() => ui.setCaptureMode((prev) => !prev)}
+            onClick={() => {
+              if (!ui.captureMode) {
+                ui.setSidebarOpen(true);
+                ui.setRightSidebarOpen(true);
+              }
+              ui.setCaptureMode((prev) => !prev);
+            }}
             className={`px-2 xl:px-3 py-1.5 rounded-lg transition-all duration-200 text-sm flex items-center gap-1.5 ${
               captureMode
                 ? "bg-blue-600 text-white hover:bg-blue-500"
@@ -162,7 +168,7 @@ export const TacticsHeader = memo(function TacticsHeader() {
           >
             <span aria-hidden="true">📸</span>
             <span className="hidden xl:inline tracking-wide">
-              {t("tactics.capture")}
+              {t("tactics.captureMode")}
             </span>
           </button>
           <div className="w-px h-5 bg-slate-700/50"></div>

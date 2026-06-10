@@ -54,8 +54,6 @@ export interface TacticsExecutionContextType {
   handlePlayerClick: (index: number, event?: MouseEvent) => void;
   /** 相手クリック */
   handleOpponentClick: (id: number, event?: MouseEvent) => void;
-  /** PNG保存 */
-  handleSavePng: () => void;
   /** フローチャート生成 */
   generateFlowchart: () => string;
 }

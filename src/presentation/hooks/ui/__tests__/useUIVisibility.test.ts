@@ -20,6 +20,7 @@ describe("useUIVisibility", () => {
     expect(result.current.showSquadBuilder).toBe(false);
     expect(result.current.showFlowchart).toBe(false);
     expect(result.current.showPlayerNames).toBe(true);
+    expect(result.current.showPlayerNumbers).toBe(true);
     expect(result.current.showNameSettings).toBe(false);
     expect(result.current.hiddenPlayerIndices).toEqual(new Set());
     expect(result.current.showRightControls).toBe(true);
@@ -64,5 +65,22 @@ describe("useUIVisibility", () => {
   it("playerMarkerScale のデフォルトが 1 である", () => {
     const { result } = renderHook(() => useUIVisibility());
     expect(result.current.playerMarkerScale).toBe(1);
+  });
+
+  it("selectedImagePresetId の初期値は none である", () => {
+    const { result } = renderHook(() => useUIVisibility());
+    expect(result.current.selectedImagePresetId).toBe("none");
+  });
+
+  it("setSelectedImagePresetId でプリセットを更新できる", () => {
+    const { result } = renderHook(() => useUIVisibility());
+    act(() => result.current.setSelectedImagePresetId("split-field-squad"));
+    expect(result.current.selectedImagePresetId).toBe("split-field-squad");
+  });
+
+  it("setShowPlayerNumbers で背番号表示フラグを更新できる", () => {
+    const { result } = renderHook(() => useUIVisibility());
+    act(() => result.current.setShowPlayerNumbers(false));
+    expect(result.current.showPlayerNumbers).toBe(false);
   });
 });

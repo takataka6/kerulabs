@@ -112,10 +112,12 @@ function createMockUIContext() {
   return {
     ui: {
       captureMode: false,
+      selectedImagePresetId: "none",
       showRightControls: true,
       squadPanelOpen: false,
       showSquadBuilder: false,
       showPlayerNames: true,
+      showPlayerNumbers: true,
       showNameSettings: false,
       hiddenPlayerIndices: new Set<number>(),
       isDraggingObject: false,
@@ -130,6 +132,7 @@ function createMockUIContext() {
       setSquadPanelOpen: noop,
       setShowRightControls: noop,
       setShowPlayerNames: noop,
+      setShowPlayerNumbers: noop,
       setShowNameSettings: noop,
       setHiddenPlayerIndices: noop,
       setFieldLocked: noop,
@@ -138,6 +141,7 @@ function createMockUIContext() {
       setPlayerMarkerScale: noop,
       setShowFlowchart: noop,
       setCaptureMode: noop,
+      setSelectedImagePresetId: noop,
       toggleSidebar: noop,
       setShowCards: noop,
       setShowPlayerManagement: noop,
@@ -161,7 +165,7 @@ function createMockTeamContext() {
       name: "Test Team",
       manager: "Manager",
     },
-    currentFormation: { id: "fm-1", name: "4-3-3" },
+    currentFormation: { id: "fm-1", name: "4-3-3", positions: [] },
     teams: [],
     teamMgmt: {
       selectedTeamId: "team-1",
@@ -351,7 +355,6 @@ function createMockExecutionContext() {
     },
     handlePlayerClick: noop,
     handleOpponentClick: noop,
-    handleSavePng: noop,
     generateFlowchart: () => "",
     tacticsLoading: false,
   };
@@ -424,6 +427,15 @@ describe("TacticsMainContent", () => {
     render(<TacticsMainContent />);
 
     expect(capturedTacticsCanvasProps.showFieldLockButton).toBe(false);
+  });
+
+  it("captureMode かつ selectedImagePresetId が 'none' 以外の場合、ImageCaptureLayout を通じて TacticsCanvas が表示される", async () => {
+    mockUIContext.ui.captureMode = true;
+    mockUIContext.ui.selectedImagePresetId = "squad-and-sub";
+
+    render(<TacticsMainContent />);
+
+    expect(await screen.findByTestId("tactics-canvas")).toBeInTheDocument();
   });
 
   it("ガイドを閉じている場合は表示しない", () => {

@@ -4,14 +4,12 @@
  * 各フック間を橋渡しするクリックハンドラ・カード操作・PNG保存などを統合する。
  */
 import { useCallback } from "react";
-import { getDateStamp } from "@shared/utils";
 import type { useConnectionLines } from "../field/useConnectionLines";
 import type { usePlayerView } from "../ui/usePlayerView";
 import type { useMultiSelect } from "../ui/useMultiSelect";
 import type { useCardManagement } from "../team/useCardManagement";
 import type { useTeamManagement } from "../team/useTeamManagement";
 import type { useManagerEditor } from "../team/useManagerEditor";
-import type { Team } from "@domain/entities/Team";
 
 interface UseBridgeCallbacksParams {
   connLines: ReturnType<typeof useConnectionLines>;
@@ -21,7 +19,6 @@ interface UseBridgeCallbacksParams {
   teamMgmt: ReturnType<typeof useTeamManagement>;
   managerEditor: ReturnType<typeof useManagerEditor>;
   pushCurrentSnapshot: () => void;
-  teams: Team[] | undefined;
 }
 
 /**
@@ -42,7 +39,6 @@ export function useBridgeCallbacks({
   teamMgmt,
   managerEditor,
   pushCurrentSnapshot,
-  teams,
 }: UseBridgeCallbacksParams) {
   const handlePlayerClick = useCallback(
     (index: number, event?: MouseEvent) => {
@@ -117,45 +113,11 @@ export function useBridgeCallbacks({
     requestAnimationFrame(() => pushCurrentSnapshot());
   }, [cardMgmt, teamMgmt, pushCurrentSnapshot]);
 
-  const handleSavePng = useCallback(() => {
-    const threeCanvas = document.querySelector(
-      "canvas:not(#sketch-canvas)",
-    ) as HTMLCanvasElement | null;
-    if (!threeCanvas) return;
-
-    const sketchCanvas = document.getElementById(
-      "sketch-canvas",
-    ) as HTMLCanvasElement | null;
-
-    let dataUrl: string;
-    if (sketchCanvas && sketchCanvas.width > 0 && sketchCanvas.height > 0) {
-      const composite = document.createElement("canvas");
-      composite.width = threeCanvas.width;
-      composite.height = threeCanvas.height;
-      const ctx = composite.getContext("2d");
-      if (!ctx) return;
-      ctx.drawImage(threeCanvas, 0, 0);
-      ctx.drawImage(sketchCanvas, 0, 0, composite.width, composite.height);
-      dataUrl = composite.toDataURL("image/png");
-    } else {
-      dataUrl = threeCanvas.toDataURL("image/png");
-    }
-
-    const link = document.createElement("a");
-    const teamName =
-      teams?.find((tm) => tm.id.value === teamMgmt.selectedTeamId)?.name ||
-      "tactics";
-    link.download = `${teamName}_${getDateStamp()}.png`;
-    link.href = dataUrl;
-    link.click();
-  }, [teams, teamMgmt.selectedTeamId]);
-
   return {
     handlePlayerClick,
     handleOpponentClick,
     handleSquadCardCycle,
     handleSaveManager,
     handleCycleManagerCard,
-    handleSavePng,
   };
 }

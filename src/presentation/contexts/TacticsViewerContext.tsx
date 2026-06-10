@@ -113,7 +113,6 @@ export function TacticsViewerProvider({
       canvasCallbacks: value.canvasCallbacks,
       handlePlayerClick: value.handlePlayerClick,
       handleOpponentClick: value.handleOpponentClick,
-      handleSavePng: value.handleSavePng,
       generateFlowchart: value.generateFlowchart,
     }),
     [
@@ -132,7 +131,6 @@ export function TacticsViewerProvider({
       value.canvasCallbacks,
       value.handlePlayerClick,
       value.handleOpponentClick,
-      value.handleSavePng,
       value.generateFlowchart,
     ],
   );

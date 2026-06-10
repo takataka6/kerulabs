@@ -132,7 +132,6 @@ function createMockExecutionValue(
     canvasCallbacks: {} as TacticsExecutionContextType["canvasCallbacks"],
     handlePlayerClick: fn(),
     handleOpponentClick: fn(),
-    handleSavePng: fn(),
     generateFlowchart: () => "",
     tacticsLoading: false,
   };

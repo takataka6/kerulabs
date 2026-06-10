@@ -42,6 +42,8 @@ const meta = {
     },
     capture: {
       captureMode: false,
+      selectedImagePresetId: "none",
+      onSelectImagePreset: fn(),
       lineupAnimation: {
         isActive: false,
         selectedPresetId: "classic-tv-reveal",
@@ -50,8 +52,9 @@ const meta = {
       },
       showPlayerNames: true,
       onTogglePlayerNames: fn(),
+      showPlayerNumbers: true,
+      onTogglePlayerNumbers: fn(),
       onExitCaptureMode: fn(),
-      onSavePng: fn(),
     },
     i18n: {
       language: "ja",
