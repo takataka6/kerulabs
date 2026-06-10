@@ -7,7 +7,7 @@
  * - TacticsTeamContext: チーム・フォーメーション・表示データ
  * - TacticsExecutionContext: 戦術実行・フィールド操作・キャンバス
  */
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getContainer } from "@application/ServiceContainer";
 import { useTacticsUI } from "@presentation/contexts/TacticsUIContext";
 import { useTacticsTeam } from "@presentation/contexts/TacticsTeamContext";
@@ -28,23 +28,7 @@ import { BackgroundSettingsPanelContent } from "./right-controls/BackgroundSetti
 import { OpponentSquadSelectorPopup } from "./right-controls/OpponentSquadSelectorPopup";
 import { ImageCaptureLayout } from "./ImageCaptureLayout";
 
-const TacticsCanvas = lazy(() =>
-  import("./TacticsCanvas").then(({ TacticsCanvas: Component }) => ({
-    default: Component,
-  })),
-);
-
-function CanvasLoader() {
-  return (
-    <div
-      className="flex h-full min-h-[320px] items-center justify-center text-sm text-slate-300"
-      role="status"
-      aria-live="polite"
-    >
-      Loading tactics canvas...
-    </div>
-  );
-}
+import { TacticsCanvas } from "./TacticsCanvas";
 
 export function TacticsMainContent() {
   const preferencesService = getContainer().preferencesService;
@@ -311,84 +295,82 @@ export function TacticsMainContent() {
       {/* 3Dキャンバス */}
       {(() => {
         const canvasElement = (
-          <Suspense fallback={<CanvasLoader />}>
-            <TacticsCanvas
-              playersData={playersData}
-              colorsData={colorsData}
-              formationData={formationMgmt.formationData}
-              pitchConfig={playModePhase.pitchConfig}
-              mergedPlayerPositions={tOrch.mergedPlayerPositions}
-              mergedArrows={tOrch.mergedArrows}
-              mergedBallTrajectories={tOrch.mergedBallTrajectories}
-              showPlayerNames={ui.showPlayerNames && !lineupAnimation.isActive}
-              showPlayerNumbers={
-                ui.showPlayerNumbers && !lineupAnimation.isActive
-              }
-              showPlayerPhotos={!lineupAnimation.isActive}
-              showOpponentNames={opponentsHook.showOpponentNames}
-              hiddenPlayerIndices={ui.hiddenPlayerIndices}
-              labelFixed={ui.labelFixed}
-              playerMarkerScale={ui.playerMarkerScale}
-              playerCards={canvasMemo.canvasPlayerCards}
-              teamName={selectedTeam.name}
-              opponentTeamName={opponentsHook.opponentTeam?.name || ""}
-              onPlayerClick={handlePlayerClick}
-              selectedPlayerIndex={canvasMemo.canvasSelectedPlayerIndex}
-              selectedPlayerIndices={multiSelect.selectedPlayerIndices}
-              isPlayerView={canvasMemo.canvasIsPlayerView}
-              opponents={opponentsHook.opponents}
-              selectedOpponentId={playerView.selectedOpponentViewId}
-              selectedOpponentIds={multiSelect.selectedOpponentIds}
-              onOpponentClick={handleOpponentClick}
-              opponentPlacementMode={opponentsHook.opponentPlacementMode}
-              onFieldClick={canvasCallbacks.handleFieldClick}
-              onOpponentDrag={opponentsHook.handleOpponentDrag}
-              onOpponentRemove={opponentsHook.handleOpponentRemove}
-              ballPosition={tOrch.effectiveBallPosition}
-              ballHighlightPosition={tOrch.ballHighlightPosition}
-              ballPlacementMode={tOrch.effectiveBallPlacementMode}
-              onBallPlace={canvasCallbacks.handleBallPlace}
-              onBallDrag={canvasCallbacks.handleBallDrag}
-              onBallRemove={canvasCallbacks.handleBallRemove}
-              isDraggingObject={ui.isDraggingObject}
-              onDragStart={canvasCallbacks.handleDragStart}
-              onDragEnd={canvasCallbacks.handleDragEnd}
-              playerDraggable={canvasMemo.canvasPlayerDraggable}
-              onPlayerDragEnd={canvasCallbacks.handlePlayerDragEnd}
-              onGroupDragEnd={canvasCallbacks.handleGroupDragEnd}
-              connectionLines={connLines.connectionLines}
-              pendingConnectionLine={canvasMemo.canvasPendingConnectionLine}
-              onConnectionLineRemove={connLines.handleConnectionLineRemove}
-              lineTrackingActive={canvasMemo.canvasLineTrackingActive}
-              onLinePointerMove={canvasCallbacks.handleLinePointerMove}
-              fieldLocked={ui.fieldLocked}
-              onToggleFieldLock={() => ui.setFieldLocked((prev) => !prev)}
-              showFieldLockButton={!ui.captureMode && !hasOpenPopup}
-              touchlineLocked={ui.touchlineLocked}
-              sceneBackground={bgSettings.sceneBackground}
-              sceneBackgroundImageUrl={bgSettings.sceneBackgroundImageUrl}
-              sceneBackgroundImageSaturation={
-                bgSettings.sceneBackgroundImageSaturation
-              }
-              sceneBackgroundImageBrightness={
-                bgSettings.sceneBackgroundImageBrightness
-              }
-              pitchColor={bgSettings.pitchColor}
-              pitchOpacity={bgSettings.pitchOpacity}
-              cameraAction={ui.cameraAction}
-              onCameraActionDone={canvasCallbacks.handleCameraActionDone}
-              yawNudgeRef={playerView.yawNudgeRef}
-              isFirstPerson={playerView.isFirstPerson}
-              onRectSelectResult={multiSelect.setSelectionFromRect}
-              onEmptyFieldClick={multiSelect.clearSelection}
-              selectedTeam={selectedTeam}
-              currentFormation={currentFormation}
-              activeTactic={tOrch.activeTactic}
-              language={language}
-              t={t}
-              tDynamic={tDynamic}
-            />
-          </Suspense>
+          <TacticsCanvas
+            playersData={playersData}
+            colorsData={colorsData}
+            formationData={formationMgmt.formationData}
+            pitchConfig={playModePhase.pitchConfig}
+            mergedPlayerPositions={tOrch.mergedPlayerPositions}
+            mergedArrows={tOrch.mergedArrows}
+            mergedBallTrajectories={tOrch.mergedBallTrajectories}
+            showPlayerNames={ui.showPlayerNames && !lineupAnimation.isActive}
+            showPlayerNumbers={
+              ui.showPlayerNumbers && !lineupAnimation.isActive
+            }
+            showPlayerPhotos={!lineupAnimation.isActive}
+            showOpponentNames={opponentsHook.showOpponentNames}
+            hiddenPlayerIndices={ui.hiddenPlayerIndices}
+            labelFixed={ui.labelFixed}
+            playerMarkerScale={ui.playerMarkerScale}
+            playerCards={canvasMemo.canvasPlayerCards}
+            teamName={selectedTeam.name}
+            opponentTeamName={opponentsHook.opponentTeam?.name || ""}
+            onPlayerClick={handlePlayerClick}
+            selectedPlayerIndex={canvasMemo.canvasSelectedPlayerIndex}
+            selectedPlayerIndices={multiSelect.selectedPlayerIndices}
+            isPlayerView={canvasMemo.canvasIsPlayerView}
+            opponents={opponentsHook.opponents}
+            selectedOpponentId={playerView.selectedOpponentViewId}
+            selectedOpponentIds={multiSelect.selectedOpponentIds}
+            onOpponentClick={handleOpponentClick}
+            opponentPlacementMode={opponentsHook.opponentPlacementMode}
+            onFieldClick={canvasCallbacks.handleFieldClick}
+            onOpponentDrag={opponentsHook.handleOpponentDrag}
+            onOpponentRemove={opponentsHook.handleOpponentRemove}
+            ballPosition={tOrch.effectiveBallPosition}
+            ballHighlightPosition={tOrch.ballHighlightPosition}
+            ballPlacementMode={tOrch.effectiveBallPlacementMode}
+            onBallPlace={canvasCallbacks.handleBallPlace}
+            onBallDrag={canvasCallbacks.handleBallDrag}
+            onBallRemove={canvasCallbacks.handleBallRemove}
+            isDraggingObject={ui.isDraggingObject}
+            onDragStart={canvasCallbacks.handleDragStart}
+            onDragEnd={canvasCallbacks.handleDragEnd}
+            playerDraggable={canvasMemo.canvasPlayerDraggable}
+            onPlayerDragEnd={canvasCallbacks.handlePlayerDragEnd}
+            onGroupDragEnd={canvasCallbacks.handleGroupDragEnd}
+            connectionLines={connLines.connectionLines}
+            pendingConnectionLine={canvasMemo.canvasPendingConnectionLine}
+            onConnectionLineRemove={connLines.handleConnectionLineRemove}
+            lineTrackingActive={canvasMemo.canvasLineTrackingActive}
+            onLinePointerMove={canvasCallbacks.handleLinePointerMove}
+            fieldLocked={ui.fieldLocked}
+            onToggleFieldLock={() => ui.setFieldLocked((prev) => !prev)}
+            showFieldLockButton={!ui.captureMode && !hasOpenPopup}
+            touchlineLocked={ui.touchlineLocked}
+            sceneBackground={bgSettings.sceneBackground}
+            sceneBackgroundImageUrl={bgSettings.sceneBackgroundImageUrl}
+            sceneBackgroundImageSaturation={
+              bgSettings.sceneBackgroundImageSaturation
+            }
+            sceneBackgroundImageBrightness={
+              bgSettings.sceneBackgroundImageBrightness
+            }
+            pitchColor={bgSettings.pitchColor}
+            pitchOpacity={bgSettings.pitchOpacity}
+            cameraAction={ui.cameraAction}
+            onCameraActionDone={canvasCallbacks.handleCameraActionDone}
+            yawNudgeRef={playerView.yawNudgeRef}
+            isFirstPerson={playerView.isFirstPerson}
+            onRectSelectResult={multiSelect.setSelectionFromRect}
+            onEmptyFieldClick={multiSelect.clearSelection}
+            selectedTeam={selectedTeam}
+            currentFormation={currentFormation}
+            activeTactic={tOrch.activeTactic}
+            language={language}
+            t={t}
+            tDynamic={tDynamic}
+          />
         );
 
         if (

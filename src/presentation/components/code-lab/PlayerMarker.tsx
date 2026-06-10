@@ -2,7 +2,7 @@
  * @module PlayerMarker
  * @description コードラボ用の簡易選手マーカー。円柱と名前/番号テキストを表示する。
  */
-import { Text } from "@react-three/drei";
+import { CanvasText as Text } from "@presentation/components/three/CanvasText";
 
 interface PlayerMarkerProps {
   position: [number, number, number];
@@ -36,7 +36,6 @@ export function PlayerMarker({
       {/* 背番号 */}
       {number !== undefined && (
         <Text
-          font="/fonts/Roboto-Regular.ttf"
           position={[0, 0.2, 0]}
           rotation={[-Math.PI / 2, 0, Math.PI]}
           fontSize={0.28}
@@ -59,7 +58,6 @@ export function PlayerMarker({
             <meshBasicMaterial color="#1e293b" />
           </mesh>
           <Text
-            font="/fonts/Roboto-Regular.ttf"
             position={[0, 0.03, -0.75]}
             rotation={[-Math.PI / 2, 0, Math.PI]}
             fontSize={0.16}

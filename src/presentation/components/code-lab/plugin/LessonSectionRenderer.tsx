@@ -2,7 +2,7 @@
  * @module LessonSectionRenderer
  * @description プラグインレッスンのJSONセクション定義をReactコンポーネントに変換するレンダラー。
  */
-import { useState, lazy, Suspense } from "react";
+import { useState } from "react";
 import { useLanguage } from "@presentation/contexts/LanguageContext";
 import { CodeBlock } from "../CodeBlock";
 import { DemoCanvas } from "../DemoCanvas";
@@ -10,11 +10,7 @@ import { MiniPitch } from "../MiniPitch";
 import { PlayerMarker } from "../PlayerMarker";
 import { useCompact } from "./CompactModeContext";
 
-const MermaidFlowchart = lazy(() =>
-  import("@presentation/components/ui/MermaidFlowchart").then((mod) => ({
-    default: mod.MermaidFlowchart,
-  })),
-);
+import { MermaidFlowchart } from "@presentation/components/ui/MermaidFlowchart";
 import type {
   LessonSection,
   I18nText,
@@ -166,15 +162,7 @@ function MermaidDiagramRenderer({
         <p className="text-slate-400 text-sm mb-3">{sanitize(description)}</p>
       )}
       <div className="rounded-lg bg-slate-900/50 border border-slate-700/50 p-4 overflow-x-auto">
-        <Suspense
-          fallback={
-            <div className="flex items-center justify-center h-32 text-slate-500 text-sm">
-              Loading diagram...
-            </div>
-          }
-        >
-          <MermaidFlowchart chart={section.code} />
-        </Suspense>
+        <MermaidFlowchart chart={section.code} />
       </div>
     </div>
   );
