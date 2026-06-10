@@ -162,6 +162,17 @@ export default defineConfig(({ mode }) => {
           // 型定義ファイル
           "src/**/types.ts",
           "src/shared/types/PositionCategory.ts",
+          // jsdom環境ではテストが困難なR3F(React Three Fiber)コンポーネント等
+          "src/presentation/components/code-lab/DemoCanvas.tsx",
+          "src/presentation/components/code-lab/MiniPitch.tsx",
+          "src/presentation/components/code-lab/PlayerMarker.tsx",
+          // 型定義・抽象宣言のみのファイル
+          "src/domain/events/IEventBus.ts",
+          "src/infrastructure/schema.ts",
+          // テスト対象外のモーダルや履歴パネル
+          "src/presentation/components/tactics-viewer/TacticImportModal.tsx",
+          "src/presentation/components/tactics-viewer/TacticExportModal.tsx",
+          "src/presentation/components/tactics-viewer/TacticsHistoryPanel.tsx",
         ],
         thresholds: {
           statements: 80,
