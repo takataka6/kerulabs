@@ -370,7 +370,7 @@
   "tactics.showNumbers": "番号表示",
   "tactics.hideNumbers": "番号非表示",
   "tactics.labelFixed": "向きを固定",
-  "tactics.capture.close": "閉じる",
+  "tactics.capture.close": "撮影モード終了",
   "tactics.capture.savePng": "PNG保存",
   "tactics.capture.imageLayouts": "画像撮影レイアウト",
   "tactics.capture.preset.field-only": "フィールドのみ",

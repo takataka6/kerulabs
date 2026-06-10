@@ -500,156 +500,151 @@ export const SidebarPanel = memo(function SidebarPanel(
       aria-label={t("a11y.formationSelector")}
       className={`sidebar-panel custom-scrollbar ${layout.sidebarOpen ? "sidebar-open" : "sidebar-closed"} ${layout.sidebarAnimating ? "sidebar-animating" : ""} transition-opacity duration-300 ${tactics.isExecuting && !stepExecution.isStepMode && !capture.captureMode ? "opacity-40" : ""}`}
       onTransitionEnd={layout.onTransitionEnd}
-      style={
-        layout.isActive
-          ? { display: "none" }
-          : capture.captureMode
-            ? { overflowY: "hidden" }
-            : undefined
-      }
+      style={layout.isActive ? { display: "none" } : undefined}
     >
       {/* ── 撮影モード ── */}
       {capture.captureMode && !capture.lineupAnimation.isActive ? (
-        <>
-          <div className="custom-scrollbar flex-1 overflow-y-auto pt-2 pb-3">
-            {/* セクション: 撮影 */}
-            <div className={SIDEBAR_SECTION_FIRST_CLASS}>
-              <div className="px-2.5 pt-2.5">
-                <div className={SIDEBAR_SECTION_HEADER_CLASS}>
-                  <span className="w-1 h-3 bg-blue-500 rounded-full"></span>
-                  {t("tactics.capture.options")}
-                </div>
-              </div>
-              <div className={SIDEBAR_SECTION_BODY_CLASS}>
-                <div className="space-y-1.5">
-                  <button
-                    onClick={capture.onTogglePlayerNames}
-                    className={`w-full py-2.5 px-3 ${
-                      capture.showPlayerNames
-                        ? "bg-white/[0.04] text-slate-300 hover:bg-white/[0.07] border border-slate-700/35"
-                        : "bg-orange-600 hover:bg-orange-500 text-white shadow-lg"
-                    } rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm font-semibold hover:scale-[1.02]`}
-                  >
-                    <span>{capture.showPlayerNames ? "👁️" : "👁️‍🗨️"}</span>
-                    <span>
-                      {capture.showPlayerNames
-                        ? t("tactics.hideNames")
-                        : t("tactics.showNames")}
-                    </span>
-                  </button>
+        <div className="custom-scrollbar min-h-full pt-2 pb-3">
+          {/* 撮影終了ボタン（最上部） */}
+          <div className={SIDEBAR_SECTION_FIRST_CLASS}>
+            <div className={SIDEBAR_SECTION_BODY_CLASS}>
+              <button
+                onClick={capture.onExitCaptureMode}
+                className="w-full mt-2.5 py-2.5 px-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm font-semibold hover:scale-[1.02]"
+              >
+                <span>✕</span>
+                <span>{t("tactics.capture.close")}</span>
+              </button>
+            </div>
+          </div>
 
-                  <button
-                    onClick={capture.onTogglePlayerNumbers}
-                    className={`w-full py-2.5 px-3 ${
-                      capture.showPlayerNumbers
-                        ? "bg-white/[0.04] text-slate-300 hover:bg-white/[0.07] border border-slate-700/35"
-                        : "bg-orange-600 hover:bg-orange-500 text-white shadow-lg"
-                    } rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm font-semibold hover:scale-[1.02]`}
-                  >
-                    <span>{capture.showPlayerNumbers ? "🔢" : "🔤"}</span>
-                    <span>
-                      {capture.showPlayerNumbers
-                        ? t("tactics.hideNumbers")
-                        : t("tactics.showNumbers")}
-                    </span>
-                  </button>
-                </div>
+          {/* セクション: 撮影 */}
+          <div className={SIDEBAR_SECTION_CLASS}>
+            <div className="px-2.5 pt-2.5">
+              <div className={SIDEBAR_SECTION_HEADER_CLASS}>
+                <span className="w-1 h-3 bg-blue-500 rounded-full"></span>
+                {t("tactics.capture.options")}
               </div>
             </div>
+            <div className={SIDEBAR_SECTION_BODY_CLASS}>
+              <div className="space-y-1.5">
+                <button
+                  onClick={capture.onTogglePlayerNames}
+                  className={`w-full py-2.5 px-3 ${
+                    capture.showPlayerNames
+                      ? "bg-white/[0.04] text-slate-300 hover:bg-white/[0.07] border border-slate-700/35"
+                      : "bg-orange-600 hover:bg-orange-500 text-white shadow-lg"
+                  } rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm font-semibold hover:scale-[1.02]`}
+                >
+                  <span>{capture.showPlayerNames ? "👁️" : "👁️‍🗨️"}</span>
+                  <span>
+                    {capture.showPlayerNames
+                      ? t("tactics.hideNames")
+                      : t("tactics.showNames")}
+                  </span>
+                </button>
 
-            {/* セクション: 画像撮影レイアウト */}
-            <div className={SIDEBAR_SECTION_CLASS}>
-              <div className="px-2.5 pt-2.5">
-                <div className={SIDEBAR_SECTION_HEADER_CLASS}>
-                  <span className="w-1 h-3 bg-blue-500 rounded-full"></span>
-                  {t("tactics.capture.imageLayouts")}
-                </div>
-              </div>
-              <div className={SIDEBAR_SECTION_BODY_CLASS}>
-                <div className="space-y-1.5">
-                  {IMAGE_PRESETS.map((preset) => (
-                    <button
-                      key={preset.id}
-                      onClick={() => capture.onSelectImagePreset(preset.id)}
-                      className={`w-full py-2 px-3 rounded-xl text-xs font-medium transition-all duration-200 text-left ${
-                        capture.selectedImagePresetId === preset.id
-                          ? "bg-blue-600 text-white shadow-lg"
-                          : "bg-white/[0.04] text-slate-300 hover:bg-white/[0.07] border border-slate-700/35"
-                      }`}
-                    >
-                      {t(preset.nameKey)}
-                    </button>
-                  ))}
-                </div>
+                <button
+                  onClick={capture.onTogglePlayerNumbers}
+                  className={`w-full py-2.5 px-3 ${
+                    capture.showPlayerNumbers
+                      ? "bg-white/[0.04] text-slate-300 hover:bg-white/[0.07] border border-slate-700/35"
+                      : "bg-orange-600 hover:bg-orange-500 text-white shadow-lg"
+                  } rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm font-semibold hover:scale-[1.02]`}
+                >
+                  <span>{capture.showPlayerNumbers ? "🔢" : "🔤"}</span>
+                  <span>
+                    {capture.showPlayerNumbers
+                      ? t("tactics.hideNumbers")
+                      : t("tactics.showNumbers")}
+                  </span>
+                </button>
               </div>
             </div>
+          </div>
 
-            {/* セクション: スタメン発表 */}
-            <div className={SIDEBAR_SECTION_CLASS}>
-              <div className="px-2.5 pt-2.5">
-                <div className={SIDEBAR_SECTION_HEADER_CLASS}>
-                  <span className="w-1 h-3 bg-emerald-500 rounded-full"></span>
-                  {t("lineup.animation.button")}
-                </div>
+          {/* セクション: 画像撮影レイアウト */}
+          <div className={SIDEBAR_SECTION_CLASS}>
+            <div className="px-2.5 pt-2.5">
+              <div className={SIDEBAR_SECTION_HEADER_CLASS}>
+                <span className="w-1 h-3 bg-blue-500 rounded-full"></span>
+                {t("tactics.capture.imageLayouts")}
               </div>
-              <div className={SIDEBAR_SECTION_BODY_CLASS}>
-                <div className="space-y-1.5">
-                  {LINEUP_ANIMATION_PRESETS.map((preset) => (
-                    <button
-                      key={preset.id}
-                      onClick={() =>
-                        capture.lineupAnimation.setSelectedPresetId(preset.id)
-                      }
-                      disabled={capture.lineupAnimation.isActive}
-                      className={`w-full py-2 px-3 rounded-xl text-sm font-medium transition-all duration-200 text-left ${
-                        capture.lineupAnimation.selectedPresetId === preset.id
-                          ? "bg-emerald-600 text-white shadow-lg"
-                          : "bg-white/[0.04] text-slate-300 hover:bg-white/[0.07] border border-slate-700/35"
-                      }`}
-                    >
-                      {tDynamic(preset.nameKey) || preset.fallbackName}
-                    </button>
-                  ))}
-                  {/* 再生速度セレクター */}
-                  {/* 再生速度セレクター */}
-                  <div className="flex gap-0.5 justify-end py-1">
-                    {PLAYBACK_SPEED_OPTIONS.map((speed) => (
-                      <button
-                        key={speed}
-                        onClick={() => setPlaybackSpeed(speed)}
-                        className={`px-1.5 py-0.5 rounded text-[9px] font-semibold transition-all duration-200 ${
-                          playbackSpeed === speed
-                            ? "bg-emerald-600 text-white shadow-sm"
-                            : "bg-white/[0.04] text-slate-500 hover:text-slate-300 hover:bg-white/[0.07]"
-                        }`}
-                      >
-                        {speed === 1 ? "1x" : `${speed}x`}
-                      </button>
-                    ))}
-                  </div>
+            </div>
+            <div className={SIDEBAR_SECTION_BODY_CLASS}>
+              <div className="space-y-1.5">
+                {IMAGE_PRESETS.map((preset) => (
                   <button
-                    onClick={capture.lineupAnimation.start}
+                    key={preset.id}
+                    onClick={() => capture.onSelectImagePreset(preset.id)}
+                    className={`w-full py-2 px-3 rounded-xl text-xs font-medium transition-all duration-200 text-left ${
+                      capture.selectedImagePresetId === preset.id
+                        ? "bg-blue-600 text-white shadow-lg"
+                        : "bg-white/[0.04] text-slate-300 hover:bg-white/[0.07] border border-slate-700/35"
+                    }`}
+                  >
+                    {t(preset.nameKey)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* セクション: スタメン発表 */}
+          <div className={SIDEBAR_SECTION_CLASS}>
+            <div className="px-2.5 pt-2.5">
+              <div className={SIDEBAR_SECTION_HEADER_CLASS}>
+                <span className="w-1 h-3 bg-emerald-500 rounded-full"></span>
+                {t("lineup.animation.button")}
+              </div>
+            </div>
+            <div className={SIDEBAR_SECTION_BODY_CLASS}>
+              <div className="space-y-1.5">
+                {LINEUP_ANIMATION_PRESETS.map((preset) => (
+                  <button
+                    key={preset.id}
+                    onClick={() =>
+                      capture.lineupAnimation.setSelectedPresetId(preset.id)
+                    }
                     disabled={capture.lineupAnimation.isActive}
-                    className="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm font-semibold hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed"
+                    className={`w-full py-2 px-3 rounded-xl text-sm font-medium transition-all duration-200 text-left ${
+                      capture.lineupAnimation.selectedPresetId === preset.id
+                        ? "bg-emerald-600 text-white shadow-lg"
+                        : "bg-white/[0.04] text-slate-300 hover:bg-white/[0.07] border border-slate-700/35"
+                    }`}
                   >
-                    <span>▶</span>
-                    <span>{t("lineup.animation.button")}</span>
+                    {tDynamic(preset.nameKey) || preset.fallbackName}
                   </button>
+                ))}
+                {/* 再生速度セレクター */}
+                {/* 再生速度セレクター */}
+                <div className="flex gap-0.5 justify-end py-1">
+                  {PLAYBACK_SPEED_OPTIONS.map((speed) => (
+                    <button
+                      key={speed}
+                      onClick={() => setPlaybackSpeed(speed)}
+                      className={`px-1.5 py-0.5 rounded text-[9px] font-semibold transition-all duration-200 ${
+                        playbackSpeed === speed
+                          ? "bg-emerald-600 text-white shadow-sm"
+                          : "bg-white/[0.04] text-slate-500 hover:text-slate-300 hover:bg-white/[0.07]"
+                      }`}
+                    >
+                      {speed === 1 ? "1x" : `${speed}x`}
+                    </button>
+                  ))}
                 </div>
+                <button
+                  onClick={capture.lineupAnimation.start}
+                  disabled={capture.lineupAnimation.isActive}
+                  className="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm font-semibold hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <span>▶</span>
+                  <span>{t("lineup.animation.button")}</span>
+                </button>
               </div>
             </div>
           </div>
-          {/* 撮影終了ボタン（下部ピン留め） */}
-          <div className="shrink-0 px-2.5 py-3 border-t border-slate-700/40 bg-slate-950/80 backdrop-blur-sm">
-            <button
-              onClick={capture.onExitCaptureMode}
-              className="w-full py-2.5 px-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm font-semibold hover:scale-[1.02]"
-            >
-              <span>✕</span>
-              <span>{t("tactics.capture.close")}</span>
-            </button>
-          </div>
-        </>
+        </div>
       ) : /* ── 戦術作成モード ── */
       showCreationMode ? (
         <>
