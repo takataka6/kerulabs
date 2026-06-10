@@ -55,6 +55,10 @@ vi.mock("@presentation/hooks/queries", () => ({
   useDeleteGlossary: () => mockDeleteGlossary,
 }));
 
+vi.mock("@presentation/hooks/useSeedSampleData", () => ({
+  useSeedSampleData: () => ({ handleSeed: vi.fn(), isSeeding: false }),
+}));
+
 vi.mock("@presentation/components/glossary", () => ({
   GlossaryDetail: ({ onBack }: { onBack: () => void }) => (
     <div data-testid="glossary-detail">

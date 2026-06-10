@@ -54,6 +54,10 @@ vi.mock("@presentation/hooks/queries", () => ({
   useDeleteTeamManual: () => mockDeleteManual,
 }));
 
+vi.mock("@presentation/hooks/useSeedSampleData", () => ({
+  useSeedSampleData: () => ({ handleSeed: vi.fn(), isSeeding: false }),
+}));
+
 vi.mock("@presentation/components/team-manual", () => ({
   ManualDetail: ({ onBack }: { onBack: () => void }) => (
     <div data-testid="manual-detail">
