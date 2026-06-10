@@ -115,6 +115,62 @@ describe("FormationInteractor", () => {
     });
   });
 
+  describe("getById", () => {
+    it("リポジトリのfindByIdを呼び出す", async () => {
+      const mockRepo = createMockRepository();
+      const interactor = new FormationInteractor(mockRepo);
+      const id = new FormationId("f1");
+
+      await interactor.getById(id);
+
+      expect(mockRepo.findById).toHaveBeenCalledWith(id);
+    });
+
+    it("存在するIDの場合はフォーメーションを返す", async () => {
+      const id = new FormationId("f1");
+      const formation = Formation.createDefault(
+        id,
+        "4-4-2",
+        "standard",
+        create11Positions(),
+      );
+      const mockRepo = createMockRepository({
+        findById: vi.fn().mockResolvedValue(formation),
+      });
+      const interactor = new FormationInteractor(mockRepo);
+
+      const result = await interactor.getById(id);
+
+      expect(result?.name).toBe("4-4-2");
+    });
+
+    it("存在しないIDの場合はnullを返す", async () => {
+      const mockRepo = createMockRepository();
+      const interactor = new FormationInteractor(mockRepo);
+
+      const result = await interactor.getById(new FormationId("none"));
+
+      expect(result).toBeNull();
+    });
+  });
+
+  describe("save", () => {
+    it("リポジトリのsaveを呼び出す", async () => {
+      const mockRepo = createMockRepository();
+      const interactor = new FormationInteractor(mockRepo);
+      const formation = Formation.createDefault(
+        new FormationId("f1"),
+        "4-4-2",
+        "standard",
+        create11Positions(),
+      );
+
+      await interactor.save(formation);
+
+      expect(mockRepo.save).toHaveBeenCalledWith(formation);
+    });
+  });
+
   describe("エラーハンドリング", () => {
     it("getAll でリポジトリがエラーを投げた場合、handleError を呼びエラーを再スローする", async () => {
       const { handleError } = await import("@shared/errors/handleError");

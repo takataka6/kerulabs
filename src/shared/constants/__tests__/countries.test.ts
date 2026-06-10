@@ -8,7 +8,12 @@
  * - 日本語/英語の両言語での国名検索と存在しない国名のフォールバックを検証
  */
 import { describe, it, expect } from "vitest";
-import { COUNTRIES, FLAG_EMOJI, getCountryInfo } from "../countries";
+import {
+  COUNTRIES,
+  FLAG_EMOJI,
+  getCountryInfo,
+  getFlagTypeByCountryName,
+} from "../countries";
 
 describe("countries", () => {
   // ── COUNTRIES ──
@@ -70,5 +75,22 @@ describe("countries", () => {
     const result = getCountryInfo("Unknown Country", "ja");
     expect(result.flag).toBe("🌍");
     expect(result.name).toBe("Unknown Country");
+  });
+
+  // ── getFlagTypeByCountryName ──
+
+  it("日本語名で国のフラグタイプを返す", () => {
+    const result = getFlagTypeByCountryName("日本");
+    expect(result).toBeDefined();
+  });
+
+  it("英語名で国のフラグタイプを返す", () => {
+    const result = getFlagTypeByCountryName("Japan");
+    expect(result).toBeDefined();
+  });
+
+  it("存在しない国名の場合はundefinedを返す", () => {
+    const result = getFlagTypeByCountryName("Unknown Country");
+    expect(result).toBeUndefined();
   });
 });
