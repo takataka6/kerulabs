@@ -28,7 +28,6 @@ const LESSON_IDS = [
   // テスト入門
   "first-test",
   "mock-test",
-  "ui-test",
 ] as const;
 
 interface LessonLayoutProps {

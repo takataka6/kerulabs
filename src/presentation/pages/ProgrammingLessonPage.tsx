@@ -14,7 +14,6 @@ import { SingletonLesson } from "@presentation/components/code-lab/lessons/Singl
 import { FactoryLesson } from "@presentation/components/code-lab/lessons/FactoryLesson";
 import { FirstTestLesson } from "@presentation/components/code-lab/lessons/FirstTestLesson";
 import { MockTestLesson } from "@presentation/components/code-lab/lessons/MockTestLesson";
-import { UITestLesson } from "@presentation/components/code-lab/lessons/UITestLesson";
 import { JSONLesson } from "@presentation/components/code-lab/lessons/JSONLesson";
 import { MarkdownLesson } from "@presentation/components/code-lab/lessons/MarkdownLesson";
 import { MermaidLesson } from "@presentation/components/code-lab/lessons/MermaidLesson";
@@ -33,7 +32,6 @@ const LESSONS = {
   factory: FactoryLesson,
   "first-test": FirstTestLesson,
   "mock-test": MockTestLesson,
-  "ui-test": UITestLesson,
   json: JSONLesson,
   markdown: MarkdownLesson,
   mermaid: MermaidLesson,

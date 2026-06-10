@@ -61,7 +61,7 @@ describe("LessonLayout", () => {
 
   it("最後のレッスンでは「次へ」ボタンが表示されない", () => {
     render(
-      <LessonLayout lessonId="ui-test">
+      <LessonLayout lessonId="mock-test">
         <div>content</div>
       </LessonLayout>,
     );

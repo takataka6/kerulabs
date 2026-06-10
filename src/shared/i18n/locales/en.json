@@ -223,8 +223,6 @@
   "code.lab.lesson.firstTest.description": "Start with expect and toBe, then test player validation.",
   "code.lab.lesson.mockTest": "Mocks & Stubs",
   "code.lab.lesson.mockTest.description": "Learn how to test use cases without a database.",
-  "code.lab.lesson.uiTest": "UI Testing",
-  "code.lab.lesson.uiTest.description": "Render React components and verify display and click behavior.",
   "code.lab.lesson.variables": "Variables & Types",
   "code.lab.lesson.variables.description": "Learn variables and data types through player name, number, and position.",
   "code.lab.lesson.arrays": "Arrays & Loops",

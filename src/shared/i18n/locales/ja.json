@@ -223,8 +223,6 @@
   "code.lab.lesson.firstTest.description": "expect と toBe から始めて、選手のバリデーションをテストしてみましょう。",
   "code.lab.lesson.mockTest": "モックとスタブ",
   "code.lab.lesson.mockTest.description": "データベースを使わずにユースケースをテストする方法を学びます。",
-  "code.lab.lesson.uiTest": "UIテスト",
-  "code.lab.lesson.uiTest.description": "Reactコンポーネントをレンダーして、画面の表示やクリック操作を検証します。",
   "code.lab.lesson.variables": "変数と型",
   "code.lab.lesson.variables.description": "選手の名前・背番号・ポジションで変数とデータ型を学びます。",
   "code.lab.lesson.arrays": "配列とループ",

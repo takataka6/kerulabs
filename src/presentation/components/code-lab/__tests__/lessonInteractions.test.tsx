@@ -92,7 +92,6 @@ import { SingletonLesson } from "../lessons/SingletonLesson";
 import { FactoryLesson } from "../lessons/FactoryLesson";
 import { FirstTestLesson } from "../lessons/FirstTestLesson";
 import { MockTestLesson } from "../lessons/MockTestLesson";
-import { UITestLesson } from "../lessons/UITestLesson";
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -631,39 +630,5 @@ describe("MockTestLesson interactions", () => {
     expect(
       screen.getByText(/インターフェース経由でアクセスしている/),
     ).toBeInTheDocument();
-  });
-});
-
-// ---------------------------------------------------------------------------
-// UITestLesson
-// ---------------------------------------------------------------------------
-describe("UITestLesson interactions", () => {
-  it("should switch to Queries tab", () => {
-    render(<UITestLesson />);
-    fireEvent.click(screen.getByRole("button", { name: "要素の探し方" }));
-    expect(screen.getByText(/getByRole が最も推奨/)).toBeInTheDocument();
-  });
-
-  it("should switch to Interactions tab", () => {
-    render(<UITestLesson />);
-    fireEvent.click(screen.getByRole("button", { name: "操作テスト" }));
-    // Verify the interaction code tab is shown by checking for unique content
-    expect(
-      screen.getByText(/ボタンをクリックするとホームに遷移する/),
-    ).toBeInTheDocument();
-  });
-
-  it("should switch to Module Mock tab", () => {
-    render(<UITestLesson />);
-    fireEvent.click(screen.getByRole("button", { name: "モジュールモック" }));
-    expect(
-      screen.getByText(/vi.mock\(\) でモジュール全体を差し替え/),
-    ).toBeInTheDocument();
-  });
-
-  it("should switch to Accessibility tab", () => {
-    render(<UITestLesson />);
-    fireEvent.click(screen.getByRole("button", { name: "アクセシビリティ" }));
-    expect(screen.getByText(/すべてのユーザーが使えるか/)).toBeInTheDocument();
   });
 });

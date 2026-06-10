@@ -164,7 +164,7 @@ describe("CodeLabPage", () => {
     );
 
     const badges = screen.getAllByText("Ready");
-    expect(badges).toHaveLength(17);
+    expect(badges).toHaveLength(16);
   });
 
   it("テスト入門カテゴリを表示する", () => {
@@ -177,7 +177,6 @@ describe("CodeLabPage", () => {
     expect(screen.getByText("code.lab.category.testing")).toBeInTheDocument();
     expect(screen.getByText("code.lab.lesson.firstTest")).toBeInTheDocument();
     expect(screen.getByText("code.lab.lesson.mockTest")).toBeInTheDocument();
-    expect(screen.getByText("code.lab.lesson.uiTest")).toBeInTheDocument();
   });
 
   it("プログラミング基礎レッスンをクリックするとレッスンページに遷移する", () => {
