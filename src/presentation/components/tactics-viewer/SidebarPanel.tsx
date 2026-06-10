@@ -600,25 +600,8 @@ export const SidebarPanel = memo(function SidebarPanel(
             </div>
             <div className={SIDEBAR_SECTION_BODY_CLASS}>
               <div className="space-y-1.5">
-                {LINEUP_ANIMATION_PRESETS.map((preset) => (
-                  <button
-                    key={preset.id}
-                    onClick={() =>
-                      capture.lineupAnimation.setSelectedPresetId(preset.id)
-                    }
-                    disabled={capture.lineupAnimation.isActive}
-                    className={`w-full py-2 px-3 rounded-xl text-sm font-medium transition-all duration-200 text-left ${
-                      capture.lineupAnimation.selectedPresetId === preset.id
-                        ? "bg-emerald-600 text-white shadow-lg"
-                        : "bg-white/[0.04] text-slate-300 hover:bg-white/[0.07] border border-slate-700/35"
-                    }`}
-                  >
-                    {tDynamic(preset.nameKey) || preset.fallbackName}
-                  </button>
-                ))}
                 {/* 再生速度セレクター */}
-                {/* 再生速度セレクター */}
-                <div className="flex gap-0.5 justify-end py-1">
+                <div className="flex gap-0.5 justify-end pb-0.5">
                   {PLAYBACK_SPEED_OPTIONS.map((speed) => (
                     <button
                       key={speed}
@@ -633,14 +616,24 @@ export const SidebarPanel = memo(function SidebarPanel(
                     </button>
                   ))}
                 </div>
-                <button
-                  onClick={capture.lineupAnimation.start}
-                  disabled={capture.lineupAnimation.isActive}
-                  className="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 text-sm font-semibold hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  <span>▶</span>
-                  <span>{t("lineup.animation.button")}</span>
-                </button>
+                {/* モード選択（タップで即実行） */}
+                {LINEUP_ANIMATION_PRESETS.map((preset) => (
+                  <button
+                    key={preset.id}
+                    onClick={() => {
+                      capture.lineupAnimation.setSelectedPresetId(preset.id);
+                      capture.lineupAnimation.start();
+                    }}
+                    disabled={capture.lineupAnimation.isActive}
+                    className={`w-full py-2 px-3 rounded-xl text-sm font-medium transition-all duration-200 text-left ${
+                      capture.lineupAnimation.selectedPresetId === preset.id
+                        ? "bg-emerald-600 text-white shadow-lg"
+                        : "bg-white/[0.04] text-slate-300 hover:bg-white/[0.07] border border-slate-700/35"
+                    } disabled:opacity-40 disabled:cursor-not-allowed`}
+                  >
+                    {tDynamic(preset.nameKey) || preset.fallbackName}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
