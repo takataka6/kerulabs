@@ -288,3 +288,11 @@
 | useTacticsOrchestration — 実行制御・操作 | ステップ管理ハンドラー | handleAddStep: addStep + resetTactic + manualPositions クリア |
 | useTacticsOrchestration — 実行制御・操作 | ステップ管理ハンドラー | handleResetStep: resetCurrentStep + manualPositions クリア |
 | useTacticsOrchestration — 実行制御・操作 | ステップ管理ハンドラー | handleResetPreview: resetTactic + manualPositions クリア |
+
+## useTacticsModeReset.test.ts
+
+| describe | context | テストケース |
+| --- | --- | --- |
+| useTacticsModeReset |  | resetInteractionModes を呼ぶとすべてのインタラクティブモードがリセットされる |
+| useTacticsModeReset |  | 複数回呼び出しても各セッターが正しく呼ばれる |
+| useTacticsModeReset |  | 依存が変化しても最新のセッターが使われる |

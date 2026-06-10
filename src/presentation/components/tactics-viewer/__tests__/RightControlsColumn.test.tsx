@@ -34,6 +34,7 @@ vi.mock("../right-controls", () => ({
   ConnectionLinesButton: () => (
     <div data-testid="connection-lines-button">Connection Lines</div>
   ),
+  RightHistoryPanel: () => <div data-testid="right-history-panel">History</div>,
 }));
 
 /* ------------------------------------------------------------------ */
