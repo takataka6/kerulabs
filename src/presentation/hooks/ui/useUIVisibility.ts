@@ -35,6 +35,10 @@ export function useUIVisibility() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sidebarAnimating, setSidebarAnimating] = useState(false);
 
+  // ── 右サイドバー ──
+  const [rightSidebarOpen, setRightSidebarOpen] = useState(true);
+  const [rightSidebarAnimating, setRightSidebarAnimating] = useState(false);
+
   // ── スカッドパネル ──
   const [squadPanelOpen, setSquadPanelOpen] = useState(true);
 
@@ -65,6 +69,12 @@ export function useUIVisibility() {
     setSidebarOpen((prev) => !prev);
   }, []);
 
+  // ── 右サイドバー開閉 ──
+  const toggleRightSidebar = useCallback(() => {
+    setRightSidebarAnimating(true);
+    setRightSidebarOpen((prev) => !prev);
+  }, []);
+
   return {
     // モーダル / パネル
     showPlayerManagement,
@@ -92,9 +102,17 @@ export function useUIVisibility() {
 
     // サイドバー
     sidebarOpen,
+    setSidebarOpen,
     sidebarAnimating,
     setSidebarAnimating,
     toggleSidebar,
+
+    // 右サイドバー
+    rightSidebarOpen,
+    setRightSidebarOpen,
+    rightSidebarAnimating,
+    setRightSidebarAnimating,
+    toggleRightSidebar,
 
     // スカッドパネル
     squadPanelOpen,

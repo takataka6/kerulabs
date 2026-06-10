@@ -52,8 +52,9 @@ const meta = {
       },
       showPlayerNames: true,
       onTogglePlayerNames: fn(),
+      showPlayerNumbers: true,
+      onTogglePlayerNumbers: fn(),
       onExitCaptureMode: fn(),
-      onSavePng: fn(),
     },
     i18n: {
       language: "ja",

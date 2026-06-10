@@ -261,7 +261,7 @@ describe("SidebarPanel", () => {
     renderSidebarPanel({ capture: { captureMode: true } });
 
     // Capture section
-    expect(screen.getByText("tactics.capture")).toBeInTheDocument();
+    expect(screen.getByText("tactics.capture.options")).toBeInTheDocument();
     expect(screen.getByText("tactics.hideNames")).toBeInTheDocument();
     expect(screen.getByText("tactics.capture.close")).toBeInTheDocument();
 

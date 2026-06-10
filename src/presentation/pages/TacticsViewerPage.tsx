@@ -63,6 +63,7 @@ import {
   TacticsSidebarSection,
   TacticsModals,
 } from "../components/tactics-viewer";
+import { TacticsRightSidebar } from "../components/tactics-viewer/TacticsRightSidebar";
 import { ErrorBoundary } from "../components/ui/ErrorBoundary";
 
 /**
@@ -183,13 +184,14 @@ export function TacticsViewerPage() {
   const { data: tactics, isLoading: tacticsLoading } = useTactics(
     playModePhase.activePhaseForTactics,
   );
-  useAllTactics();
+  const { data: allTactics } = useAllTactics();
 
   // ── Tactics Orchestration (core) ──
   const tOrch = useTacticsOrchestration({
     currentFormation: formationMgmt.currentFormation,
     selectedTeam: teamMgmt.selectedTeam,
     tactics,
+    allTactics,
     playMode: playModePhase.playMode,
     selectedPhase: playModePhase.selectedPhase,
     selectedSetPlayType: playModePhase.selectedSetPlayType,
@@ -410,6 +412,9 @@ export function TacticsViewerPage() {
           </ErrorBoundary>
           <ErrorBoundary inline>
             <TacticsMainContent />
+          </ErrorBoundary>
+          <ErrorBoundary inline>
+            <TacticsRightSidebar />
           </ErrorBoundary>
         </div>
 

@@ -58,6 +58,7 @@ function createMockUIContext() {
       setCaptureMode: vi.fn(),
       setSelectedImagePresetId: vi.fn(),
       setCameraAction: vi.fn(),
+      setRightSidebarOpen: vi.fn(),
     },
   };
 }
