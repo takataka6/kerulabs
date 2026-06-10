@@ -1,7 +1,14 @@
-import { useEffect, useState, lazy, Suspense } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { translations } from "@shared/i18n/translations";
 import { HomePage } from "@presentation/pages/HomePage";
+import { TacticsViewerPage } from "@presentation/pages/TacticsViewerPage";
+import { GlossaryPage } from "@presentation/pages/GlossaryPage";
+import { CodeLabPage } from "@presentation/pages/CodeLabPage";
+import { ProgrammingLessonPage } from "@presentation/pages/ProgrammingLessonPage";
+import { PluginLessonPageRoute } from "@presentation/pages/PluginLessonPageRoute";
+import { PluginManagerPage } from "@presentation/pages/PluginManagerPage";
+import { TeamManualPage } from "@presentation/pages/TeamManualPage";
 import {
   LanguageProvider,
   useLanguage,
@@ -13,56 +20,6 @@ import {
   ToastProvider,
 } from "@presentation/components/ui";
 import { useAppInitialization } from "@presentation/hooks/useAppInitialization";
-
-/* ------------------------------------------------------------------ */
-/*  遅延ロード — 重いページをチャンク分割                                  */
-/* ------------------------------------------------------------------ */
-const TacticsViewerPage = lazy(() =>
-  import("@presentation/pages/TacticsViewerPage").then((m) => ({
-    default: m.TacticsViewerPage,
-  })),
-);
-const GlossaryPage = lazy(() =>
-  import("@presentation/pages/GlossaryPage").then((m) => ({
-    default: m.GlossaryPage,
-  })),
-);
-const CodeLabPage = lazy(() =>
-  import("@presentation/pages/CodeLabPage").then((m) => ({
-    default: m.CodeLabPage,
-  })),
-);
-const ProgrammingLessonPage = lazy(() =>
-  import("@presentation/pages/ProgrammingLessonPage").then((m) => ({
-    default: m.ProgrammingLessonPage,
-  })),
-);
-const PluginLessonPageRoute = lazy(() =>
-  import("@presentation/pages/PluginLessonPageRoute").then((m) => ({
-    default: m.PluginLessonPageRoute,
-  })),
-);
-const PluginManagerPage = lazy(() =>
-  import("@presentation/pages/PluginManagerPage").then((m) => ({
-    default: m.PluginManagerPage,
-  })),
-);
-const TeamManualPage = lazy(() =>
-  import("@presentation/pages/TeamManualPage").then((m) => ({
-    default: m.TeamManualPage,
-  })),
-);
-
-function PageLoader() {
-  return (
-    <div className="flex-1 min-h-screen bg-slate-900 flex items-center justify-center">
-      <div
-        className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"
-        aria-hidden="true"
-      />
-    </div>
-  );
-}
 
 function SkipLink() {
   const { t } = useLanguage();
@@ -149,68 +106,66 @@ export function App() {
         <ConfirmProvider>
           <SkipLink />
           <ErrorBoundary>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route
-                  path="/tactics-simulator"
-                  element={
-                    <ErrorBoundary inline>
-                      <TacticsViewerPage />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/glossary"
-                  element={
-                    <ErrorBoundary inline>
-                      <GlossaryPage />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/team-manual"
-                  element={
-                    <ErrorBoundary inline>
-                      <TeamManualPage />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/code-lab"
-                  element={
-                    <ErrorBoundary inline>
-                      <CodeLabPage />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/code-lab/lesson/plugin/:lessonId"
-                  element={
-                    <ErrorBoundary inline>
-                      <PluginLessonPageRoute />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/code-lab/lesson/:lessonId"
-                  element={
-                    <ErrorBoundary inline>
-                      <ProgrammingLessonPage />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/plugins"
-                  element={
-                    <ErrorBoundary inline>
-                      <PluginManagerPage />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Suspense>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route
+                path="/tactics-simulator"
+                element={
+                  <ErrorBoundary inline>
+                    <TacticsViewerPage />
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="/glossary"
+                element={
+                  <ErrorBoundary inline>
+                    <GlossaryPage />
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="/team-manual"
+                element={
+                  <ErrorBoundary inline>
+                    <TeamManualPage />
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="/code-lab"
+                element={
+                  <ErrorBoundary inline>
+                    <CodeLabPage />
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="/code-lab/lesson/plugin/:lessonId"
+                element={
+                  <ErrorBoundary inline>
+                    <PluginLessonPageRoute />
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="/code-lab/lesson/:lessonId"
+                element={
+                  <ErrorBoundary inline>
+                    <ProgrammingLessonPage />
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="/plugins"
+                element={
+                  <ErrorBoundary inline>
+                    <PluginManagerPage />
+                  </ErrorBoundary>
+                }
+              />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
           </ErrorBoundary>
         </ConfirmProvider>
       </ToastProvider>

@@ -61,9 +61,6 @@ vi.mock("@presentation/components/code-lab/lessons/FirstTestLesson", () =>
 vi.mock("@presentation/components/code-lab/lessons/MockTestLesson", () =>
   stubLesson("MockTestLesson"),
 );
-vi.mock("@presentation/components/code-lab/lessons/UITestLesson", () =>
-  stubLesson("UITestLesson"),
-);
 vi.mock("@presentation/components/code-lab/lessons/JSONLesson", () =>
   stubLesson("JSONLesson"),
 );

@@ -113,10 +113,6 @@
 | MockTestLesson interactions | should switch to Create Mock step |
 | MockTestLesson interactions | should switch to Use in Test step |
 | MockTestLesson interactions | should switch to Why It Works step |
-| UITestLesson interactions | should switch to Queries tab |
-| UITestLesson interactions | should switch to Interactions tab |
-| UITestLesson interactions | should switch to Module Mock tab |
-| UITestLesson interactions | should switch to Accessibility tab |
 | CILesson interactions | should switch to CI Steps tab |
 | CILesson interactions | should switch to E2E Tests tab |
 | CILesson interactions | should switch to Accessibility tab in CI |
@@ -127,4 +123,4 @@
 
 | describe | テストケース |
 | --- | --- |
-| Lessons スモークテスト | $name がクラッシュせずにレンダリングされる（ArraysLesson, CILesson, CleanArchitectureLesson, ConditionalsLesson, DomainModelLesson, FactoryLesson, FirstTestLesson, FunctionsLesson, GitBasicsLesson, GitBranchLesson, GitHooksLesson, JSONLesson, MarkdownLesson, MermaidLesson, MockTestLesson, ObjectsLesson, SingletonLesson, UITestLesson, VariablesLesson） |
+| Lessons スモークテスト | $name がクラッシュせずにレンダリングされる（ArraysLesson, CILesson, CleanArchitectureLesson, ConditionalsLesson, DomainModelLesson, FactoryLesson, FirstTestLesson, FunctionsLesson, GitBasicsLesson, GitBranchLesson, GitHooksLesson, JSONLesson, MarkdownLesson, MermaidLesson, MockTestLesson, ObjectsLesson, SingletonLesson, VariablesLesson） |

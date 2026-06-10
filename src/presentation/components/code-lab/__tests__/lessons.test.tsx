@@ -91,7 +91,6 @@ import { MermaidLesson } from "../lessons/MermaidLesson";
 import { MockTestLesson } from "../lessons/MockTestLesson";
 import { ObjectsLesson } from "../lessons/ObjectsLesson";
 import { SingletonLesson } from "../lessons/SingletonLesson";
-import { UITestLesson } from "../lessons/UITestLesson";
 import { VariablesLesson } from "../lessons/VariablesLesson";
 
 const lessons = [
@@ -110,7 +109,6 @@ const lessons = [
   { name: "MockTestLesson", Component: MockTestLesson },
   { name: "ObjectsLesson", Component: ObjectsLesson },
   { name: "SingletonLesson", Component: SingletonLesson },
-  { name: "UITestLesson", Component: UITestLesson },
   { name: "VariablesLesson", Component: VariablesLesson },
 ] as const;
 

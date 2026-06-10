@@ -2,110 +2,42 @@
  * @module ProgrammingLessonPage
  * @description コードラボレッスンのルーターコンポーネント。URLパラメータに応じたレッスンコンポーネントを表示する。
  */
-import { lazy, Suspense } from "react";
 import { useParams, Navigate } from "react-router-dom";
+import { VariablesLesson } from "@presentation/components/code-lab/lessons/VariablesLesson";
+import { ArraysLesson } from "@presentation/components/code-lab/lessons/ArraysLesson";
+import { ConditionalsLesson } from "@presentation/components/code-lab/lessons/ConditionalsLesson";
+import { FunctionsLesson } from "@presentation/components/code-lab/lessons/FunctionsLesson";
+import { ObjectsLesson } from "@presentation/components/code-lab/lessons/ObjectsLesson";
+import { CleanArchitectureLesson } from "@presentation/components/code-lab/lessons/CleanArchitectureLesson";
+import { DomainModelLesson } from "@presentation/components/code-lab/lessons/DomainModelLesson";
+import { SingletonLesson } from "@presentation/components/code-lab/lessons/SingletonLesson";
+import { FactoryLesson } from "@presentation/components/code-lab/lessons/FactoryLesson";
+import { FirstTestLesson } from "@presentation/components/code-lab/lessons/FirstTestLesson";
+import { MockTestLesson } from "@presentation/components/code-lab/lessons/MockTestLesson";
+import { JSONLesson } from "@presentation/components/code-lab/lessons/JSONLesson";
+import { MarkdownLesson } from "@presentation/components/code-lab/lessons/MarkdownLesson";
+import { MermaidLesson } from "@presentation/components/code-lab/lessons/MermaidLesson";
+import { GitBasicsLesson } from "@presentation/components/code-lab/lessons/GitBasicsLesson";
+import { GitBranchLesson } from "@presentation/components/code-lab/lessons/GitBranchLesson";
 
 const LESSONS = {
-  variables: lazy(() =>
-    import("@presentation/components/code-lab/lessons/VariablesLesson").then(
-      ({ VariablesLesson }) => ({ default: VariablesLesson }),
-    ),
-  ),
-  arrays: lazy(() =>
-    import("@presentation/components/code-lab/lessons/ArraysLesson").then(
-      ({ ArraysLesson }) => ({ default: ArraysLesson }),
-    ),
-  ),
-  conditionals: lazy(() =>
-    import("@presentation/components/code-lab/lessons/ConditionalsLesson").then(
-      ({ ConditionalsLesson }) => ({ default: ConditionalsLesson }),
-    ),
-  ),
-  functions: lazy(() =>
-    import("@presentation/components/code-lab/lessons/FunctionsLesson").then(
-      ({ FunctionsLesson }) => ({ default: FunctionsLesson }),
-    ),
-  ),
-  objects: lazy(() =>
-    import("@presentation/components/code-lab/lessons/ObjectsLesson").then(
-      ({ ObjectsLesson }) => ({ default: ObjectsLesson }),
-    ),
-  ),
-  "clean-architecture": lazy(() =>
-    import("@presentation/components/code-lab/lessons/CleanArchitectureLesson").then(
-      ({ CleanArchitectureLesson }) => ({
-        default: CleanArchitectureLesson,
-      }),
-    ),
-  ),
-  "domain-model": lazy(() =>
-    import("@presentation/components/code-lab/lessons/DomainModelLesson").then(
-      ({ DomainModelLesson }) => ({ default: DomainModelLesson }),
-    ),
-  ),
-  singleton: lazy(() =>
-    import("@presentation/components/code-lab/lessons/SingletonLesson").then(
-      ({ SingletonLesson }) => ({ default: SingletonLesson }),
-    ),
-  ),
-  factory: lazy(() =>
-    import("@presentation/components/code-lab/lessons/FactoryLesson").then(
-      ({ FactoryLesson }) => ({ default: FactoryLesson }),
-    ),
-  ),
-  "first-test": lazy(() =>
-    import("@presentation/components/code-lab/lessons/FirstTestLesson").then(
-      ({ FirstTestLesson }) => ({ default: FirstTestLesson }),
-    ),
-  ),
-  "mock-test": lazy(() =>
-    import("@presentation/components/code-lab/lessons/MockTestLesson").then(
-      ({ MockTestLesson }) => ({ default: MockTestLesson }),
-    ),
-  ),
-  "ui-test": lazy(() =>
-    import("@presentation/components/code-lab/lessons/UITestLesson").then(
-      ({ UITestLesson }) => ({ default: UITestLesson }),
-    ),
-  ),
-  json: lazy(() =>
-    import("@presentation/components/code-lab/lessons/JSONLesson").then(
-      ({ JSONLesson }) => ({ default: JSONLesson }),
-    ),
-  ),
-  markdown: lazy(() =>
-    import("@presentation/components/code-lab/lessons/MarkdownLesson").then(
-      ({ MarkdownLesson }) => ({ default: MarkdownLesson }),
-    ),
-  ),
-  mermaid: lazy(() =>
-    import("@presentation/components/code-lab/lessons/MermaidLesson").then(
-      ({ MermaidLesson }) => ({ default: MermaidLesson }),
-    ),
-  ),
-  "git-basics": lazy(() =>
-    import("@presentation/components/code-lab/lessons/GitBasicsLesson").then(
-      ({ GitBasicsLesson }) => ({ default: GitBasicsLesson }),
-    ),
-  ),
-  "git-branch": lazy(() =>
-    import("@presentation/components/code-lab/lessons/GitBranchLesson").then(
-      ({ GitBranchLesson }) => ({ default: GitBranchLesson }),
-    ),
-  ),
+  variables: VariablesLesson,
+  arrays: ArraysLesson,
+  conditionals: ConditionalsLesson,
+  functions: FunctionsLesson,
+  objects: ObjectsLesson,
+  "clean-architecture": CleanArchitectureLesson,
+  "domain-model": DomainModelLesson,
+  singleton: SingletonLesson,
+  factory: FactoryLesson,
+  "first-test": FirstTestLesson,
+  "mock-test": MockTestLesson,
+  json: JSONLesson,
+  markdown: MarkdownLesson,
+  mermaid: MermaidLesson,
+  "git-basics": GitBasicsLesson,
+  "git-branch": GitBranchLesson,
 } satisfies Record<string, React.ComponentType>;
-
-function LessonLoader() {
-  return (
-    <div
-      className="flex min-h-[240px] items-center justify-center text-sm text-slate-400"
-      role="status"
-      aria-live="polite"
-    >
-      Loading lesson...
-    </div>
-  );
-}
 
 export function ProgrammingLessonPage() {
   const { lessonId } = useParams<{ lessonId: string }>();
@@ -116,9 +48,5 @@ export function ProgrammingLessonPage() {
     return <Navigate to="/code-lab" replace />;
   }
 
-  return (
-    <Suspense fallback={<LessonLoader />}>
-      <LessonComponent />
-    </Suspense>
-  );
+  return <LessonComponent />;
 }

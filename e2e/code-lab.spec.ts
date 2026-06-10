@@ -39,7 +39,7 @@ test.describe("コードラボページ", () => {
 
   test("全レッスンがReady状態である", async ({ page }) => {
     const readyBadges = page.getByText("Ready");
-    await expect(readyBadges).toHaveCount(17);
+    await expect(readyBadges).toHaveCount(16);
   });
 
   test("レッスンをクリックするとレッスンページに遷移する", async ({ page }) => {
