@@ -48,11 +48,10 @@ import {
 import { useLineupAnimation } from "@presentation/components/lineup-animation";
 import { useSketchOverlay } from "@presentation/hooks/sketch";
 
-// Context
-import {
-  TacticsViewerProvider,
-  type TacticsViewerContextType,
-} from "@presentation/contexts/TacticsViewerContext";
+// Context (個別の Context を直接使用し、巨大な複合 Provider への依存を排除)
+import { TacticsUIProvider } from "@presentation/contexts/TacticsUIContext";
+import { TacticsTeamProvider } from "@presentation/contexts/TacticsTeamContext";
+import { TacticsExecutionProvider } from "@presentation/contexts/TacticsExecutionContext";
 
 // 抽出済みコンポーネント
 import {
@@ -360,68 +359,79 @@ export function TacticsViewerPage() {
     return <LoadingScreen message={t("common.loading")} />;
   }
 
-  // ── Context value ──
-  // TacticsViewerProvider 内部で各サブコンテキストごとに useMemo で安定化されるため、
-  // ここでのメモ化は不要（early return の後にフックを置けない制約もある）
-  const contextValue: TacticsViewerContextType = {
+  // ── Context slices（各 Context に必要な値のみを明示的に組み立てる） ──
+  // 以前の巨大な TacticsViewerContextType + 複合 Provider 経由のスライス方式を廃止し、
+  // 直接 3 つの Provider をネストして提供する形に簡素化。
+  // これにより結合度とメンテナンスコストを低減。
+  const uiValue = {
     ui,
-    playModePhase,
-    tOrch,
+    canUndo,
+    canRedo,
+    handleUndo,
+    handleRedo,
+  };
+
+  const teamValue = {
+    selectedTeam,
+    currentFormation,
+    teams,
+    teamMgmt,
     formationMgmt,
+    displayData,
+    cardMgmt,
+    managerEditor,
+    handleSquadCardCycle,
+    handleSaveManager,
+    handleCycleManagerCard,
+  };
+
+  const executionValue = {
+    tOrch,
+    playModePhase,
+    tacticsLoading,
     opponentsHook,
     ballHook,
     connLines,
     playerView,
     multiSelect,
     bgSettings,
-    cardMgmt,
-    teamMgmt,
-    managerEditor,
     lineupAnimation,
     sketch,
     canvasMemo,
     canvasCallbacks,
-    displayData,
-    selectedTeam,
-    currentFormation,
-    canUndo,
-    canRedo,
-    handleUndo,
-    handleRedo,
     handlePlayerClick,
     handleOpponentClick,
-    handleSquadCardCycle,
-    handleSaveManager,
-    handleCycleManagerCard,
     generateFlowchart,
-    teams,
-    tacticsLoading,
   };
 
   // ── Main Screen ──
   return (
-    <TacticsViewerProvider value={contextValue}>
-      <div className="w-full h-screen bg-slate-900 flex flex-col overflow-hidden">
-        <ErrorBoundary inline>
-          <TacticsHeader />
-        </ErrorBoundary>
+    <TacticsUIProvider value={uiValue}>
+      <TacticsTeamProvider value={teamValue}>
+        <TacticsExecutionProvider value={executionValue}>
+          <div className="w-full h-screen bg-slate-900 flex flex-col overflow-hidden">
+            <ErrorBoundary inline>
+              <TacticsHeader />
+            </ErrorBoundary>
 
-        <div className="flex-1 flex min-h-0 relative">
-          <ErrorBoundary inline>
-            <TacticsSidebarSection />
-          </ErrorBoundary>
-          <ErrorBoundary inline>
-            <TacticsMainContent />
-          </ErrorBoundary>
-          <ErrorBoundary inline>
-            <TacticsRightSidebar />
-          </ErrorBoundary>
-        </div>
+            <div className="flex-1 flex min-h-0 relative">
+              <ErrorBoundary inline>
+                <TacticsSidebarSection />
+              </ErrorBoundary>
+              <ErrorBoundary inline>
+                <TacticsMainContent />
+              </ErrorBoundary>
+              <ErrorBoundary inline>
+                <TacticsRightSidebar />
+              </ErrorBoundary>
+            </div>
 
-        <ErrorBoundary inline>
-          <TacticsModals />
-        </ErrorBoundary>
-      </div>
-    </TacticsViewerProvider>
+            <ErrorBoundary inline>
+              <TacticsModals />
+            </ErrorBoundary>
+          </div>
+        </TacticsExecutionProvider>
+      </TacticsTeamProvider>
+    </TacticsUIProvider>
   );
 }
