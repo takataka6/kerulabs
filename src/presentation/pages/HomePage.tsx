@@ -498,18 +498,20 @@ export function HomePage() {
         </nav>
 
         {/* GitHub リンク */}
-        <a
-          href={GITHUB_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="GitHub"
-          className="flex items-center gap-2 rounded-xl border border-slate-700/50 bg-slate-900/72 px-3.5 py-2 text-slate-400 shadow-2xl backdrop-blur-md transition-all duration-300 hover:bg-slate-800/70 hover:text-white"
-        >
-          <GitHubIcon className="h-3.5 w-3.5 shrink-0" />
-          <span className="hidden sm:inline text-xs sm:text-sm font-semibold">
-            GitHub
-          </span>
-        </a>
+        {!IS_ELECTRON && (
+          <a
+            href={GITHUB_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub"
+            className="flex items-center gap-2 rounded-xl border border-slate-700/50 bg-slate-900/72 px-3.5 py-2 text-slate-400 shadow-2xl backdrop-blur-md transition-all duration-300 hover:bg-slate-800/70 hover:text-white"
+          >
+            <GitHubIcon className="h-3.5 w-3.5 shrink-0" />
+            <span className="hidden sm:inline text-xs sm:text-sm font-semibold">
+              GitHub
+            </span>
+          </a>
+        )}
       </div>
     </div>
   );
