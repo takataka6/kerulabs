@@ -137,6 +137,9 @@ export const Player = memo(function Player({
   const dragPositionRef = useRef<{ x: number; z: number } | null>(null);
   // React再レンダーがtargetPositionに追いつくまでドラッグ終了位置を保持
   const dragEndPosRef = useRef<{ x: number; z: number } | null>(null);
+  // タッチタップ検出用（iPadなどのタッチデバイス対応）
+  const tapStartClientRef = useRef<{ x: number; y: number } | null>(null);
+  const clickFiredRef = useRef(false);
 
   const getFieldPosition = useCallback(
     (e: PointerEvent): { x: number; z: number } | null => {
@@ -173,6 +176,8 @@ export const Player = memo(function Player({
     (e: ThreeEvent<PointerEvent>) => {
       if (!draggable) return;
       e.stopPropagation();
+      tapStartClientRef.current = { x: e.clientX, y: e.clientY };
+      clickFiredRef.current = false;
       isDragging.current = true;
       // ドラッグ開始時にバウンディング矩形を一度キャッシュ
       cachedRect.current = gl.domElement.getBoundingClientRect();
@@ -392,8 +397,36 @@ export const Player = memo(function Player({
     }
   });
 
+  const handleNonDraggablePointerDown = useCallback(
+    (e: ThreeEvent<PointerEvent>) => {
+      if (!onClick) return;
+      e.stopPropagation();
+      tapStartClientRef.current = { x: e.clientX, y: e.clientY };
+      clickFiredRef.current = false;
+    },
+    [onClick],
+  );
+
+  const handlePointerUp = useCallback(
+    (e: ThreeEvent<PointerEvent>) => {
+      const start = tapStartClientRef.current;
+      tapStartClientRef.current = null;
+      if (!start || !onClick || clickFiredRef.current) return;
+      const dx = e.clientX - start.x;
+      const dy = e.clientY - start.y;
+      if (Math.sqrt(dx * dx + dy * dy) < 5) {
+        clickFiredRef.current = true;
+        e.stopPropagation();
+        onClick(index, e.nativeEvent as unknown as MouseEvent);
+      }
+    },
+    [onClick, index],
+  );
+
   const handleClick = useCallback(
     (e: ThreeEvent<MouseEvent>) => {
+      if (clickFiredRef.current) return;
+      clickFiredRef.current = true;
       e.stopPropagation();
       onClick?.(index, e.nativeEvent);
     },
@@ -422,7 +455,14 @@ export const Player = memo(function Player({
         position={[position.x, DISK_GEOMETRY.Y_POSITION, position.z]}
         castShadow
         onClick={onClick ? handleClick : undefined}
-        onPointerDown={draggable ? handlePointerDown : undefined}
+        onPointerDown={
+          draggable
+            ? handlePointerDown
+            : onClick
+              ? handleNonDraggablePointerDown
+              : undefined
+        }
+        onPointerUp={onClick ? handlePointerUp : undefined}
         onPointerOver={handlePointerOver}
         onPointerOut={handlePointerOut}
       >

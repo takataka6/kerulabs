@@ -92,6 +92,9 @@ export const OpponentMarker = memo(function OpponentMarker({
   const cachedMouse = useRef(new Vector2());
   const cachedIntersection = useRef(new Vector3());
   const cachedRect = useRef<DOMRect | null>(null);
+  // タッチタップ検出用（iPadなどのタッチデバイス対応）
+  const tapStartClientRef = useRef<{ x: number; y: number } | null>(null);
+  const clickFiredRef = useRef(false);
 
   const colors = useMemo(() => deriveOpponentColors(color), [color]);
 
@@ -126,6 +129,8 @@ export const OpponentMarker = memo(function OpponentMarker({
   const handlePointerDown = useCallback(
     (e: ThreeEvent<PointerEvent>) => {
       e.stopPropagation();
+      tapStartClientRef.current = { x: e.clientX, y: e.clientY };
+      clickFiredRef.current = false;
       isDragging.current = true;
       cachedRect.current = gl.domElement.getBoundingClientRect();
       gl.domElement.style.cursor = "grabbing";
@@ -227,8 +232,26 @@ export const OpponentMarker = memo(function OpponentMarker({
     [id, onRemove],
   );
 
+  const handlePointerUp = useCallback(
+    (e: ThreeEvent<PointerEvent>) => {
+      const start = tapStartClientRef.current;
+      tapStartClientRef.current = null;
+      if (!start || !onClick || clickFiredRef.current) return;
+      const dx = e.clientX - start.x;
+      const dy = e.clientY - start.y;
+      if (Math.sqrt(dx * dx + dy * dy) < 5) {
+        clickFiredRef.current = true;
+        e.stopPropagation();
+        onClick(id, e.nativeEvent as unknown as MouseEvent);
+      }
+    },
+    [id, onClick],
+  );
+
   const handleClick = useCallback(
     (e: ThreeEvent<MouseEvent>) => {
+      if (clickFiredRef.current) return;
+      clickFiredRef.current = true;
       e.stopPropagation();
       onClick?.(id, e.nativeEvent);
     },
@@ -328,6 +351,7 @@ export const OpponentMarker = memo(function OpponentMarker({
           ref={meshRef}
           position={[0, DISK_GEOMETRY.Y_POSITION, 0]}
           onPointerDown={handlePointerDown}
+          onPointerUp={onClick ? handlePointerUp : undefined}
           onClick={onClick ? handleClick : undefined}
           onContextMenu={handleContextMenu}
           onPointerOver={handlePointerOver}
