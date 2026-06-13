@@ -315,6 +315,7 @@ export function TacticsMainContent() {
             }
             showPlayerPhotos={!lineupAnimation.isActive}
             showOpponentNames={opponentsHook.showOpponentNames}
+            showOpponentNumbers={opponentsHook.showOpponentNumbers}
             hiddenPlayerIndices={ui.hiddenPlayerIndices}
             labelFixed={ui.labelFixed}
             playerMarkerScale={ui.playerMarkerScale}

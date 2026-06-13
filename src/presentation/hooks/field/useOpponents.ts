@@ -52,6 +52,7 @@ export function useOpponents(
   const [showOpponentSquadBuilder, setShowOpponentSquadBuilder] =
     useState(false);
   const [showOpponentNames, setShowOpponentNames] = useState(true);
+  const [showOpponentNumbers, setShowOpponentNumbers] = useState(true);
   const [opponentMarkerColor, setOpponentMarkerColor] = useState(
     DEFAULT_OPPONENT_MARKER_COLOR,
   );
@@ -282,6 +283,8 @@ export function useOpponents(
     setShowOpponentSquadBuilder,
     showOpponentNames,
     setShowOpponentNames,
+    showOpponentNumbers,
+    setShowOpponentNumbers,
     opponentMarkerColor,
     setOpponentMarkerColor,
     opponentTeam,

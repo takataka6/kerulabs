@@ -41,6 +41,7 @@ interface OpponentMarkerProps {
   color?: string; // チームカラー (デフォルト: '#1e1e1e')
   name?: string; // 選手名
   showName?: boolean;
+  showNumber?: boolean;
   labelFixed?: boolean;
   onGroupDragEnd?: (
     positions: Array<{
@@ -67,6 +68,7 @@ export const OpponentMarker = memo(function OpponentMarker({
   color,
   name,
   showName = true,
+  showNumber = true,
   labelFixed = false,
   onGroupDragEnd,
   groupDragState,
@@ -352,17 +354,19 @@ export const OpponentMarker = memo(function OpponentMarker({
         </mesh>
 
         {/* 番号テキスト（相手チームは反転して相手側から読める向き） */}
-        <Text
-          position={[0, OPPONENT_OFFSETS.NUMBER_Y, 0]}
-          rotation={[-Math.PI / 2, 0, 0]}
-          fontSize={TEXT_LABEL.OPPONENT_NUMBER_FONT_SIZE}
-          color={colors.text}
-          anchorX="center"
-          anchorY="middle"
-          fontWeight="bold"
-        >
-          {number.toString()}
-        </Text>
+        {showNumber && (
+          <Text
+            position={[0, OPPONENT_OFFSETS.NUMBER_Y, 0]}
+            rotation={[-Math.PI / 2, 0, 0]}
+            fontSize={TEXT_LABEL.OPPONENT_NUMBER_FONT_SIZE}
+            color={colors.text}
+            anchorX="center"
+            anchorY="middle"
+            fontWeight="bold"
+          >
+            {number.toString()}
+          </Text>
+        )}
 
         {/* 名前ラベル（フラット表示） */}
         {name && showName && !labelFixed && (
