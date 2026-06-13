@@ -7,6 +7,8 @@
 
 ## [Unreleased]
 
+## [0.9.2] - 2026-06-14
+
 ### Changed
 
 - **権利関係・ライセンスコンプライアンスの整備**: MITライセンスでの安全な提供・再配布を可能にするため、以下の対応を実施。
@@ -242,7 +244,8 @@
 - **Husky + lint-staged**: コミット時の自動リント・フォーマット
 - **GitHub Actions CI**: 型チェック・リント・テストの自動実行
 
-[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.9.1...HEAD
+[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.9.2...HEAD
+[0.9.2]: https://github.com/takataka6/kerulabs/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/takataka6/kerulabs/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/takataka6/kerulabs/compare/v0.8.1...v0.9.0
 [0.8.1]: https://github.com/takataka6/kerulabs/compare/v0.8.0...v0.8.1
