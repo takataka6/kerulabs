@@ -7,6 +7,11 @@
 
 ## [Unreleased]
 
+### Changed
+
+- **アプリ配布物（macOS/Windows/Linux）へのライセンスファイル同梱の強化**:
+  - `electron-builder.yml` に `extraResources` を追加し、`LICENSE` および `NOTICE` ファイルを各アプリ配布物の `Resources` フォルダに同梱するように設定しました。これにより、macOS のコード署名（codesign）や公証（notarization）のエラーを引き起こすことなく、デスクトップ配布物全体でライセンスの安全な同梱が可能になりました。
+
 ## [0.9.2] - 2026-06-14
 
 ### Changed

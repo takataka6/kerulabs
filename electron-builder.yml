@@ -30,6 +30,11 @@ mac:
   entitlements: build/entitlements.mac.plist
   entitlementsInherit: build/entitlements.mac.plist
   notarize: true
+extraResources:
+  - from: "."
+    filter:
+      - LICENSE
+      - NOTICE
 win:
   icon: build/icon.png
   target:
