@@ -95,6 +95,8 @@ function defaultProps(
     pitchConfig: { maxOpponents: 11 },
     showPlayerNames: true,
     onTogglePlayerNames: vi.fn(),
+    showPlayerNumbers: true,
+    onTogglePlayerNumbers: vi.fn(),
     showNameSettings: false,
     onToggleNameSettings: vi.fn(),
     hiddenPlayerIndices: new Set<number>(),

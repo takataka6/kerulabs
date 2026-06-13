@@ -240,6 +240,8 @@ export function TacticsMainContent() {
           pitchConfig={playModePhase.pitchConfig}
           showPlayerNames={ui.showPlayerNames}
           onTogglePlayerNames={() => ui.setShowPlayerNames((prev) => !prev)}
+          showPlayerNumbers={ui.showPlayerNumbers}
+          onTogglePlayerNumbers={() => ui.setShowPlayerNumbers((prev) => !prev)}
           showNameSettings={ui.showNameSettings}
           onToggleNameSettings={() => ui.setShowNameSettings((prev) => !prev)}
           hiddenPlayerIndices={ui.hiddenPlayerIndices}

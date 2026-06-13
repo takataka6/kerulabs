@@ -78,9 +78,11 @@ interface RightControlsColumnProps {
   teams: Team[] | undefined;
   pitchConfig: { maxOpponents: number };
 
-  // 選手名表示
+  // 選手名・番号表示
   showPlayerNames: boolean;
   onTogglePlayerNames: () => void;
+  showPlayerNumbers: boolean;
+  onTogglePlayerNumbers: () => void;
   showNameSettings: boolean;
   onToggleNameSettings: () => void;
   hiddenPlayerIndices: Set<number>;
@@ -147,6 +149,8 @@ export const RightControlsColumn = memo(function RightControlsColumn({
   pitchConfig,
   showPlayerNames,
   onTogglePlayerNames,
+  showPlayerNumbers,
+  onTogglePlayerNumbers,
   showNameSettings,
   onToggleNameSettings,
   hiddenPlayerIndices,
@@ -477,6 +481,26 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                   </div>
                 )}
               </div>
+
+              {/* 番号表示切り替え */}
+              <button
+                onClick={onTogglePlayerNumbers}
+                className={`${SECONDARY_TOGGLE_BUTTON_CLASS} ${RAIL_PANEL_WIDTH_CLASS} ${showPlayerNumbers ? "" : "border-orange-500/50 bg-[linear-gradient(180deg,rgba(154,52,18,0.30)_0%,rgba(120,40,14,0.30)_100%)] text-orange-300 hover:border-orange-400/60"}`}
+                aria-label={
+                  showPlayerNumbers
+                    ? t("tactics.hideNumbers")
+                    : t("tactics.showNumbers")
+                }
+              >
+                <span className="text-xs" aria-hidden="true">
+                  {showPlayerNumbers ? "🔢" : "🔤"}
+                </span>
+                <span className="text-xs font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
+                  {showPlayerNumbers
+                    ? t("tactics.hideNumbers")
+                    : t("tactics.showNumbers")}
+                </span>
+              </button>
 
               {/* 背景設定 */}
               <BackgroundSettingsPanel
