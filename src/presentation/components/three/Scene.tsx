@@ -65,6 +65,7 @@ export const Scene = memo(function Scene({
   showPlayerNumbers = true,
   showPlayerPhotos = true,
   showOpponentNames = true,
+  showOpponentNumbers = true,
   hiddenPlayerIndices = new Set(),
   labelFixed = false,
   playerMarkerScale = 1,
@@ -486,6 +487,7 @@ export const Scene = memo(function Scene({
               : opp.id === selectedOpponentId
           }
           showName={showOpponentNames}
+          showNumber={showOpponentNumbers}
           labelFixed={labelFixed}
           onGroupDragEnd={onGroupDragEnd}
           groupDragState={groupDragRef}
@@ -515,7 +517,11 @@ export const Scene = memo(function Scene({
           number={players[index]?.number || index + 1}
           name={players[index]?.name}
           imageUrl={players[index]?.imageUrl}
-          showName={showPlayerNames && !hiddenPlayerIndices.has(index)}
+          showName={
+            showPlayerNames
+              ? !hiddenPlayerIndices.has(index)
+              : hiddenPlayerIndices.has(index)
+          }
           showNumber={showPlayerNumbers}
           showPhoto={showPlayerPhotos}
           labelFixed={labelFixed}

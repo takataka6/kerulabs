@@ -239,7 +239,12 @@ export function TacticsMainContent() {
           teams={teams}
           pitchConfig={playModePhase.pitchConfig}
           showPlayerNames={ui.showPlayerNames}
-          onTogglePlayerNames={() => ui.setShowPlayerNames((prev) => !prev)}
+          onTogglePlayerNames={() => {
+            ui.setShowPlayerNames((prev) => !prev);
+            ui.setHiddenPlayerIndices(new Set());
+          }}
+          showPlayerNumbers={ui.showPlayerNumbers}
+          onTogglePlayerNumbers={() => ui.setShowPlayerNumbers((prev) => !prev)}
           showNameSettings={ui.showNameSettings}
           onToggleNameSettings={() => ui.setShowNameSettings((prev) => !prev)}
           hiddenPlayerIndices={ui.hiddenPlayerIndices}
@@ -313,6 +318,7 @@ export function TacticsMainContent() {
             }
             showPlayerPhotos={!lineupAnimation.isActive}
             showOpponentNames={opponentsHook.showOpponentNames}
+            showOpponentNumbers={opponentsHook.showOpponentNumbers}
             hiddenPlayerIndices={ui.hiddenPlayerIndices}
             labelFixed={ui.labelFixed}
             playerMarkerScale={ui.playerMarkerScale}

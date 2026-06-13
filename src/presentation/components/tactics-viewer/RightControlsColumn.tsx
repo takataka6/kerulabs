@@ -78,9 +78,11 @@ interface RightControlsColumnProps {
   teams: Team[] | undefined;
   pitchConfig: { maxOpponents: number };
 
-  // 選手名表示
+  // 選手名・番号表示
   showPlayerNames: boolean;
   onTogglePlayerNames: () => void;
+  showPlayerNumbers: boolean;
+  onTogglePlayerNumbers: () => void;
   showNameSettings: boolean;
   onToggleNameSettings: () => void;
   hiddenPlayerIndices: Set<number>;
@@ -147,6 +149,8 @@ export const RightControlsColumn = memo(function RightControlsColumn({
   pitchConfig,
   showPlayerNames,
   onTogglePlayerNames,
+  showPlayerNumbers,
+  onTogglePlayerNumbers,
   showNameSettings,
   onToggleNameSettings,
   hiddenPlayerIndices,
@@ -340,25 +344,48 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                     )}
                   </button>
                 </div>
-                {opponentsHook.opponents.length > 0 && (
-                  <div className="border-t border-slate-700/50">
-                    <button
-                      onClick={() =>
-                        opponentsHook.setShowOpponentNames(
-                          !opponentsHook.showOpponentNames,
-                        )
-                      }
-                      className={`w-full min-h-[38px] py-1 px-1.5 sm:py-1.5 sm:px-2.5 transition-all duration-300 flex items-center justify-center gap-1 sm:gap-1.5 text-xs ${opponentsHook.showOpponentNames ? "text-slate-200 hover:bg-white/[0.06]" : "text-slate-500 hover:bg-white/[0.04]"}`}
+                <div className="border-t border-slate-700/50 flex items-stretch">
+                  {/* 相手名前表示切り替え */}
+                  <button
+                    onClick={() =>
+                      opponentsHook.setShowOpponentNames(
+                        !opponentsHook.showOpponentNames,
+                      )
+                    }
+                    disabled={opponentsHook.opponents.length === 0}
+                    className={`flex-1 min-h-[36px] py-1 px-1 sm:py-1.5 sm:px-1.5 transition-all duration-300 flex items-center justify-center gap-1 text-xs border-r border-slate-700/50 ${opponentsHook.opponents.length === 0 ? "opacity-30 cursor-not-allowed" : opponentsHook.showOpponentNames ? "text-slate-200 hover:bg-white/[0.06]" : "text-slate-500 hover:bg-white/[0.04]"}`}
+                  >
+                    <span
+                      className="sm:hidden text-[11px] font-bold font-mono leading-none"
+                      aria-hidden="true"
                     >
-                      <span className="text-[10px] sm:text-xs">
-                        {opponentsHook.showOpponentNames ? "👁️" : "👁️‍🗨️"}
-                      </span>
-                      <span className="font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
-                        {t("tactics.names.opponent")}
-                      </span>
-                    </button>
-                  </div>
-                )}
+                      Aa
+                    </span>
+                    <span className="hidden sm:inline text-xs font-semibold tracking-wide whitespace-nowrap">
+                      {t("tactics.names.label")}
+                    </span>
+                  </button>
+                  {/* 相手番号表示切り替え */}
+                  <button
+                    onClick={() =>
+                      opponentsHook.setShowOpponentNumbers(
+                        !opponentsHook.showOpponentNumbers,
+                      )
+                    }
+                    disabled={opponentsHook.opponents.length === 0}
+                    className={`flex-1 min-h-[36px] py-1 px-1 sm:py-1.5 sm:px-1.5 transition-all duration-300 flex items-center justify-center gap-1 text-xs ${opponentsHook.opponents.length === 0 ? "opacity-30 cursor-not-allowed" : opponentsHook.showOpponentNumbers ? "text-slate-200 hover:bg-white/[0.06]" : "text-slate-500 hover:bg-white/[0.04]"}`}
+                  >
+                    <span
+                      className="sm:hidden text-[11px] font-bold font-mono leading-none"
+                      aria-hidden="true"
+                    >
+                      123
+                    </span>
+                    <span className="hidden sm:inline text-xs font-semibold tracking-wide whitespace-nowrap">
+                      {t("tactics.numbers.label")}
+                    </span>
+                  </button>
+                </div>
               </div>
 
               {/* Undo / Redo - モバイルのみ表示 */}
@@ -395,32 +422,36 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                 </div>
               </div>
 
-              {/* 名前表示切り替え */}
+              {/* 名前/番号表示切り替え - 横並び */}
               <div
                 className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS}`}
               >
                 <div className="flex items-stretch">
+                  {/* 名前表示切り替え */}
                   <button
                     onClick={onTogglePlayerNames}
-                    className={`${RAIL_BUTTON_CLASS} ${showPlayerNames ? "bg-white/[0.08] text-white hover:bg-white/[0.12]" : RAIL_BUTTON_INACTIVE_CLASS}`}
+                    className={`flex-1 min-h-[36px] py-1 px-1 sm:py-1.5 sm:px-1.5 transition-all duration-300 flex items-center justify-center gap-1 ${showPlayerNames ? "text-slate-200 hover:bg-white/[0.06] hover:text-white" : "text-slate-500 hover:bg-white/[0.06] hover:text-white"}`}
                     aria-label={
                       showPlayerNames
                         ? t("tactics.hideNames")
                         : t("tactics.showNames")
                     }
                   >
-                    <span className="text-xs" aria-hidden="true">
-                      {showPlayerNames ? "👁️" : "👁️‍🗨️"}
+                    <span
+                      className="sm:hidden text-[11px] font-bold font-mono leading-none"
+                      aria-hidden="true"
+                    >
+                      Aa
                     </span>
-                    <span className="text-xs font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
-                      {showPlayerNames
-                        ? t("tactics.hideNames")
-                        : t("tactics.showNames")}
+                    <span className="hidden sm:inline text-xs font-semibold tracking-wide whitespace-nowrap">
+                      {t("tactics.names.label")}
                     </span>
                   </button>
+
+                  {/* 設定ボタン（中央） */}
                   <button
                     onClick={onToggleNameSettings}
-                    className={`${SPLIT_ACTION_CLASS} flex items-center`}
+                    className="py-1 px-1.5 sm:py-1.5 sm:px-2 transition-all duration-300 text-slate-500 hover:text-white hover:bg-white/[0.06] border-x border-slate-700/50 flex items-center justify-center"
                     aria-label={
                       showNameSettings
                         ? t("a11y.closePanel")
@@ -432,44 +463,71 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                       {showNameSettings ? "▲" : "▼"}
                     </span>
                   </button>
+
+                  {/* 番号表示切り替え */}
+                  <button
+                    onClick={onTogglePlayerNumbers}
+                    className={`flex-1 min-h-[36px] py-1 px-1 sm:py-1.5 sm:px-1.5 transition-all duration-300 flex items-center justify-center gap-1 ${showPlayerNumbers ? "text-slate-200 hover:bg-white/[0.06] hover:text-white" : "text-slate-500 hover:bg-white/[0.06] hover:text-white"}`}
+                    aria-label={
+                      showPlayerNumbers
+                        ? t("tactics.hideNumbers")
+                        : t("tactics.showNumbers")
+                    }
+                  >
+                    <span
+                      className="sm:hidden text-[11px] font-bold font-mono leading-none"
+                      aria-hidden="true"
+                    >
+                      123
+                    </span>
+                    <span className="hidden sm:inline text-xs font-semibold tracking-wide whitespace-nowrap">
+                      {t("tactics.numbers.label")}
+                    </span>
+                  </button>
                 </div>
-                {showNameSettings && showPlayerNames && (
+
+                {showNameSettings && (
                   <div className="border-t border-slate-700/50">
-                    {/* ラベル固定 */}
-                    <div className="px-3 py-2 border-b border-slate-700/40">
-                      <button
-                        onClick={onToggleLabelFixed}
-                        className={`w-full text-[10px] font-semibold py-1.5 rounded transition-all duration-150 flex items-center justify-center gap-1.5 ${
-                          labelFixed
-                            ? "bg-blue-500/70 text-white"
-                            : "bg-white/[0.05] text-slate-400 hover:bg-white/[0.10] hover:text-slate-200"
-                        }`}
-                      >
-                        {t("tactics.labelFixed")}
-                      </button>
-                    </div>
+                    {/* ラベル固定（名前表示中のみ） */}
+                    {showPlayerNames && (
+                      <div className="px-3 py-2 border-b border-slate-700/40">
+                        <button
+                          onClick={onToggleLabelFixed}
+                          className={`w-full text-[10px] font-semibold py-1.5 rounded transition-all duration-150 flex items-center justify-center gap-1.5 ${
+                            labelFixed
+                              ? "bg-blue-500/70 text-white"
+                              : "bg-white/[0.05] text-slate-400 hover:bg-white/[0.10] hover:text-slate-200"
+                          }`}
+                        >
+                          {t("tactics.labelFixed")}
+                        </button>
+                      </div>
+                    )}
                     {playersData.map((player, index) => {
-                      const isHidden = hiddenPlayerIndices.has(index);
+                      const isException = hiddenPlayerIndices.has(index);
+                      const isVisible = showPlayerNames
+                        ? !isException
+                        : isException;
                       const pos = formationData[index];
                       const bgColor = getPositionBg(pos?.cat);
                       return (
                         <button
                           key={index}
                           onClick={() => onTogglePlayerHidden(index)}
-                          className={`w-full flex items-center gap-2 px-3 py-1.5 transition-all duration-200 ${isHidden ? "text-slate-500 hover:bg-white/[0.03]" : "text-slate-300 hover:bg-white/[0.06]"}`}
+                          className={`w-full flex items-center gap-2 px-3 py-1.5 transition-all duration-200 ${isVisible ? "text-slate-300 hover:bg-white/[0.06]" : "text-slate-500 hover:bg-white/[0.03]"}`}
                         >
                           <div
-                            className={`w-5 h-5 ${bgColor} rounded flex items-center justify-center text-white text-[9px] font-bold ${isHidden ? "opacity-30" : ""}`}
+                            className={`w-5 h-5 ${bgColor} rounded flex items-center justify-center text-white text-[9px] font-bold ${isVisible ? "" : "opacity-30"}`}
                           >
                             {player.number}
                           </div>
                           <span
-                            className={`text-xs truncate flex-1 text-left ${isHidden ? "line-through opacity-50" : ""}`}
+                            className={`text-xs truncate flex-1 text-left ${isVisible ? "" : "line-through opacity-50"}`}
                           >
                             {player.name}
                           </span>
                           <span className="text-xs">
-                            {isHidden ? "👁️‍🗨️" : "👁️"}
+                            {isVisible ? "👁️" : "👁️‍🗨️"}
                           </span>
                         </button>
                       );

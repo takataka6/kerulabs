@@ -380,6 +380,8 @@
   "tactics.capture.preset.split-field-squad": "フィールド＆スターティング",
   "tactics.capture.preset.cinematic-all": "シネマティック全表示",
   "tactics.capture.preset.magazine-showcase": "雑誌風ショーケース",
+  "tactics.names.label": "名前",
+  "tactics.numbers.label": "番号",
   "tactics.names.myTeam": "自チーム",
   "tactics.names.opponent": "相手",
   "tactics.tacticsFlow": "戦術フロー",

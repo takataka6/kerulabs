@@ -41,6 +41,7 @@ export interface SceneProps {
   showPlayerNumbers?: boolean;
   showPlayerPhotos?: boolean;
   showOpponentNames?: boolean;
+  showOpponentNumbers?: boolean;
   hiddenPlayerIndices?: Set<number>;
   labelFixed?: boolean;
   playerMarkerScale?: number;

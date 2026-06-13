@@ -508,13 +508,16 @@ describe("TacticsMainContent", () => {
       expect(mockUIContext.handleRedo).toHaveBeenCalled();
     });
 
-    it("onTogglePlayerNames toggles showPlayerNames via context", () => {
+    it("onTogglePlayerNames toggles showPlayerNames and clears hiddenPlayerIndices via context", () => {
       render(<TacticsMainContent />);
 
       const toggle =
         capturedRightControlsProps.onTogglePlayerNames as () => void;
       toggle();
       expect(mockUIContext.ui.setShowPlayerNames).toHaveBeenCalled();
+      expect(mockUIContext.ui.setHiddenPlayerIndices).toHaveBeenCalledWith(
+        new Set(),
+      );
     });
 
     it("onToggleNameSettings toggles showNameSettings via context", () => {

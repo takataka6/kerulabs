@@ -51,6 +51,7 @@ interface TacticsCanvasProps {
   showPlayerNumbers: boolean;
   showPlayerPhotos: boolean;
   showOpponentNames: boolean;
+  showOpponentNumbers: boolean;
   hiddenPlayerIndices: Set<number>;
   labelFixed: boolean;
   playerMarkerScale: number;
@@ -173,6 +174,7 @@ export const TacticsCanvas = memo(function TacticsCanvas(
     showPlayerNumbers,
     showPlayerPhotos,
     showOpponentNames,
+    showOpponentNumbers,
     hiddenPlayerIndices,
     labelFixed,
     playerMarkerScale,
@@ -389,6 +391,7 @@ export const TacticsCanvas = memo(function TacticsCanvas(
           showPlayerNumbers={showPlayerNumbers}
           showPlayerPhotos={showPlayerPhotos}
           showOpponentNames={showOpponentNames}
+          showOpponentNumbers={showOpponentNumbers}
           hiddenPlayerIndices={hiddenPlayerIndices}
           labelFixed={labelFixed}
           playerMarkerScale={playerMarkerScale}

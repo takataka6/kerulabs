@@ -380,6 +380,8 @@
   "tactics.capture.preset.split-field-squad": "Field & Lineup Split",
   "tactics.capture.preset.cinematic-all": "Cinematic Showcase",
   "tactics.capture.preset.magazine-showcase": "Magazine Layout",
+  "tactics.names.label": "Name",
+  "tactics.numbers.label": "No.",
   "tactics.names.myTeam": "My Team",
   "tactics.names.opponent": "Opponent",
   "tactics.tacticsFlow": "Tactics Flow",

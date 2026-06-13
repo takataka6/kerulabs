@@ -79,6 +79,8 @@ function createDefaultHook() {
     setShowOpponentSquadBuilder: vi.fn(),
     showOpponentNames: true,
     setShowOpponentNames: vi.fn(),
+    showOpponentNumbers: true,
+    setShowOpponentNumbers: vi.fn(),
     handleFieldClick: vi.fn(),
     handleOpponentDrag: vi.fn(),
     handleOpponentRemove: vi.fn(),
