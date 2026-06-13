@@ -2,7 +2,7 @@
  * @module SquadBuilder
  * @description スカッドビルダーコンポーネント。フォーメーションのポジション枠に選手をドラッグ&ドロップで配置する。
  */
-import { useState, useMemo, useCallback, memo } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef, memo } from "react";
 import { Team } from "@domain/entities/Team";
 import { Formation } from "@domain/entities/Formation";
 import { Player } from "@domain/entities/Player";
@@ -140,9 +140,15 @@ export function SquadBuilder({
   onClose,
 }: SquadBuilderProps) {
   const { t } = useLanguage();
-  const [squad, setSquad] = useState<(Player | null)[]>(
-    formation.positions.map((_, index) => selectedPlayers[index] || null),
+  const initialSquad = formation.positions.map(
+    (_, index) => selectedPlayers[index] || null,
   );
+  const initialEmptyPositionIndex = initialSquad.findIndex(
+    (player) => player === null,
+  );
+  const positionButtonRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const initialFocusDoneRef = useRef(false);
+  const [squad, setSquad] = useState<(Player | null)[]>(initialSquad);
   // スカッドに配置されていない選手をサブメンバーとして初期化
   const [substitutes, setSubstitutes] = useState<Player[]>(
     selectedPlayers
@@ -152,7 +158,7 @@ export function SquadBuilder({
   const [playerFilter, setPlayerFilter] = useState("");
   // 選択中のポジションインデックス（選手一覧からワンクリックで割り当て）
   const [activePositionIndex, setActivePositionIndex] = useState<number | null>(
-    null,
+    initialEmptyPositionIndex >= 0 ? initialEmptyPositionIndex : null,
   );
   const availablePlayers = useMemo(() => {
     const assignedPlayerIds = new Set(
@@ -229,6 +235,22 @@ export function SquadBuilder({
     onClose();
   };
 
+  useEffect(() => {
+    if (initialFocusDoneRef.current) return;
+
+    if (initialEmptyPositionIndex < 0) {
+      initialFocusDoneRef.current = true;
+      return;
+    }
+
+    initialFocusDoneRef.current = true;
+
+    // Wait for the modal contents to paint before moving focus.
+    requestAnimationFrame(() => {
+      positionButtonRefs.current[initialEmptyPositionIndex]?.focus();
+    });
+  }, [initialEmptyPositionIndex]);
+
   return (
     <AccessibleModal
       isOpen={true}
@@ -293,6 +315,9 @@ export function SquadBuilder({
                   key={index}
                   role="button"
                   tabIndex={0}
+                  ref={(element) => {
+                    positionButtonRefs.current[index] = element;
+                  }}
                   onClick={() => handlePositionClick(index)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {

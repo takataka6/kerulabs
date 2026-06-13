@@ -179,6 +179,31 @@ describe("SquadBuilder", () => {
     ).toBeInTheDocument();
   });
 
+  it("ポップアップ表示時に最初の空きポジションへフォーカスする", () => {
+    const team = createMockTeam();
+    const formation = createMockFormation();
+    const selectedPlayers: (Player | null)[] = Array.from(
+      { length: 11 },
+      (_, index) => (index === 0 ? createPlayer("Assigned GK", 1, "gk") : null),
+    );
+
+    render(
+      <SquadBuilder
+        team={team}
+        formation={formation}
+        selectedPlayers={selectedPlayers}
+        onUpdateSquad={vi.fn()}
+        onClose={vi.fn()}
+      />,
+    );
+
+    const firstEmptySlot = screen.getByLabelText("P1");
+    expect(firstEmptySlot).toHaveFocus();
+    expect(
+      screen.getByText(/tactics.squadBuilder.selectPlayer/),
+    ).toBeInTheDocument();
+  });
+
   it("選手検索フィルターで選手を絞り込める", () => {
     const team = createMockTeam();
     const formation = createMockFormation();
