@@ -344,7 +344,8 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                     )}
                   </button>
                 </div>
-                <div className="border-t border-slate-700/50">
+                <div className="border-t border-slate-700/50 flex items-stretch">
+                  {/* 相手名前表示切り替え */}
                   <button
                     onClick={() =>
                       opponentsHook.setShowOpponentNames(
@@ -352,13 +353,30 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                       )
                     }
                     disabled={opponentsHook.opponents.length === 0}
-                    className={`w-full min-h-[38px] py-1 px-1.5 sm:py-1.5 sm:px-2.5 transition-all duration-300 flex items-center justify-center gap-1 sm:gap-1.5 text-xs ${opponentsHook.opponents.length === 0 ? "opacity-30 cursor-not-allowed" : opponentsHook.showOpponentNames ? "text-slate-200 hover:bg-white/[0.06]" : "text-slate-500 hover:bg-white/[0.04]"}`}
+                    className={`flex-1 min-h-[36px] py-1 px-1 sm:py-1.5 sm:px-1.5 transition-all duration-300 flex items-center justify-center gap-1 text-xs border-r border-slate-700/50 ${opponentsHook.opponents.length === 0 ? "opacity-30 cursor-not-allowed" : opponentsHook.showOpponentNames ? "text-slate-200 hover:bg-white/[0.06]" : "text-slate-500 hover:bg-white/[0.04]"}`}
                   >
-                    <span className="text-[10px] sm:text-xs">
+                    <span className="text-xs" aria-hidden="true">
                       {opponentsHook.showOpponentNames ? "👁️" : "👁️‍🗨️"}
                     </span>
-                    <span className="font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
-                      {t("tactics.names.opponent")}
+                    <span className="text-xs font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
+                      {t("tactics.names.label")}
+                    </span>
+                  </button>
+                  {/* 相手番号表示切り替え */}
+                  <button
+                    onClick={() =>
+                      opponentsHook.setShowOpponentNumbers(
+                        !opponentsHook.showOpponentNumbers,
+                      )
+                    }
+                    disabled={opponentsHook.opponents.length === 0}
+                    className={`flex-1 min-h-[36px] py-1 px-1 sm:py-1.5 sm:px-1.5 transition-all duration-300 flex items-center justify-center gap-1 text-xs ${opponentsHook.opponents.length === 0 ? "opacity-30 cursor-not-allowed" : opponentsHook.showOpponentNumbers ? "text-slate-200 hover:bg-white/[0.06]" : "text-slate-500 hover:bg-white/[0.04]"}`}
+                  >
+                    <span className="text-xs" aria-hidden="true">
+                      {opponentsHook.showOpponentNumbers ? "🔢" : "🔤"}
+                    </span>
+                    <span className="text-xs font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
+                      {t("tactics.numbers.label")}
                     </span>
                   </button>
                 </div>
