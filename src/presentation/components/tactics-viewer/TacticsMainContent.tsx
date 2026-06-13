@@ -510,7 +510,7 @@ export function TacticsMainContent() {
       />
 
       {/* ビューコントロール */}
-      {!ui.captureMode && !playerView.playerViewEnabled && (
+      {!ui.captureMode && !playerView.playerViewEnabled && !hasOpenPopup && (
         <ViewLockPanel
           onCameraAction={ui.setCameraAction}
           touchlineLocked={ui.touchlineLocked}
