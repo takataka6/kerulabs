@@ -1,0 +1,29 @@
+KeruLabs
+Copyright (c) 2026 Takao Fujii
+
+This software is licensed under the MIT License.
+See the LICENSE file for details.
+
+## Third-party notices
+
+### Roboto font
+Copyright 2015 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+"Roboto" is a trademark of Google LLC.
+
+The Roboto font is included in this project to provide consistent
+typography in offline/local environments (see public/fonts/Roboto-Regular.ttf
+and its copies in built artifacts). The font file itself contains the
+above copyright and license notices.

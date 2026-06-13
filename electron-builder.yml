@@ -8,6 +8,8 @@ files:
     to: "."
     filter:
       - package.json
+      - LICENSE
+      - NOTICE
   - from: "dist"
     to: "dist"
     filter:
