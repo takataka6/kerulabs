@@ -48,7 +48,7 @@ export const ViewLockPanel = memo(function ViewLockPanel({
     "min-h-[44px] px-1.5 sm:min-h-[56px] sm:px-2.5 transition-all duration-300 flex flex-col items-center justify-center gap-0.5";
 
   return (
-    <div className="absolute bottom-2 sm:bottom-4 right-2 sm:right-4 z-0 flex items-end gap-1 sm:gap-1.5">
+    <div className="fixed right-2 z-10 flex items-end gap-1 bottom-[calc(env(safe-area-inset-bottom,0px)+0.5rem)] sm:absolute sm:bottom-4 sm:right-4">
       <button
         onClick={() => setExpanded((prev) => !prev)}
         className={`${shellClass} rounded-[20px] transition-all duration-300 flex items-center justify-center h-[46px] w-[36px] ${
