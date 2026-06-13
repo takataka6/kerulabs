@@ -7,6 +7,13 @@
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-06-13
+
+### Fixed
+
+- **多言語ローカライズの空文字列フォールバック不具合の修正**: `LanguageContext` の `t` および `tDynamic` 関数において、翻訳キーの値が空文字列のときにキー文字列がそのまま表示されてしまうバグを修正しました（`||` から `??` に変更）。
+- **新規チーム作成/編集プレースホルダーの整理**: プレースホルダーに表示されていた具体的な固有名詞の例を削除し、クリーンな表示に改善しました。
+
 ## [0.9.0] - 2026-06-13
 
 ### Added
@@ -226,7 +233,8 @@
 - **Husky + lint-staged**: コミット時の自動リント・フォーマット
 - **GitHub Actions CI**: 型チェック・リント・テストの自動実行
 
-[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.9.1...HEAD
+[0.9.1]: https://github.com/takataka6/kerulabs/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/takataka6/kerulabs/compare/v0.8.1...v0.9.0
 [0.8.1]: https://github.com/takataka6/kerulabs/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/takataka6/kerulabs/compare/v0.7.0...v0.8.0
