@@ -69,7 +69,6 @@ export function TacticsMainContent() {
     () => !preferencesService.get("tacticsViewerGuideDismissed"),
   );
   const hasOpenPopup =
-    showGuide ||
     bgSettings.showSceneBgSettings ||
     ui.showPlayerManagement ||
     ui.showSquadBuilder ||
