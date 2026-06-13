@@ -47,7 +47,7 @@ export const ManagerDisplay = memo(function ManagerDisplay({
   if (captureMode) return null;
 
   return (
-    <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 xl:bottom-6 xl:left-6 z-10 flex items-end gap-1 sm:gap-1.5">
+    <div className="fixed left-2 z-10 flex items-end gap-1 bottom-[calc(env(safe-area-inset-bottom,0px)+0.5rem)] sm:bottom-[calc(env(safe-area-inset-bottom,0px)+1rem)] sm:left-4 xl:bottom-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] xl:left-6">
       {expanded && (
         <div className="bg-slate-900/95 backdrop-blur-xl rounded-2xl px-2 py-1.5 sm:px-3 sm:py-2 border border-slate-700/50 shadow-2xl">
           {editingManager ? (
