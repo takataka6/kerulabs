@@ -22,6 +22,8 @@ function renderViewLockPanel(
 ) {
   const props = {
     onCameraAction: vi.fn(),
+    fieldLocked: false,
+    onToggleFieldLock: vi.fn(),
     touchlineLocked: false,
     onToggleTouchlineLock: vi.fn(),
     disabled: false,
@@ -84,6 +86,18 @@ describe("ViewLockPanel", () => {
   // ── ロックトグル ────────────────────────────────────────
 
   describe("ロックトグル", () => {
+    it("フィールドロックボタンクリックで onToggleFieldLock が呼ばれる", () => {
+      const { onToggleFieldLock } = renderViewLockPanel();
+
+      fireEvent.click(screen.getByLabelText("tactics.lockField"));
+      expect(onToggleFieldLock).toHaveBeenCalledTimes(1);
+    });
+
+    it("fieldLocked 時のラベルが unlockField になる", () => {
+      renderViewLockPanel({ fieldLocked: true });
+      expect(screen.getByLabelText("tactics.unlockField")).toBeInTheDocument();
+    });
+
     it("タッチラインロックボタンクリックで onToggleTouchlineLock が呼ばれる", () => {
       const { onToggleTouchlineLock } = renderViewLockPanel();
 

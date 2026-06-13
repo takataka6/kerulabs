@@ -26,7 +26,7 @@ export function RightHistoryPanel({
 
   return (
     <div
-      className={`hidden sm:flex ${SECONDARY_PANEL_CLASS} h-[82px] sm:h-[82px] xl:h-[86px] w-[88px] xl:w-[96px] self-stretch flex-col`}
+      className={`hidden sm:flex ${SECONDARY_PANEL_CLASS} h-[68px] sm:h-[68px] xl:h-[86px] w-[88px] xl:w-[96px] self-stretch flex-col`}
     >
       <div className="bg-gradient-to-r from-slate-800/95 via-slate-800/90 to-slate-700/85 px-1 py-1 sm:py-1.5 border-b border-slate-600/60 flex items-center justify-center xl:justify-start xl:px-2">
         <div className="text-[10px] text-slate-300/90 font-bold tracking-[0.22em] uppercase flex items-center gap-1.5 h-5">
@@ -34,7 +34,7 @@ export function RightHistoryPanel({
           <span>History</span>
         </div>
       </div>
-      <div className="px-1.5 py-1 sm:p-2 flex items-center justify-center gap-1 sm:gap-1.5 flex-1">
+      <div className="px-1.5 pt-0.5 pb-1 sm:px-2 sm:pt-1 sm:pb-1.5 xl:p-2 flex items-start justify-center gap-1 sm:gap-1.5 flex-1">
         <button
           onClick={onUndo}
           disabled={!canUndo || !undoRedoEnabled}

@@ -469,7 +469,7 @@ describe("TacticsMainContent", () => {
     expect(capturedTacticsCanvasProps.showFieldLockButton).toBe(false);
   });
 
-  it("通常時はフィールド横のロックボタンを表示する", () => {
+  it("通常時もフィールド横のロックボタンは表示しない", () => {
     mockPreferencesGet.mockImplementation((key: string) => {
       if (key === "tacticsViewerGuideDismissed") return true;
       return undefined;
@@ -477,7 +477,7 @@ describe("TacticsMainContent", () => {
 
     render(<TacticsMainContent />);
 
-    expect(capturedTacticsCanvasProps.showFieldLockButton).toBe(true);
+    expect(capturedTacticsCanvasProps.showFieldLockButton).toBe(false);
   });
 
   // ── Callback delegation tests ─────────────────────────
@@ -618,6 +618,18 @@ describe("TacticsMainContent", () => {
         capturedViewLockPanelProps.onToggleTouchlineLock as () => void;
       toggle();
       expect(mockUIContext.ui.setTouchlineLocked).toHaveBeenCalled();
+    });
+
+    it("ViewLockPanel onToggleFieldLock toggles fieldLocked via context", () => {
+      mockPreferencesGet.mockImplementation((key: string) => {
+        if (key === "tacticsViewerGuideDismissed") return true;
+        return undefined;
+      });
+      render(<TacticsMainContent />);
+
+      const toggle = capturedViewLockPanelProps.onToggleFieldLock as () => void;
+      toggle();
+      expect(mockUIContext.ui.setFieldLocked).toHaveBeenCalled();
     });
 
     it("TacticsCanvas にフィールド固定トグルが渡される", () => {

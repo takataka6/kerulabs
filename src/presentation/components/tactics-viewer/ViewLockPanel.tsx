@@ -9,6 +9,8 @@ type CameraAction = "topDown" | "sideView" | "sideViewReverse" | "reset";
 
 interface ViewLockPanelProps {
   onCameraAction: (action: CameraAction) => void;
+  fieldLocked: boolean;
+  onToggleFieldLock: () => void;
   touchlineLocked: boolean;
   onToggleTouchlineLock: () => void;
   disabled: boolean;
@@ -32,6 +34,8 @@ const VIEWS: {
 
 export const ViewLockPanel = memo(function ViewLockPanel({
   onCameraAction,
+  fieldLocked,
+  onToggleFieldLock,
   touchlineLocked,
   onToggleTouchlineLock,
   disabled,
@@ -41,10 +45,10 @@ export const ViewLockPanel = memo(function ViewLockPanel({
   const shellClass =
     "bg-[linear-gradient(180deg,rgba(15,23,42,0.94)_0%,rgba(2,6,23,0.92)_100%)] backdrop-blur-xl border border-slate-600/35 ring-1 ring-white/5 shadow-[0_8px_18px_rgba(2,6,23,0.14),0_2px_4px_rgba(2,6,23,0.08)]";
   const actionClass =
-    "min-h-[56px] px-2 sm:px-2.5 transition-all duration-300 flex flex-col items-center justify-center gap-0.5";
+    "min-h-[44px] px-1.5 sm:min-h-[56px] sm:px-2.5 transition-all duration-300 flex flex-col items-center justify-center gap-0.5";
 
   return (
-    <div className="absolute bottom-2 sm:bottom-4 right-2 sm:right-4 z-20 flex items-end gap-1 sm:gap-1.5">
+    <div className="absolute bottom-2 sm:bottom-4 right-2 sm:right-4 z-0 flex items-end gap-1 sm:gap-1.5">
       <button
         onClick={() => setExpanded((prev) => !prev)}
         className={`${shellClass} rounded-[20px] transition-all duration-300 flex items-center justify-center h-[46px] w-[36px] ${
@@ -65,6 +69,26 @@ export const ViewLockPanel = memo(function ViewLockPanel({
           className={`${shellClass} rounded-[22px] overflow-hidden max-w-[calc(100vw-4rem)]`}
         >
           <div className="flex flex-wrap sm:flex-nowrap">
+            <button
+              onClick={onToggleFieldLock}
+              className={`${actionClass} ${
+                fieldLocked
+                  ? "bg-emerald-600/18 text-emerald-200"
+                  : "bg-white/[0.04] text-slate-300 hover:bg-white/[0.07] hover:text-white"
+              }`}
+              aria-label={
+                fieldLocked ? t("tactics.unlockField") : t("tactics.lockField")
+              }
+            >
+              <span className="text-base" aria-hidden="true">
+                {fieldLocked ? "🔒" : "🔓"}
+              </span>
+              <span className="text-[10px] font-semibold tracking-wide whitespace-nowrap hidden sm:block">
+                {fieldLocked
+                  ? t("tactics.unlockField")
+                  : t("tactics.lockField")}
+              </span>
+            </button>
             {VIEWS.map(({ action, icon, labelKey }) => (
               <button
                 key={action}

@@ -356,7 +356,7 @@ export function TacticsMainContent() {
             onLinePointerMove={canvasCallbacks.handleLinePointerMove}
             fieldLocked={ui.fieldLocked}
             onToggleFieldLock={() => ui.setFieldLocked((prev) => !prev)}
-            showFieldLockButton={!ui.captureMode && !hasOpenPopup}
+            showFieldLockButton={false}
             touchlineLocked={ui.touchlineLocked}
             sceneBackground={bgSettings.sceneBackground}
             sceneBackgroundImageUrl={bgSettings.sceneBackgroundImageUrl}
@@ -523,6 +523,8 @@ export function TacticsMainContent() {
       {!ui.captureMode && !playerView.playerViewEnabled && !hasOpenPopup && (
         <ViewLockPanel
           onCameraAction={ui.setCameraAction}
+          fieldLocked={ui.fieldLocked}
+          onToggleFieldLock={() => ui.setFieldLocked((prev) => !prev)}
           touchlineLocked={ui.touchlineLocked}
           onToggleTouchlineLock={() => ui.setTouchlineLocked((prev) => !prev)}
           disabled={false}

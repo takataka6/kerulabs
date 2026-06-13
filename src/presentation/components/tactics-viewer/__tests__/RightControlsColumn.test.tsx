@@ -399,7 +399,7 @@ describe("RightControlsColumn", () => {
     it("サイズ選択ボタン(S, M, L)が表示される", () => {
       render(<RightControlsColumn {...defaultProps()} />);
 
-      expect(screen.getByText("tactics.size")).toBeInTheDocument();
+      expect(screen.queryByText("tactics.size")).not.toBeInTheDocument();
       expect(screen.getByText("S")).toBeInTheDocument();
       expect(screen.getByText("M")).toBeInTheDocument();
       expect(screen.getByText("L")).toBeInTheDocument();
