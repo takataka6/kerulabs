@@ -26,8 +26,6 @@ import {
   RightHistoryPanel,
 } from "./right-controls";
 
-const PRIMARY_PANEL_CLASS =
-  "bg-[linear-gradient(180deg,rgba(30,41,59,0.96)_0%,rgba(15,23,42,0.96)_100%)] backdrop-blur-xl rounded-[22px] border border-slate-500/50 shadow-[0_10px_24px_rgba(2,6,23,0.16),0_2px_6px_rgba(2,6,23,0.1)] overflow-hidden ring-1 ring-white/5";
 const SECONDARY_PANEL_CLASS =
   "bg-[linear-gradient(180deg,rgba(15,23,42,0.92)_0%,rgba(2,6,23,0.9)_100%)] backdrop-blur-xl rounded-[20px] border border-slate-600/35 shadow-[0_6px_16px_rgba(2,6,23,0.12),0_1px_3px_rgba(2,6,23,0.08)] overflow-hidden ring-1 ring-white/5";
 const SECONDARY_TOGGLE_BUTTON_CLASS =
@@ -253,7 +251,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
             <div className="flex w-full sm:w-auto items-stretch justify-end gap-2 self-end">
               {/* フォーメーション */}
               <div
-                className={`${PRIMARY_PANEL_CLASS} ${HEADER_ACTION_CARD_HEIGHT_CLASS} flex w-auto shrink-0 items-center gap-0.5 bg-[linear-gradient(180deg,rgba(2,6,23,0.76)_0%,rgba(2,6,23,0.9)_100%)] px-[3px] py-[3px] sm:px-[3px] sm:py-[3px] xl:px-0.5 xl:py-0.5`}
+                className={`${SECONDARY_PANEL_CLASS} ${HEADER_ACTION_CARD_HEIGHT_CLASS} flex w-auto shrink-0 items-center gap-0.5 bg-[linear-gradient(180deg,rgba(2,6,23,0.76)_0%,rgba(2,6,23,0.9)_100%)] px-[3px] py-[3px] sm:px-[3px] sm:py-[3px] xl:px-0.5 xl:py-0.5`}
               >
                 <button
                   onClick={onToggleFormationEditor}

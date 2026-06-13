@@ -2,7 +2,7 @@
  * @module BallMarker
  * @description 3Dシーン上のボールマーカーコンポーネント。ドラッグによるボール配置と右クリック削除を提供する。
  */
-import { memo, useRef, useCallback, useMemo } from "react";
+import { memo, useRef, useCallback, useMemo, useState } from "react";
 import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { Plane, Vector2, Vector3, type Group } from "three";
 import {
@@ -35,6 +35,7 @@ export const BallMarker = memo(function BallMarker({
   onDragEnd,
   fieldBounds,
 }: BallMarkerProps) {
+  const [isDraggingState, setIsDraggingState] = useState(false);
   const fieldBoundsResolved = useMemo(
     () => fieldBounds ?? DEFAULT_FIELD_BOUNDS,
     [fieldBounds],
@@ -73,6 +74,7 @@ export const BallMarker = memo(function BallMarker({
     (e: ThreeEvent<PointerEvent>) => {
       e.stopPropagation();
       isDragging.current = true;
+      setIsDraggingState(true);
       cachedRect.current = gl.domElement.getBoundingClientRect();
       gl.domElement.style.cursor = "grabbing";
       onDragStart?.();
@@ -87,6 +89,7 @@ export const BallMarker = memo(function BallMarker({
 
       const cleanup = () => {
         isDragging.current = false;
+        setIsDraggingState(false);
         cachedRect.current = null;
         gl.domElement.style.cursor = "auto";
         onDragEnd?.();
@@ -147,6 +150,19 @@ export const BallMarker = memo(function BallMarker({
         />
         <meshBasicMaterial color="#000000" transparent opacity={0.3} />
       </mesh>
+
+      {/* ドラッグ時のハイライトリング */}
+      {isDraggingState && (
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.13, 0]}>
+          <ringGeometry args={[0.22, 0.3, 32]} />
+          <meshBasicMaterial
+            color="#fbbf24"
+            transparent
+            opacity={0.7}
+            fog={false}
+          />
+        </mesh>
+      )}
 
       {/* サッカーボール - シェーダーで五角形パターンを描画 */}
       <mesh
