@@ -594,7 +594,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
 
               {/* プレイヤービューボタン */}
               <div
-                className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} ${playerView.playerViewEnabled ? "!border-amber-500/50" : "border-slate-700/45"}`}
+                className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} ${playerView.playerViewEnabled ? "!border-amber-500/45" : "border-slate-700/45"}`}
               >
                 <button
                   onClick={playerView.togglePlayerView}
@@ -613,7 +613,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
 
               {/* ボール配置ボタン */}
               <div
-                className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} ${ballHook.ballPlacementMode ? "border-yellow-500/50" : "border-slate-700/45"} ${ballHook.ballPosition ? "bg-white/[0.08]" : ""}`}
+                className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} ${ballHook.ballPlacementMode ? "!border-yellow-500/45" : "border-slate-700/45"} ${ballHook.ballPosition ? "bg-white/[0.08]" : ""}`}
               >
                 <div className="flex items-stretch">
                   <button
@@ -650,7 +650,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
 
               {/* スケッチボタン */}
               <div
-                className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} ${sketchMode ? "border-pink-500/50" : "border-slate-700/45"}`}
+                className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} ${sketchMode ? "!border-pink-500/45" : "border-slate-700/45"}`}
               >
                 <button
                   onClick={onToggleSketchMode}
