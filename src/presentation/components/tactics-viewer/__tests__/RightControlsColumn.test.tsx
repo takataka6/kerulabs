@@ -8,7 +8,7 @@
  * - 子コンポーネントへのprops受け渡しを検証
  */
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import { RightControlsColumn } from "../RightControlsColumn";
 
 /* ------------------------------------------------------------------ */
@@ -90,6 +90,8 @@ function defaultProps(
       clearOpponents: vi.fn(),
       showOpponentNames: false,
       setShowOpponentNames: vi.fn(),
+      showOpponentNumbers: true,
+      setShowOpponentNumbers: vi.fn(),
     } as never,
     teams: [],
     pitchConfig: { maxOpponents: 11 },
@@ -561,6 +563,56 @@ describe("RightControlsColumn", () => {
 
       fireEvent.click(screen.getByLabelText("tactics.opponents"));
       expect(props.opponentsHook.toggleOpponentPlacement).toHaveBeenCalled();
+    });
+
+    it("相手名前トグルクリックで setShowOpponentNames が呼ばれる", () => {
+      const setShowOpponentNames = vi.fn();
+      const props = defaultProps({
+        opponentsHook: {
+          opponentPlacementMode: false,
+          toggleOpponentPlacement: vi.fn(),
+          opponents: [{ id: 1, x: 0, z: 0 }],
+          clearOpponents: vi.fn(),
+          showOpponentNames: true,
+          setShowOpponentNames,
+          showOpponentNumbers: true,
+          setShowOpponentNumbers: vi.fn(),
+        } as never,
+      });
+      render(<RightControlsColumn {...props} />);
+
+      const opponentSection = screen
+        .getByLabelText("tactics.opponents")
+        .closest("div[class]")!.parentElement!;
+      const buttons = within(opponentSection).getAllByRole("button");
+      // 相手セクション内のボタン順: [配置, 名前トグル, 番号トグル]
+      fireEvent.click(buttons[1]);
+      expect(setShowOpponentNames).toHaveBeenCalled();
+    });
+
+    it("相手番号トグルクリックで setShowOpponentNumbers が呼ばれる", () => {
+      const setShowOpponentNumbers = vi.fn();
+      const props = defaultProps({
+        opponentsHook: {
+          opponentPlacementMode: false,
+          toggleOpponentPlacement: vi.fn(),
+          opponents: [{ id: 1, x: 0, z: 0 }],
+          clearOpponents: vi.fn(),
+          showOpponentNames: true,
+          setShowOpponentNames: vi.fn(),
+          showOpponentNumbers: true,
+          setShowOpponentNumbers,
+        } as never,
+      });
+      render(<RightControlsColumn {...props} />);
+
+      const opponentSection = screen
+        .getByLabelText("tactics.opponents")
+        .closest("div[class]")!.parentElement!;
+      const buttons = within(opponentSection).getAllByRole("button");
+      // 相手セクション内のボタン順: [配置, 名前トグル, 番号トグル]
+      fireEvent.click(buttons[2]);
+      expect(setShowOpponentNumbers).toHaveBeenCalled();
     });
 
     it("名前表示ボタンクリックで onTogglePlayerNames が呼ばれる", () => {
