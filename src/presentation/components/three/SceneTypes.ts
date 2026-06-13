@@ -96,6 +96,8 @@ export interface SceneProps {
     color: string;
   } | null;
   onConnectionLineRemove?: (id: number) => void;
+  lineFromPlayerIndex?: number | null;
+  lineColor?: string;
   /** ライン描画中の始点選手選択済み状態（マウス追従プレーン表示用） */
   lineTrackingActive?: boolean;
   onLinePointerMove?: (pos: { x: number; z: number }) => void;
