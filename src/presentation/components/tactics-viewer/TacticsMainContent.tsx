@@ -350,6 +350,8 @@ export function TacticsMainContent() {
             onGroupDragEnd={canvasCallbacks.handleGroupDragEnd}
             connectionLines={connLines.connectionLines}
             pendingConnectionLine={canvasMemo.canvasPendingConnectionLine}
+            lineFromPlayerIndex={connLines.lineFromPlayerIndex}
+            lineColor={connLines.lineColor}
             onConnectionLineRemove={connLines.handleConnectionLineRemove}
             lineTrackingActive={canvasMemo.canvasLineTrackingActive}
             onLinePointerMove={canvasCallbacks.handleLinePointerMove}

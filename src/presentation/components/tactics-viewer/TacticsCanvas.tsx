@@ -107,6 +107,8 @@ interface TacticsCanvasProps {
     endPos: { x: number; z: number };
     color: string;
   } | null;
+  lineFromPlayerIndex?: number | null;
+  lineColor?: string;
   onConnectionLineRemove: (id: number) => void;
   lineTrackingActive: boolean;
   onLinePointerMove: (pos: { x: number; z: number }) => void;
@@ -207,6 +209,8 @@ export const TacticsCanvas = memo(function TacticsCanvas(
     onGroupDragEnd,
     connectionLines,
     pendingConnectionLine,
+    lineFromPlayerIndex = null,
+    lineColor = "#22d3ee",
     onConnectionLineRemove,
     lineTrackingActive,
     onLinePointerMove,
@@ -424,6 +428,8 @@ export const TacticsCanvas = memo(function TacticsCanvas(
           onGroupDragEnd={onGroupDragEnd}
           connectionLines={connectionLines}
           pendingConnectionLine={pendingConnectionLine}
+          lineFromPlayerIndex={lineFromPlayerIndex}
+          lineColor={lineColor}
           onConnectionLineRemove={onConnectionLineRemove}
           lineTrackingActive={lineTrackingActive}
           onLinePointerMove={onLinePointerMove}

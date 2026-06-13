@@ -98,6 +98,8 @@ export const Scene = memo(function Scene({
   onGroupDragEnd,
   connectionLines = [],
   pendingConnectionLine = null,
+  lineFromPlayerIndex = null,
+  lineColor = "#22d3ee",
   onConnectionLineRemove,
   lineTrackingActive = false,
   onLinePointerMove,
@@ -482,9 +484,8 @@ export const Scene = memo(function Scene({
           onDragEnd={onDragEnd}
           onClick={onOpponentClick}
           isSelected={
-            selectedOpponentIds
-              ? selectedOpponentIds.has(opp.id)
-              : opp.id === selectedOpponentId
+            (selectedOpponentIds && selectedOpponentIds.has(opp.id)) ||
+            opp.id === selectedOpponentId
           }
           showName={showOpponentNames}
           showNumber={showOpponentNumbers}
@@ -529,9 +530,12 @@ export const Scene = memo(function Scene({
           card={playerCards[index] || "none"}
           onClick={onPlayerClick}
           isSelected={
-            selectedPlayerIndices
-              ? selectedPlayerIndices.has(index)
-              : index === selectedPlayerIndex
+            (selectedPlayerIndices && selectedPlayerIndices.has(index)) ||
+            index === selectedPlayerIndex ||
+            index === lineFromPlayerIndex
+          }
+          selectedRingColor={
+            index === lineFromPlayerIndex ? lineColor : undefined
           }
           markerScale={playerMarkerScale}
           draggable={playerDraggable}

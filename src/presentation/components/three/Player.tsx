@@ -48,6 +48,7 @@ interface PlayerProps {
   card?: CardStatus;
   onClick?: (index: number, event?: MouseEvent) => void;
   isSelected?: boolean;
+  selectedRingColor?: string;
   markerScale?: number;
   draggable?: boolean;
   onDragStart?: () => void;
@@ -78,6 +79,7 @@ export const Player = memo(function Player({
   card = "none",
   onClick,
   isSelected = false,
+  selectedRingColor,
   markerScale = 1,
   draggable = false,
   onDragStart,
@@ -435,7 +437,7 @@ export const Player = memo(function Player({
               ]}
             />
             <meshBasicMaterial
-              color="#fbbf24"
+              color={selectedRingColor || "#fbbf24"}
               transparent
               opacity={SELECTION_RING.OPACITY}
               fog={false}

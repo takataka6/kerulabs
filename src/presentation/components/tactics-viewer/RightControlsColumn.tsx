@@ -34,15 +34,15 @@ const RAIL_BUTTON_CLASS =
   "relative w-full min-h-[32px] py-0.5 px-1 sm:min-h-[30px] sm:py-0.5 sm:px-1.25 xl:min-h-[36px] xl:py-1.5 xl:px-2.5 transition-all duration-300 flex items-center justify-center gap-1.5 text-slate-300 hover:bg-white/[0.06] hover:text-white";
 const RAIL_BUTTON_INACTIVE_CLASS = "bg-transparent";
 const SPLIT_ACTION_CLASS =
-  "py-0.5 px-1.5 sm:py-0.5 sm:px-1.5 xl:py-1.5 xl:px-2 transition-all duration-300 text-slate-500 hover:text-white hover:bg-white/[0.06] border-l border-slate-700/50";
+  "pl-2 pr-3.5 sm:pl-2.5 sm:pr-4.5 xl:pl-3.5 xl:pr-5.5 transition-all duration-300 text-red-400/80 hover:text-red-400 hover:bg-red-500/10 border-l border-slate-700/50 flex items-center justify-center font-bold text-xs self-stretch";
 const COUNT_BADGE_CLASS =
   "text-[9px] bg-white/8 text-slate-200 px-1.5 py-0.5 rounded-full border border-white/10";
 const RAIL_LABEL_CLASS =
   "hidden sm:inline text-[11px] xl:text-xs font-semibold tracking-wide whitespace-nowrap";
 const HEADER_ACTION_CARD_HEIGHT_CLASS = "h-[54px] sm:h-[54px] xl:h-[72px]";
-const RAIL_PANEL_WIDTH_CLASS = "w-full sm:w-[116px] xl:w-[148px]";
+const RAIL_PANEL_WIDTH_CLASS = "w-full sm:w-[128px] xl:w-[148px]";
 const RAIL_ROW_CLASS =
-  "grid grid-cols-2 sm:grid-cols-1 gap-1 sm:gap-1.5 items-start sm:justify-items-end w-full sm:w-[116px] xl:w-[148px]";
+  "grid grid-cols-2 sm:grid-cols-1 gap-1 sm:gap-1.5 items-start sm:justify-items-end w-full sm:w-[128px] xl:w-[148px]";
 
 interface RightControlsColumnProps {
   // 表示切り替え
@@ -594,7 +594,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
 
               {/* プレイヤービューボタン */}
               <div
-                className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} ${playerView.playerViewEnabled ? "!border-amber-500/50" : "border-slate-700/45"}`}
+                className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} ${playerView.playerViewEnabled ? "!border-amber-500/45" : "border-slate-700/45"}`}
               >
                 <button
                   onClick={playerView.togglePlayerView}
@@ -613,12 +613,12 @@ export const RightControlsColumn = memo(function RightControlsColumn({
 
               {/* ボール配置ボタン */}
               <div
-                className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} ${ballHook.ballPlacementMode ? "border-yellow-500/50" : "border-slate-700/45"}`}
+                className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} ${ballHook.ballPlacementMode ? "!border-yellow-500/45" : "border-slate-700/45"} ${ballHook.ballPosition ? "bg-white/[0.08]" : ""}`}
               >
-                <div className="flex items-center">
+                <div className="flex items-stretch">
                   <button
                     onClick={ballHook.toggleBallPlacement}
-                    className={`${RAIL_BUTTON_CLASS} ${ballHook.ballPlacementMode ? "bg-yellow-600/18 text-yellow-200 hover:bg-yellow-600/24" : ballHook.ballPosition ? "bg-white/[0.08] text-slate-100 hover:bg-white/[0.12]" : RAIL_BUTTON_INACTIVE_CLASS}`}
+                    className={`${RAIL_BUTTON_CLASS} ${ballHook.ballPlacementMode ? "bg-yellow-600/18 text-yellow-200 hover:bg-yellow-600/24" : ballHook.ballPosition ? "text-slate-100 hover:bg-white/[0.06]" : RAIL_BUTTON_INACTIVE_CLASS}`}
                     aria-label={t("tactics.ball")}
                   >
                     <span className="text-xs" aria-hidden="true">
@@ -635,9 +635,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                       title={t("tactics.ball.remove")}
                       aria-label={t("tactics.ball.remove")}
                     >
-                      <span className="text-[10px]" aria-hidden="true">
-                        ✕
-                      </span>
+                      ✕
                     </button>
                   )}
                 </div>
@@ -652,7 +650,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
 
               {/* スケッチボタン */}
               <div
-                className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} ${sketchMode ? "border-pink-500/50" : "border-slate-700/45"}`}
+                className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} ${sketchMode ? "!border-pink-500/45" : "border-slate-700/45"}`}
               >
                 <button
                   onClick={onToggleSketchMode}
