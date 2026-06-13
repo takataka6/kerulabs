@@ -58,7 +58,9 @@ jobs:
         run: pnpm build
 
       - name: Package web bundle
-        run: zip -r "kerulabs-web-${RELEASE_TAG}.zip" dist
+        run: |
+          cp LICENSE NOTICE dist/
+          zip -r "kerulabs-web-${RELEASE_TAG}.zip" dist
         env:
           RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
 
