@@ -51,7 +51,7 @@ export const ConnectionLinesButton = memo(function ConnectionLinesButton({
         {connLines.connectionLines.length > 0 && (
           <button
             onClick={connLines.clearConnectionLines}
-            className="px-3.5 sm:px-4 xl:px-4.5 transition-all duration-300 text-red-400/80 hover:text-red-400 hover:bg-red-500/10 border-l border-slate-700/50 flex items-center justify-center font-bold text-xs self-stretch"
+            className="px-2.5 sm:px-3.5 xl:px-4 transition-all duration-300 text-red-400/80 hover:text-red-400 hover:bg-red-500/10 border-l border-slate-700/50 flex items-center justify-center font-bold text-xs self-stretch"
             title={t("tactics.connectionLines.clear")}
             aria-label={t("tactics.connectionLines.clear")}
           >
