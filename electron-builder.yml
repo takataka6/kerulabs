@@ -30,6 +30,27 @@ mac:
   entitlements: build/entitlements.mac.plist
   entitlementsInherit: build/entitlements.mac.plist
   notarize: true
+  # 保守的・明示的に LICENSE / NOTICE を dmg ルートに配置
+  # (global files フィルタだけでは dmg レイアウトでトップレベルに出ないため)
+  extraFiles:
+    - from: "."
+      filter: ["LICENSE", "NOTICE"]
+  # dmg ウィンドウ内で LICENSE / NOTICE がアプリと並んで見えるよう明示配置
+  # （ユーザーが dmg を開いたときに一目でライセンスファイルが同梱されていることがわかる）
+  dmg:
+    contents:
+      - x: 130
+        y: 150
+        type: file
+        path: LICENSE
+      - x: 130
+        y: 250
+        type: file
+        path: NOTICE
+      - x: 410
+        y: 150
+        type: link
+        path: /Applications
 win:
   icon: build/icon.png
   target:

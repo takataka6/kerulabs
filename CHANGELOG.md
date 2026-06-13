@@ -7,6 +7,15 @@
 
 ## [Unreleased]
 
+### Changed
+
+- **macOS dmg でのライセンスファイル可視性向上**（保守的対応、次リリース向け）:
+  - `electron-builder.yml` に `mac.extraFiles` と `dmg.contents` を追加。
+  - これにより、LICENSE / NOTICE が dmg マウント時に `KeruLabs.app` と並んで表示されるよう明示的に配置される。
+  - 権利関係（MIT + Roboto の Apache 2.0）コンプライアンスをより明確・ユーザーから確認しやすくした。
+  - ビルド工程内で処理されるため、署名・notarization に影響を与えない保守的な変更。
+  - 以前の 0.9.2 での `files` フィルタ + Web 版明示コピーと合わせ、配布物全体でのライセンス同梱を強化。
+
 ## [0.9.2] - 2026-06-14
 
 ### Changed
