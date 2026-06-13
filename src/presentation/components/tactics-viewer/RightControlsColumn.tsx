@@ -315,14 +315,14 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                     : "border-slate-700/45"
                 }`}
               >
-                <div className="flex items-center">
+                <div className="flex items-stretch">
                   <button
                     onClick={opponentsHook.toggleOpponentPlacement}
                     data-opponent-selector-trigger="true"
-                    className={`${RAIL_BUTTON_CLASS} ${
+                    className={`flex-1 min-h-[36px] py-1 px-1 sm:py-1.5 sm:px-1.5 transition-all duration-300 flex items-center justify-center gap-1 border-r border-slate-700/50 ${
                       isOpponentSelectorActive
                         ? "bg-gradient-to-r from-red-600/28 to-red-500/16 text-red-100 hover:from-red-600/34 hover:to-red-500/20"
-                        : RAIL_BUTTON_INACTIVE_CLASS
+                        : "text-slate-300 hover:bg-white/[0.06] hover:text-white"
                     }`}
                     aria-label={t("tactics.opponents")}
                     aria-expanded={showOpponentSelector}
@@ -343,8 +343,6 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                       </span>
                     )}
                   </button>
-                </div>
-                <div className="border-t border-slate-700/50">
                   <button
                     onClick={() =>
                       opponentsHook.setShowOpponentNames(
@@ -352,12 +350,12 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                       )
                     }
                     disabled={opponentsHook.opponents.length === 0}
-                    className={`w-full min-h-[38px] py-1 px-1.5 sm:py-1.5 sm:px-2.5 transition-all duration-300 flex items-center justify-center gap-1 sm:gap-1.5 text-xs ${opponentsHook.opponents.length === 0 ? "opacity-30 cursor-not-allowed" : opponentsHook.showOpponentNames ? "text-slate-200 hover:bg-white/[0.06]" : "text-slate-500 hover:bg-white/[0.04]"}`}
+                    className={`flex-1 min-h-[36px] py-1 px-1 sm:py-1.5 sm:px-1.5 transition-all duration-300 flex items-center justify-center gap-1 text-xs ${opponentsHook.opponents.length === 0 ? "opacity-30 cursor-not-allowed" : opponentsHook.showOpponentNames ? "text-slate-200 hover:bg-white/[0.06]" : "text-slate-500 hover:bg-white/[0.04]"}`}
                   >
-                    <span className="text-[10px] sm:text-xs">
+                    <span className="text-xs" aria-hidden="true">
                       {opponentsHook.showOpponentNames ? "👁️" : "👁️‍🗨️"}
                     </span>
-                    <span className="font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
+                    <span className="text-xs font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
                       {t("tactics.names.opponent")}
                     </span>
                   </button>
