@@ -486,43 +486,48 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                   </button>
                 </div>
 
-                {showNameSettings && showPlayerNames && (
+                {showNameSettings && (
                   <div className="border-t border-slate-700/50">
-                    {/* ラベル固定 */}
-                    <div className="px-3 py-2 border-b border-slate-700/40">
-                      <button
-                        onClick={onToggleLabelFixed}
-                        className={`w-full text-[10px] font-semibold py-1.5 rounded transition-all duration-150 flex items-center justify-center gap-1.5 ${
-                          labelFixed
-                            ? "bg-blue-500/70 text-white"
-                            : "bg-white/[0.05] text-slate-400 hover:bg-white/[0.10] hover:text-slate-200"
-                        }`}
-                      >
-                        {t("tactics.labelFixed")}
-                      </button>
-                    </div>
+                    {/* ラベル固定（名前表示中のみ） */}
+                    {showPlayerNames && (
+                      <div className="px-3 py-2 border-b border-slate-700/40">
+                        <button
+                          onClick={onToggleLabelFixed}
+                          className={`w-full text-[10px] font-semibold py-1.5 rounded transition-all duration-150 flex items-center justify-center gap-1.5 ${
+                            labelFixed
+                              ? "bg-blue-500/70 text-white"
+                              : "bg-white/[0.05] text-slate-400 hover:bg-white/[0.10] hover:text-slate-200"
+                          }`}
+                        >
+                          {t("tactics.labelFixed")}
+                        </button>
+                      </div>
+                    )}
                     {playersData.map((player, index) => {
-                      const isHidden = hiddenPlayerIndices.has(index);
+                      const isException = hiddenPlayerIndices.has(index);
+                      const isVisible = showPlayerNames
+                        ? !isException
+                        : isException;
                       const pos = formationData[index];
                       const bgColor = getPositionBg(pos?.cat);
                       return (
                         <button
                           key={index}
                           onClick={() => onTogglePlayerHidden(index)}
-                          className={`w-full flex items-center gap-2 px-3 py-1.5 transition-all duration-200 ${isHidden ? "text-slate-500 hover:bg-white/[0.03]" : "text-slate-300 hover:bg-white/[0.06]"}`}
+                          className={`w-full flex items-center gap-2 px-3 py-1.5 transition-all duration-200 ${isVisible ? "text-slate-300 hover:bg-white/[0.06]" : "text-slate-500 hover:bg-white/[0.03]"}`}
                         >
                           <div
-                            className={`w-5 h-5 ${bgColor} rounded flex items-center justify-center text-white text-[9px] font-bold ${isHidden ? "opacity-30" : ""}`}
+                            className={`w-5 h-5 ${bgColor} rounded flex items-center justify-center text-white text-[9px] font-bold ${isVisible ? "" : "opacity-30"}`}
                           >
                             {player.number}
                           </div>
                           <span
-                            className={`text-xs truncate flex-1 text-left ${isHidden ? "line-through opacity-50" : ""}`}
+                            className={`text-xs truncate flex-1 text-left ${isVisible ? "" : "line-through opacity-50"}`}
                           >
                             {player.name}
                           </span>
                           <span className="text-xs">
-                            {isHidden ? "👁️‍🗨️" : "👁️"}
+                            {isVisible ? "👁️" : "👁️‍🗨️"}
                           </span>
                         </button>
                       );
