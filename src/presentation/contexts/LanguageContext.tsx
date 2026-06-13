@@ -56,14 +56,14 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
 
   const t = useCallback(
     (key: TranslationKey): string => {
-      return translations[language][key] || key;
+      return translations[language][key] ?? key;
     },
     [language],
   );
 
   const tDynamic = useCallback(
     (key: string): string => {
-      return (translations[language] as Record<string, string>)[key] || key;
+      return (translations[language] as Record<string, string>)[key] ?? key;
     },
     [language],
   );
