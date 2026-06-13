@@ -166,10 +166,12 @@ describe("RightControlsColumn", () => {
   // ── フォーメーション選択 ──────────────────────────────
 
   describe("フォーメーション選択", () => {
-    it("フォーメーションヘッダーが表示される", () => {
+    it("フォーメーション編集ボタンが表示される", () => {
       render(<RightControlsColumn {...defaultProps()} />);
 
-      expect(screen.getByText("tactics.formation")).toBeInTheDocument();
+      expect(
+        screen.getByLabelText("tactics.editFormations"),
+      ).toBeInTheDocument();
     });
 
     it("利用可能なフォーメーションボタンが表示される", () => {

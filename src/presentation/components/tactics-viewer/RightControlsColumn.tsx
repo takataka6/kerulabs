@@ -37,13 +37,11 @@ const RAIL_BUTTON_CLASS =
 const RAIL_BUTTON_INACTIVE_CLASS = "bg-transparent";
 const SPLIT_ACTION_CLASS =
   "py-0.5 px-1.5 sm:py-0.5 sm:px-1.5 xl:py-1.5 xl:px-2 transition-all duration-300 text-slate-500 hover:text-white hover:bg-white/[0.06] border-l border-slate-700/50";
-const PANEL_CAPTION_CLASS =
-  "text-[9px] sm:text-[9px] xl:text-[10px] text-slate-300/90 font-bold tracking-[0.14em] sm:tracking-[0.14em] xl:tracking-[0.22em] uppercase flex items-center gap-1 h-5";
 const COUNT_BADGE_CLASS =
   "text-[9px] bg-white/8 text-slate-200 px-1.5 py-0.5 rounded-full border border-white/10";
 const RAIL_LABEL_CLASS =
   "hidden sm:inline text-[11px] xl:text-xs font-semibold tracking-wide whitespace-nowrap";
-const HEADER_ACTION_CARD_HEIGHT_CLASS = "sm:h-[68px] xl:h-[86px]";
+const HEADER_ACTION_CARD_HEIGHT_CLASS = "h-[54px] sm:h-[54px] xl:h-[72px]";
 const RAIL_PANEL_WIDTH_CLASS = "w-full sm:w-[116px] xl:w-[148px]";
 const RAIL_ROW_CLASS =
   "grid grid-cols-2 sm:grid-cols-1 gap-1 sm:gap-1.5 items-start sm:justify-items-end w-full sm:w-[116px] xl:w-[148px]";
@@ -179,6 +177,11 @@ export const RightControlsColumn = memo(function RightControlsColumn({
   const currentFormation = gameModeFormations.find(
     (f) => f.id.value === currentFormationId,
   );
+  const currentFormationLabel = currentFormation?.name ?? "4-3-3";
+  const formationSelectWidthCh = Math.max(
+    9,
+    Math.min(currentFormationLabel.length + 5, 14),
+  );
   const availableFormationIds = new Set(
     getFormationOptionsWithDefault(selectedTeam.availableFormations, gameMode),
   );
@@ -250,51 +253,40 @@ export const RightControlsColumn = memo(function RightControlsColumn({
             <div className="flex w-full sm:w-auto items-stretch justify-end gap-2 self-end">
               {/* フォーメーション */}
               <div
-                className={`${PRIMARY_PANEL_CLASS} ${HEADER_ACTION_CARD_HEIGHT_CLASS} flex w-full sm:w-[124px] xl:w-[156px] flex-col`}
+                className={`${PRIMARY_PANEL_CLASS} ${HEADER_ACTION_CARD_HEIGHT_CLASS} flex w-auto shrink-0 items-center gap-0.5 bg-[linear-gradient(180deg,rgba(2,6,23,0.76)_0%,rgba(2,6,23,0.9)_100%)] px-[3px] py-[3px] sm:px-[3px] sm:py-[3px] xl:px-0.5 xl:py-0.5`}
               >
-                <div className="bg-gradient-to-r from-slate-800/95 via-slate-800/90 to-slate-700/85 px-1.5 py-0.5 sm:px-1.5 sm:py-0.5 border-b border-slate-600/60 flex items-center justify-between gap-1">
-                  <button
-                    onClick={onToggleFormationEditor}
-                    className="flex min-w-0 flex-1 items-center justify-between gap-2 rounded-lg px-1 py-0.5 text-slate-300 transition-all duration-300 hover:bg-white/10 hover:text-white"
-                    title={t("tactics.editFormations")}
-                    aria-label={t("tactics.editFormations")}
+                <button
+                  onClick={onToggleFormationEditor}
+                  className="flex h-[46px] w-[24px] sm:h-[46px] sm:w-[24px] xl:h-[62px] xl:w-[28px] items-center justify-center rounded-[18px] text-[9px] text-slate-500 transition-all duration-300 hover:bg-white/10 hover:text-slate-300"
+                  title={t("tactics.editFormations")}
+                  aria-label={t("tactics.editFormations")}
+                >
+                  <span aria-hidden="true">✏️</span>
+                </button>
+                <div className="relative">
+                  <select
+                    value={currentFormationId ?? ""}
+                    onChange={(e) => onChangeFormation(e.target.value)}
+                    disabled={isExecuting}
+                    aria-label={t("a11y.formationSelector")}
+                    className={`pointer-events-auto h-[46px] sm:h-[46px] xl:h-[62px] cursor-pointer appearance-none rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(37,99,235,0.98)_0%,rgba(29,78,216,0.98)_100%)] pl-3 pr-8 py-0.5 text-center text-xs sm:text-sm font-bold text-white shadow-[0_10px_24px_rgba(37,99,235,0.28)] outline-none transition-all duration-300 ${isExecuting ? "cursor-not-allowed opacity-40" : "hover:brightness-110 focus:border-blue-300/70 focus:ring-2 focus:ring-blue-400/30"}`}
+                    style={{ width: `${formationSelectWidthCh}ch` }}
                   >
-                    <span className={`${PANEL_CAPTION_CLASS} min-w-0`}>
-                      <span className="truncate">{t("tactics.formation")}</span>
-                    </span>
-                    <span
-                      className="flex h-5 w-5 items-center justify-center rounded-lg text-[10px] text-slate-400 transition-all duration-300"
-                      aria-hidden="true"
-                    >
-                      ✏️
-                    </span>
-                  </button>
-                </div>
-                <div className="flex flex-1 items-center rounded-b-[22px] bg-[linear-gradient(180deg,rgba(2,6,23,0.76)_0%,rgba(2,6,23,0.9)_100%)] p-[3px] sm:p-[3px] xl:p-0.5">
-                  <div className="relative w-full">
-                    <select
-                      value={currentFormationId ?? ""}
-                      onChange={(e) => onChangeFormation(e.target.value)}
-                      disabled={isExecuting}
-                      aria-label={t("a11y.formationSelector")}
-                      className={`pointer-events-auto w-full cursor-pointer appearance-none rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(37,99,235,0.98)_0%,rgba(29,78,216,0.98)_100%)] px-2 py-0.5 sm:py-0.5 text-center text-xs sm:text-sm font-bold text-white shadow-[0_10px_24px_rgba(37,99,235,0.28)] outline-none transition-all duration-300 ${isExecuting ? "cursor-not-allowed opacity-40" : "hover:brightness-110 focus:border-blue-300/70 focus:ring-2 focus:ring-blue-400/30"}`}
-                    >
-                      {gameModeFormations
-                        .filter((f) => availableFormationIds.has(f.id.value))
-                        .map((f) => (
-                          <option
-                            key={f.id.value}
-                            value={f.id.value}
-                            className="bg-slate-900 text-slate-100"
-                          >
-                            {f.name}
-                          </option>
-                        ))}
-                    </select>
-                    <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-white/80">
-                      ▼
-                    </span>
-                  </div>
+                    {gameModeFormations
+                      .filter((f) => availableFormationIds.has(f.id.value))
+                      .map((f) => (
+                        <option
+                          key={f.id.value}
+                          value={f.id.value}
+                          className="bg-slate-900 text-slate-100"
+                        >
+                          {f.name}
+                        </option>
+                      ))}
+                  </select>
+                  <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-white/80">
+                    ▼
+                  </span>
                 </div>
               </div>
 
