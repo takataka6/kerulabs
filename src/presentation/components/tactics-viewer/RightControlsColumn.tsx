@@ -355,10 +355,13 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                     disabled={opponentsHook.opponents.length === 0}
                     className={`flex-1 min-h-[36px] py-1 px-1 sm:py-1.5 sm:px-1.5 transition-all duration-300 flex items-center justify-center gap-1 text-xs border-r border-slate-700/50 ${opponentsHook.opponents.length === 0 ? "opacity-30 cursor-not-allowed" : opponentsHook.showOpponentNames ? "text-slate-200 hover:bg-white/[0.06]" : "text-slate-500 hover:bg-white/[0.04]"}`}
                   >
-                    <span className="text-xs" aria-hidden="true">
-                      {opponentsHook.showOpponentNames ? "👁️" : "👁️‍🗨️"}
+                    <span
+                      className="sm:hidden text-[11px] font-bold font-mono leading-none"
+                      aria-hidden="true"
+                    >
+                      Aa
                     </span>
-                    <span className="text-xs font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
+                    <span className="hidden sm:inline text-xs font-semibold tracking-wide whitespace-nowrap">
                       {t("tactics.names.label")}
                     </span>
                   </button>
@@ -372,10 +375,13 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                     disabled={opponentsHook.opponents.length === 0}
                     className={`flex-1 min-h-[36px] py-1 px-1 sm:py-1.5 sm:px-1.5 transition-all duration-300 flex items-center justify-center gap-1 text-xs ${opponentsHook.opponents.length === 0 ? "opacity-30 cursor-not-allowed" : opponentsHook.showOpponentNumbers ? "text-slate-200 hover:bg-white/[0.06]" : "text-slate-500 hover:bg-white/[0.04]"}`}
                   >
-                    <span className="text-xs" aria-hidden="true">
-                      {opponentsHook.showOpponentNumbers ? "🔢" : "🔤"}
+                    <span
+                      className="sm:hidden text-[11px] font-bold font-mono leading-none"
+                      aria-hidden="true"
+                    >
+                      123
                     </span>
-                    <span className="text-xs font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
+                    <span className="hidden sm:inline text-xs font-semibold tracking-wide whitespace-nowrap">
                       {t("tactics.numbers.label")}
                     </span>
                   </button>
@@ -422,53 +428,59 @@ export const RightControlsColumn = memo(function RightControlsColumn({
               >
                 <div className="flex items-stretch">
                   {/* 名前表示切り替え */}
-                  <div className="flex items-stretch flex-1 border-r border-slate-700/50">
-                    <button
-                      onClick={onTogglePlayerNames}
-                      className={`flex-1 min-h-[36px] py-1 px-1 sm:py-1.5 sm:px-1.5 transition-all duration-300 flex items-center justify-center gap-1 ${showPlayerNames ? "bg-white/[0.08] text-white hover:bg-white/[0.12]" : "text-slate-500 hover:bg-white/[0.06] hover:text-white"}`}
-                      aria-label={
-                        showPlayerNames
-                          ? t("tactics.hideNames")
-                          : t("tactics.showNames")
-                      }
+                  <button
+                    onClick={onTogglePlayerNames}
+                    className={`flex-1 min-h-[36px] py-1 px-1 sm:py-1.5 sm:px-1.5 transition-all duration-300 flex items-center justify-center gap-1 ${showPlayerNames ? "text-slate-200 hover:bg-white/[0.06] hover:text-white" : "text-slate-500 hover:bg-white/[0.06] hover:text-white"}`}
+                    aria-label={
+                      showPlayerNames
+                        ? t("tactics.hideNames")
+                        : t("tactics.showNames")
+                    }
+                  >
+                    <span
+                      className="sm:hidden text-[11px] font-bold font-mono leading-none"
+                      aria-hidden="true"
                     >
-                      <span className="text-xs" aria-hidden="true">
-                        {showPlayerNames ? "👁️" : "👁️‍🗨️"}
-                      </span>
-                      <span className="text-xs font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
-                        {t("tactics.names.label")}
-                      </span>
-                    </button>
-                    <button
-                      onClick={onToggleNameSettings}
-                      className={`${SPLIT_ACTION_CLASS} flex items-center`}
-                      aria-label={
-                        showNameSettings
-                          ? t("a11y.closePanel")
-                          : t("tactics.showNames")
-                      }
-                      aria-expanded={showNameSettings}
-                    >
-                      <span className="text-[10px]" aria-hidden="true">
-                        {showNameSettings ? "▲" : "▼"}
-                      </span>
-                    </button>
-                  </div>
+                      Aa
+                    </span>
+                    <span className="hidden sm:inline text-xs font-semibold tracking-wide whitespace-nowrap">
+                      {t("tactics.names.label")}
+                    </span>
+                  </button>
+
+                  {/* 設定ボタン（中央） */}
+                  <button
+                    onClick={onToggleNameSettings}
+                    className="py-1 px-1.5 sm:py-1.5 sm:px-2 transition-all duration-300 text-slate-500 hover:text-white hover:bg-white/[0.06] border-x border-slate-700/50 flex items-center justify-center"
+                    aria-label={
+                      showNameSettings
+                        ? t("a11y.closePanel")
+                        : t("tactics.showNames")
+                    }
+                    aria-expanded={showNameSettings}
+                  >
+                    <span className="text-[10px]" aria-hidden="true">
+                      {showNameSettings ? "▲" : "▼"}
+                    </span>
+                  </button>
 
                   {/* 番号表示切り替え */}
                   <button
                     onClick={onTogglePlayerNumbers}
-                    className={`flex-1 min-h-[36px] py-1 px-1 sm:py-1.5 sm:px-1.5 transition-all duration-300 flex items-center justify-center gap-1 ${showPlayerNumbers ? "text-slate-300 hover:bg-white/[0.06] hover:text-white" : "text-orange-300 hover:bg-white/[0.06]"}`}
+                    className={`flex-1 min-h-[36px] py-1 px-1 sm:py-1.5 sm:px-1.5 transition-all duration-300 flex items-center justify-center gap-1 ${showPlayerNumbers ? "text-slate-200 hover:bg-white/[0.06] hover:text-white" : "text-slate-500 hover:bg-white/[0.06] hover:text-white"}`}
                     aria-label={
                       showPlayerNumbers
                         ? t("tactics.hideNumbers")
                         : t("tactics.showNumbers")
                     }
                   >
-                    <span className="text-xs" aria-hidden="true">
-                      {showPlayerNumbers ? "🔢" : "🔤"}
+                    <span
+                      className="sm:hidden text-[11px] font-bold font-mono leading-none"
+                      aria-hidden="true"
+                    >
+                      123
                     </span>
-                    <span className="text-xs font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
+                    <span className="hidden sm:inline text-xs font-semibold tracking-wide whitespace-nowrap">
                       {t("tactics.numbers.label")}
                     </span>
                   </button>
