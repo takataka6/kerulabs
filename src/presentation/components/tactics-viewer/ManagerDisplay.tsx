@@ -129,10 +129,10 @@ export const ManagerDisplay = memo(function ManagerDisplay({
       )}
       <button
         onClick={() => setExpanded((prev) => !prev)}
-        className={`bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl transition-all duration-300 flex items-center justify-center py-2.5 px-2.5 ${
+        className={`bg-[linear-gradient(180deg,rgba(30,41,59,0.96)_0%,rgba(15,23,42,0.96)_100%)] backdrop-blur-xl rounded-2xl border border-slate-600/45 ring-1 ring-white/5 shadow-[0_8px_18px_rgba(2,6,23,0.14),0_2px_4px_rgba(2,6,23,0.08)] transition-all duration-300 flex items-center justify-center py-2.5 px-2.5 ${
           expanded
-            ? "text-white hover:bg-slate-700"
-            : "text-slate-400 hover:bg-slate-800"
+            ? "text-white hover:-translate-y-[1px] hover:border-slate-400/60"
+            : "text-slate-400 hover:-translate-y-[1px] hover:border-slate-500/60 hover:text-slate-200"
         }`}
         aria-label={
           expanded ? t("tactics.hideControls") : t("tactics.showControls")

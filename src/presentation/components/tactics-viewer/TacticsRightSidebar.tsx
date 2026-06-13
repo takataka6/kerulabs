@@ -103,9 +103,9 @@ export const TacticsRightSidebar = memo(function TacticsRightSidebar() {
         aria-expanded={ui.rightSidebarOpen}
         className={`fixed z-40 ${
           ui.rightSidebarOpen ? "top-2" : "top-auto bottom-4 sm:bottom-6"
-        } w-7 sm:w-8 h-9 sm:h-10 bg-[linear-gradient(180deg,rgba(30,41,59,0.96)_0%,rgba(15,23,42,0.96)_100%)] backdrop-blur-xl border border-slate-600/45 rounded-l-2xl flex items-center justify-center text-slate-300 hover:text-white hover:border-slate-500/60 transition-all duration-300 ease-in-out shadow-[0_8px_18px_rgba(2,6,23,0.14),0_2px_4px_rgba(2,6,23,0.08)] ring-1 ring-white/5 ${
+        } w-7 sm:w-8 h-9 sm:h-10 bg-[linear-gradient(180deg,rgba(30,41,59,0.96)_0%,rgba(15,23,42,0.96)_100%)] backdrop-blur-xl border border-slate-600/45 rounded-l-2xl flex items-center justify-center transition-all duration-300 ease-in-out shadow-[0_8px_18px_rgba(2,6,23,0.14),0_2px_4px_rgba(2,6,23,0.08)] ring-1 ring-white/5 ${
           ui.rightSidebarOpen ? "right-60 xl:right-72" : "right-0"
-        } ${isDisabled ? "opacity-0 pointer-events-none" : ""}`}
+        } ${ui.rightSidebarOpen ? "text-white hover:-translate-y-[1px] hover:border-slate-400/60" : "text-slate-400 hover:-translate-y-[1px] hover:border-slate-500/60 hover:text-slate-200"} ${isDisabled ? "opacity-0 pointer-events-none" : ""}`}
         style={lineupAnimation.isActive ? { display: "none" } : undefined}
       >
         <span className="text-xs" aria-hidden="true">
