@@ -344,25 +344,24 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                     )}
                   </button>
                 </div>
-                {opponentsHook.opponents.length > 0 && (
-                  <div className="border-t border-slate-700/50">
-                    <button
-                      onClick={() =>
-                        opponentsHook.setShowOpponentNames(
-                          !opponentsHook.showOpponentNames,
-                        )
-                      }
-                      className={`w-full min-h-[38px] py-1 px-1.5 sm:py-1.5 sm:px-2.5 transition-all duration-300 flex items-center justify-center gap-1 sm:gap-1.5 text-xs ${opponentsHook.showOpponentNames ? "text-slate-200 hover:bg-white/[0.06]" : "text-slate-500 hover:bg-white/[0.04]"}`}
-                    >
-                      <span className="text-[10px] sm:text-xs">
-                        {opponentsHook.showOpponentNames ? "👁️" : "👁️‍🗨️"}
-                      </span>
-                      <span className="font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
-                        {t("tactics.names.opponent")}
-                      </span>
-                    </button>
-                  </div>
-                )}
+                <div className="border-t border-slate-700/50">
+                  <button
+                    onClick={() =>
+                      opponentsHook.setShowOpponentNames(
+                        !opponentsHook.showOpponentNames,
+                      )
+                    }
+                    disabled={opponentsHook.opponents.length === 0}
+                    className={`w-full min-h-[38px] py-1 px-1.5 sm:py-1.5 sm:px-2.5 transition-all duration-300 flex items-center justify-center gap-1 sm:gap-1.5 text-xs ${opponentsHook.opponents.length === 0 ? "opacity-30 cursor-not-allowed" : opponentsHook.showOpponentNames ? "text-slate-200 hover:bg-white/[0.06]" : "text-slate-500 hover:bg-white/[0.04]"}`}
+                  >
+                    <span className="text-[10px] sm:text-xs">
+                      {opponentsHook.showOpponentNames ? "👁️" : "👁️‍🗨️"}
+                    </span>
+                    <span className="font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
+                      {t("tactics.names.opponent")}
+                    </span>
+                  </button>
+                </div>
               </div>
 
               {/* Undo / Redo - モバイルのみ表示 */}
