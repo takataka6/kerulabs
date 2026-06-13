@@ -31,20 +31,20 @@ const PRIMARY_PANEL_CLASS =
 const SECONDARY_PANEL_CLASS =
   "bg-[linear-gradient(180deg,rgba(15,23,42,0.92)_0%,rgba(2,6,23,0.9)_100%)] backdrop-blur-xl rounded-[20px] border border-slate-600/35 shadow-[0_6px_16px_rgba(2,6,23,0.12),0_1px_3px_rgba(2,6,23,0.08)] overflow-hidden ring-1 ring-white/5";
 const SECONDARY_TOGGLE_BUTTON_CLASS =
-  "relative min-h-[36px] py-1 px-1.5 sm:py-1.5 sm:px-2 xl:py-1.5 xl:px-2.5 rounded-[20px] border border-slate-600/35 bg-[linear-gradient(180deg,rgba(15,23,42,0.92)_0%,rgba(2,6,23,0.9)_100%)] text-slate-300 shadow-[0_6px_16px_rgba(2,6,23,0.12),0_1px_3px_rgba(2,6,23,0.08)] ring-1 ring-white/5 transition-all duration-300 flex items-center justify-center gap-1.5 hover:-translate-y-[1px] hover:border-slate-500/50 hover:text-white";
+  "relative min-h-[32px] py-0.5 px-1 sm:min-h-[30px] sm:py-0.5 sm:px-1.25 xl:min-h-[36px] xl:py-1.5 xl:px-2.5 rounded-[20px] border border-slate-600/35 bg-[linear-gradient(180deg,rgba(15,23,42,0.92)_0%,rgba(2,6,23,0.9)_100%)] text-slate-300 shadow-[0_6px_16px_rgba(2,6,23,0.12),0_1px_3px_rgba(2,6,23,0.08)] ring-1 ring-white/5 transition-all duration-300 flex items-center justify-center gap-1.5 hover:-translate-y-[1px] hover:border-slate-500/50 hover:text-white";
 const RAIL_BUTTON_CLASS =
-  "relative w-full min-h-[36px] py-1 px-1.5 sm:py-1.5 sm:px-2 xl:py-1.5 xl:px-2.5 transition-all duration-300 flex items-center justify-center gap-1.5 text-slate-300 hover:bg-white/[0.06] hover:text-white";
+  "relative w-full min-h-[32px] py-0.5 px-1 sm:min-h-[30px] sm:py-0.5 sm:px-1.25 xl:min-h-[36px] xl:py-1.5 xl:px-2.5 transition-all duration-300 flex items-center justify-center gap-1.5 text-slate-300 hover:bg-white/[0.06] hover:text-white";
 const RAIL_BUTTON_INACTIVE_CLASS = "bg-transparent";
 const SPLIT_ACTION_CLASS =
-  "py-1 px-1.5 sm:py-1.5 sm:px-2 transition-all duration-300 text-slate-500 hover:text-white hover:bg-white/[0.06] border-l border-slate-700/50";
-const PANEL_CAPTION_CLASS =
-  "text-[10px] text-slate-300/90 font-bold tracking-[0.22em] uppercase flex items-center gap-1.5 h-5";
+  "py-0.5 px-1.5 sm:py-0.5 sm:px-1.5 xl:py-1.5 xl:px-2 transition-all duration-300 text-slate-500 hover:text-white hover:bg-white/[0.06] border-l border-slate-700/50";
 const COUNT_BADGE_CLASS =
   "text-[9px] bg-white/8 text-slate-200 px-1.5 py-0.5 rounded-full border border-white/10";
-const HEADER_ACTION_CARD_HEIGHT_CLASS = "sm:h-[82px] xl:h-[86px]";
-const RAIL_PANEL_WIDTH_CLASS = "w-full sm:w-[136px] xl:w-[148px]";
+const RAIL_LABEL_CLASS =
+  "hidden sm:inline text-[11px] xl:text-xs font-semibold tracking-wide whitespace-nowrap";
+const HEADER_ACTION_CARD_HEIGHT_CLASS = "h-[54px] sm:h-[54px] xl:h-[72px]";
+const RAIL_PANEL_WIDTH_CLASS = "w-full sm:w-[116px] xl:w-[148px]";
 const RAIL_ROW_CLASS =
-  "grid grid-cols-2 sm:grid-cols-1 gap-1 sm:gap-1.5 items-start sm:justify-items-end w-full sm:w-[136px] xl:w-[148px]";
+  "grid grid-cols-2 sm:grid-cols-1 gap-1 sm:gap-1.5 items-start sm:justify-items-end w-full sm:w-[116px] xl:w-[148px]";
 
 interface RightControlsColumnProps {
   // 表示切り替え
@@ -177,6 +177,11 @@ export const RightControlsColumn = memo(function RightControlsColumn({
   const currentFormation = gameModeFormations.find(
     (f) => f.id.value === currentFormationId,
   );
+  const currentFormationLabel = currentFormation?.name ?? "4-3-3";
+  const formationSelectWidthCh = Math.max(
+    9,
+    Math.min(currentFormationLabel.length + 5, 14),
+  );
   const availableFormationIds = new Set(
     getFormationOptionsWithDefault(selectedTeam.availableFormations, gameMode),
   );
@@ -195,14 +200,14 @@ export const RightControlsColumn = memo(function RightControlsColumn({
 
   return (
     <div
-      className={`fixed ${headerVisible ? "top-[90px] sm:top-[106px]" : "top-2"} right-2 sm:right-3 z-10 flex flex-col gap-1 sm:gap-1.5 items-end max-w-[calc(100%-1rem)] sm:max-w-[calc(100%-2rem)] ${headerVisible ? "max-h-[calc(100vh-140px)] sm:max-h-[calc(100vh-160px)]" : "max-h-[calc(100vh-1rem)]"} overflow-y-auto overflow-x-hidden custom-scrollbar pointer-events-none [&>*]:pointer-events-auto`}
+      className={`fixed ${headerVisible ? "top-[90px] bottom-2 sm:top-[106px] sm:bottom-3" : "top-2 bottom-2"} right-2 sm:right-3 z-10 flex flex-col gap-1 sm:gap-1.5 items-end max-w-[calc(100%-1rem)] sm:max-w-[calc(100%-2rem)] overflow-y-auto overflow-x-hidden custom-scrollbar [overflow-anchor:none] pointer-events-none [&>*]:pointer-events-auto`}
     >
       {/* フォーメーション選択 + Undo/Redo + 開閉トグル */}
       <div className="flex items-start gap-2 [&>*]:pointer-events-auto">
         {/* 右コントロール群の開閉トグル */}
         <button
           onClick={onToggleRightControls}
-          className={`bg-[linear-gradient(180deg,rgba(30,41,59,0.96)_0%,rgba(15,23,42,0.96)_100%)] backdrop-blur-xl rounded-[20px] border border-slate-500/45 ring-1 ring-white/5 shadow-[0_6px_16px_rgba(2,6,23,0.14),0_1px_3px_rgba(2,6,23,0.08)] transition-all duration-300 flex items-center justify-center h-[46px] w-[36px] ${showRightControls ? "text-white hover:-translate-y-[1px] hover:border-slate-400/60" : "text-slate-400 hover:-translate-y-[1px] hover:border-slate-500/60 hover:text-slate-200"}`}
+          className={`bg-[linear-gradient(180deg,rgba(30,41,59,0.96)_0%,rgba(15,23,42,0.96)_100%)] backdrop-blur-xl rounded-[20px] border border-slate-500/45 ring-1 ring-white/5 shadow-[0_6px_16px_rgba(2,6,23,0.14),0_1px_3px_rgba(2,6,23,0.08)] transition-all duration-300 flex items-center justify-center h-[38px] w-[32px] sm:h-[36px] sm:w-[30px] xl:h-[46px] xl:w-[36px] ${showRightControls ? "text-white hover:-translate-y-[1px] hover:border-slate-400/60" : "text-slate-400 hover:-translate-y-[1px] hover:border-slate-500/60 hover:text-slate-200"}`}
           aria-label={
             showRightControls
               ? t("tactics.hideControls")
@@ -248,49 +253,40 @@ export const RightControlsColumn = memo(function RightControlsColumn({
             <div className="flex w-full sm:w-auto items-stretch justify-end gap-2 self-end">
               {/* フォーメーション */}
               <div
-                className={`${PRIMARY_PANEL_CLASS} ${HEADER_ACTION_CARD_HEIGHT_CLASS} flex w-full sm:w-[144px] xl:w-[156px] flex-col`}
+                className={`${PRIMARY_PANEL_CLASS} ${HEADER_ACTION_CARD_HEIGHT_CLASS} flex w-auto shrink-0 items-center gap-0.5 bg-[linear-gradient(180deg,rgba(2,6,23,0.76)_0%,rgba(2,6,23,0.9)_100%)] px-[3px] py-[3px] sm:px-[3px] sm:py-[3px] xl:px-0.5 xl:py-0.5`}
               >
-                <div className="bg-gradient-to-r from-slate-800/95 via-slate-800/90 to-slate-700/85 px-1.5 py-1 sm:px-2 sm:py-1.5 border-b border-slate-600/60 flex items-center justify-between gap-1">
-                  <div className={PANEL_CAPTION_CLASS}>
-                    <span className="w-1 h-3.5 bg-orange-500 rounded-full hidden sm:block"></span>
-                    <span className="hidden sm:inline">
-                      {t("tactics.formation")}
-                    </span>
-                  </div>
-                  <button
-                    onClick={onToggleFormationEditor}
-                    className="text-slate-400 hover:text-white transition-all duration-300 w-5 h-5 flex items-center justify-center rounded-lg hover:bg-white/10 text-[10px]"
-                    title={t("tactics.editFormations")}
-                    aria-label={t("tactics.editFormations")}
+                <button
+                  onClick={onToggleFormationEditor}
+                  className="flex h-[46px] w-[24px] sm:h-[46px] sm:w-[24px] xl:h-[62px] xl:w-[28px] items-center justify-center rounded-[18px] text-[9px] text-slate-500 transition-all duration-300 hover:bg-white/10 hover:text-slate-300"
+                  title={t("tactics.editFormations")}
+                  aria-label={t("tactics.editFormations")}
+                >
+                  <span aria-hidden="true">✏️</span>
+                </button>
+                <div className="relative">
+                  <select
+                    value={currentFormationId ?? ""}
+                    onChange={(e) => onChangeFormation(e.target.value)}
+                    disabled={isExecuting}
+                    aria-label={t("a11y.formationSelector")}
+                    className={`pointer-events-auto h-[46px] sm:h-[46px] xl:h-[62px] cursor-pointer appearance-none rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(37,99,235,0.98)_0%,rgba(29,78,216,0.98)_100%)] pl-3 pr-8 py-0.5 text-center text-xs sm:text-sm font-bold text-white shadow-[0_10px_24px_rgba(37,99,235,0.28)] outline-none transition-all duration-300 ${isExecuting ? "cursor-not-allowed opacity-40" : "hover:brightness-110 focus:border-blue-300/70 focus:ring-2 focus:ring-blue-400/30"}`}
+                    style={{ width: `${formationSelectWidthCh}ch` }}
                   >
-                    <span aria-hidden="true">✏️</span>
-                  </button>
-                </div>
-                <div className="flex flex-1 items-center rounded-b-[22px] bg-[linear-gradient(180deg,rgba(2,6,23,0.76)_0%,rgba(2,6,23,0.9)_100%)] p-0.5 sm:px-0.5 sm:py-1">
-                  <div className="relative w-full">
-                    <select
-                      value={currentFormationId ?? ""}
-                      onChange={(e) => onChangeFormation(e.target.value)}
-                      disabled={isExecuting}
-                      aria-label={t("a11y.formationSelector")}
-                      className={`pointer-events-auto w-full cursor-pointer appearance-none rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(37,99,235,0.98)_0%,rgba(29,78,216,0.98)_100%)] px-2 py-1.5 text-center text-xs sm:text-sm font-bold text-white shadow-[0_10px_24px_rgba(37,99,235,0.28)] outline-none transition-all duration-300 ${isExecuting ? "cursor-not-allowed opacity-40" : "hover:brightness-110 focus:border-blue-300/70 focus:ring-2 focus:ring-blue-400/30"}`}
-                    >
-                      {gameModeFormations
-                        .filter((f) => availableFormationIds.has(f.id.value))
-                        .map((f) => (
-                          <option
-                            key={f.id.value}
-                            value={f.id.value}
-                            className="bg-slate-900 text-slate-100"
-                          >
-                            {f.name}
-                          </option>
-                        ))}
-                    </select>
-                    <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-white/80">
-                      ▼
-                    </span>
-                  </div>
+                    {gameModeFormations
+                      .filter((f) => availableFormationIds.has(f.id.value))
+                      .map((f) => (
+                        <option
+                          key={f.id.value}
+                          value={f.id.value}
+                          className="bg-slate-900 text-slate-100"
+                        >
+                          {f.name}
+                        </option>
+                      ))}
+                  </select>
+                  <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-white/80">
+                    ▼
+                  </span>
                 </div>
               </div>
 
@@ -313,9 +309,9 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                   isOpponentSelectorActive
                     ? "border-red-400/60 ring-red-400/20 shadow-[0_10px_24px_rgba(127,29,29,0.28),0_2px_6px_rgba(2,6,23,0.12)]"
                     : "border-slate-700/45"
-                }`}
+                } flex items-stretch sm:block`}
               >
-                <div className="flex items-center">
+                <div className="flex flex-1 items-center sm:flex-none">
                   <button
                     onClick={opponentsHook.toggleOpponentPlacement}
                     data-opponent-selector-trigger="true"
@@ -330,7 +326,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                     <span className="text-xs" aria-hidden="true">
                       👤
                     </span>
-                    <span className="text-xs font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
+                    <span className={RAIL_LABEL_CLASS}>
                       {t("tactics.opponents")}
                     </span>
                     {isOpponentSelectorActive && (
@@ -344,7 +340,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                     )}
                   </button>
                 </div>
-                <div className="border-t border-slate-700/50 flex items-stretch">
+                <div className="flex flex-1 items-stretch border-l border-slate-700/50 sm:border-l-0 sm:border-t">
                   {/* 相手名前表示切り替え */}
                   <button
                     onClick={() =>
@@ -353,7 +349,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                       )
                     }
                     disabled={opponentsHook.opponents.length === 0}
-                    className={`flex-1 min-h-[36px] py-1 px-1 sm:py-1.5 sm:px-1.5 transition-all duration-300 flex items-center justify-center gap-1 text-xs border-r border-slate-700/50 ${opponentsHook.opponents.length === 0 ? "opacity-30 cursor-not-allowed" : opponentsHook.showOpponentNames ? "text-slate-200 hover:bg-white/[0.06]" : "text-slate-500 hover:bg-white/[0.04]"}`}
+                    className={`flex-1 min-h-[32px] py-1 px-1 sm:min-h-[30px] sm:px-1.25 transition-all duration-300 flex items-center justify-center gap-1 text-xs border-r border-slate-700/50 ${opponentsHook.opponents.length === 0 ? "opacity-30 cursor-not-allowed" : opponentsHook.showOpponentNames ? "text-slate-200 hover:bg-white/[0.06]" : "text-slate-500 hover:bg-white/[0.04]"}`}
                   >
                     <span
                       className="sm:hidden text-[11px] font-bold font-mono leading-none"
@@ -361,7 +357,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                     >
                       Aa
                     </span>
-                    <span className="hidden sm:inline text-xs font-semibold tracking-wide whitespace-nowrap">
+                    <span className={RAIL_LABEL_CLASS}>
                       {t("tactics.names.label")}
                     </span>
                   </button>
@@ -373,7 +369,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                       )
                     }
                     disabled={opponentsHook.opponents.length === 0}
-                    className={`flex-1 min-h-[36px] py-1 px-1 sm:py-1.5 sm:px-1.5 transition-all duration-300 flex items-center justify-center gap-1 text-xs ${opponentsHook.opponents.length === 0 ? "opacity-30 cursor-not-allowed" : opponentsHook.showOpponentNumbers ? "text-slate-200 hover:bg-white/[0.06]" : "text-slate-500 hover:bg-white/[0.04]"}`}
+                    className={`flex-1 min-h-[32px] py-1 px-1 sm:min-h-[30px] sm:px-1.25 transition-all duration-300 flex items-center justify-center gap-1 text-xs ${opponentsHook.opponents.length === 0 ? "opacity-30 cursor-not-allowed" : opponentsHook.showOpponentNumbers ? "text-slate-200 hover:bg-white/[0.06]" : "text-slate-500 hover:bg-white/[0.04]"}`}
                   >
                     <span
                       className="sm:hidden text-[11px] font-bold font-mono leading-none"
@@ -381,7 +377,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                     >
                       123
                     </span>
-                    <span className="hidden sm:inline text-xs font-semibold tracking-wide whitespace-nowrap">
+                    <span className={RAIL_LABEL_CLASS}>
                       {t("tactics.numbers.label")}
                     </span>
                   </button>
@@ -430,7 +426,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                   {/* 名前表示切り替え */}
                   <button
                     onClick={onTogglePlayerNames}
-                    className={`flex-1 min-h-[36px] py-1 px-1 sm:py-1.5 sm:px-1.5 transition-all duration-300 flex items-center justify-center gap-1 ${showPlayerNames ? "text-slate-200 hover:bg-white/[0.06] hover:text-white" : "text-slate-500 hover:bg-white/[0.06] hover:text-white"}`}
+                    className={`flex-1 min-h-[32px] py-1 px-1 sm:min-h-[30px] sm:px-1.25 transition-all duration-300 flex items-center justify-center gap-1 ${showPlayerNames ? "text-slate-200 hover:bg-white/[0.06] hover:text-white" : "text-slate-500 hover:bg-white/[0.06] hover:text-white"}`}
                     aria-label={
                       showPlayerNames
                         ? t("tactics.hideNames")
@@ -443,7 +439,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                     >
                       Aa
                     </span>
-                    <span className="hidden sm:inline text-xs font-semibold tracking-wide whitespace-nowrap">
+                    <span className={RAIL_LABEL_CLASS}>
                       {t("tactics.names.label")}
                     </span>
                   </button>
@@ -451,7 +447,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                   {/* 設定ボタン（中央） */}
                   <button
                     onClick={onToggleNameSettings}
-                    className="py-1 px-1.5 sm:py-1.5 sm:px-2 transition-all duration-300 text-slate-500 hover:text-white hover:bg-white/[0.06] border-x border-slate-700/50 flex items-center justify-center"
+                    className="py-1 px-1.25 sm:px-1.5 transition-all duration-300 text-slate-500 hover:text-white hover:bg-white/[0.06] border-x border-slate-700/50 flex items-center justify-center"
                     aria-label={
                       showNameSettings
                         ? t("a11y.closePanel")
@@ -467,7 +463,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                   {/* 番号表示切り替え */}
                   <button
                     onClick={onTogglePlayerNumbers}
-                    className={`flex-1 min-h-[36px] py-1 px-1 sm:py-1.5 sm:px-1.5 transition-all duration-300 flex items-center justify-center gap-1 ${showPlayerNumbers ? "text-slate-200 hover:bg-white/[0.06] hover:text-white" : "text-slate-500 hover:bg-white/[0.06] hover:text-white"}`}
+                    className={`flex-1 min-h-[32px] py-1 px-1 sm:min-h-[30px] sm:px-1.25 transition-all duration-300 flex items-center justify-center gap-1 ${showPlayerNumbers ? "text-slate-200 hover:bg-white/[0.06] hover:text-white" : "text-slate-500 hover:bg-white/[0.06] hover:text-white"}`}
                     aria-label={
                       showPlayerNumbers
                         ? t("tactics.hideNumbers")
@@ -480,7 +476,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                     >
                       123
                     </span>
-                    <span className="hidden sm:inline text-xs font-semibold tracking-wide whitespace-nowrap">
+                    <span className={RAIL_LABEL_CLASS}>
                       {t("tactics.numbers.label")}
                     </span>
                   </button>
@@ -522,7 +518,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                             {player.number}
                           </div>
                           <span
-                            className={`text-xs truncate flex-1 text-left ${isVisible ? "" : "line-through opacity-50"}`}
+                            className={`text-[11px] xl:text-xs truncate flex-1 text-left ${isVisible ? "" : "line-through opacity-50"}`}
                           >
                             {player.name}
                           </span>
@@ -554,24 +550,19 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                 <span className="text-xs" aria-hidden="true">
                   {showCards ? "🟨" : "🚫"}
                 </span>
-                <span className="text-xs font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
-                  {t("tactics.card")}
-                </span>
+                <span className={RAIL_LABEL_CLASS}>{t("tactics.card")}</span>
               </button>
 
               {/* マーカーサイズ */}
               <div
-                className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} flex items-center min-h-[36px] justify-between p-0.5`}
+                className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} flex items-center min-h-[32px] sm:min-h-[30px] xl:min-h-[36px] p-[3px] sm:p-[3px] xl:p-0.5`}
               >
-                <span className="py-1 px-2 text-[10px] sm:text-[11px] font-semibold text-slate-400 border-r border-slate-700/50 tracking-[0.12em] uppercase whitespace-nowrap hidden sm:block">
-                  {t("tactics.size")}
-                </span>
                 <div className="flex items-center gap-1 flex-1 h-full">
                   {([0.9, 1.0, 1.1] as const).map((s) => (
                     <button
                       key={s}
                       onClick={() => onMarkerScaleChange(s)}
-                      className={`flex-1 min-h-[26px] py-1 px-1.5 text-[10px] sm:text-xs font-semibold rounded-lg transition-all duration-200 flex items-center justify-center ${playerMarkerScale === s ? "bg-white/[0.08] text-white" : "text-slate-400 hover:bg-white/[0.06] hover:text-slate-300"}`}
+                      className={`flex-1 min-h-[26px] py-1 px-1.5 text-[10px] sm:text-[11px] xl:text-xs font-semibold rounded-lg transition-all duration-200 flex items-center justify-center ${playerMarkerScale === s ? "bg-white/[0.08] text-white" : "text-slate-400 hover:bg-white/[0.06] hover:text-slate-300"}`}
                       aria-label={t("a11y.markerSize").replace(
                         "{size}",
                         s === 0.9 ? "S" : s === 1.0 ? "M" : "L",
@@ -596,7 +587,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                     <span className="text-xs" aria-hidden="true">
                       📊
                     </span>
-                    <span className="text-xs font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
+                    <span className={RAIL_LABEL_CLASS}>
                       {t("tactics.tacticsFlow")}
                     </span>
                   </button>
@@ -616,7 +607,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                   <span className="text-xs" aria-hidden="true">
                     📹
                   </span>
-                  <span className="text-xs font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
+                  <span className={RAIL_LABEL_CLASS}>
                     {t("tactics.playerView")}
                   </span>
                 </button>
@@ -635,7 +626,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                     <span className="text-xs" aria-hidden="true">
                       ⚽
                     </span>
-                    <span className="text-xs font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
+                    <span className={RAIL_LABEL_CLASS}>
                       {t("tactics.ball")}
                     </span>
                   </button>
@@ -674,7 +665,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                   <span className="text-xs" aria-hidden="true">
                     🖊️
                   </span>
-                  <span className="text-xs font-semibold tracking-wide whitespace-nowrap hidden sm:inline">
+                  <span className={RAIL_LABEL_CLASS}>
                     {t("tactics.sketch")}
                   </span>
                 </button>

@@ -8,7 +8,7 @@
  * - ポジション別のスロット表示を検証
  */
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { SquadBuilder } from "../SquadBuilder";
 import { Team } from "@domain/entities/Team";
 import { Player } from "@domain/entities/Player";
@@ -169,11 +169,40 @@ describe("SquadBuilder", () => {
       />,
     );
 
-    // Click on the GK position slot
     const gkSlot = screen.getByLabelText("GK");
-    fireEvent.click(gkSlot);
+    const p1Slot = screen.getByLabelText("P1");
 
-    // Should show "select player" hint when a position is active
+    expect(gkSlot).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(p1Slot);
+
+    expect(gkSlot).toHaveAttribute("aria-pressed", "false");
+    expect(p1Slot).toHaveAttribute("aria-pressed", "true");
+    expect(
+      screen.getByText(/tactics.squadBuilder.selectPlayer/),
+    ).toBeInTheDocument();
+  });
+
+  it("ポップアップ表示時に最初の空きポジションへフォーカスする", async () => {
+    const team = createMockTeam();
+    const formation = createMockFormation();
+    const selectedPlayers: (Player | null)[] = Array.from(
+      { length: 11 },
+      (_, index) => (index === 0 ? createPlayer("Assigned GK", 1, "gk") : null),
+    );
+
+    render(
+      <SquadBuilder
+        team={team}
+        formation={formation}
+        selectedPlayers={selectedPlayers}
+        onUpdateSquad={vi.fn()}
+        onClose={vi.fn()}
+      />,
+    );
+
+    const firstEmptySlot = screen.getByLabelText("P1");
+    await waitFor(() => expect(firstEmptySlot).toHaveFocus());
+    expect(firstEmptySlot).toHaveAttribute("aria-pressed", "true");
     expect(
       screen.getByText(/tactics.squadBuilder.selectPlayer/),
     ).toBeInTheDocument();
@@ -345,11 +374,7 @@ describe("SquadBuilder", () => {
       />,
     );
 
-    // First, click on GK position to activate it
-    const gkSlot = screen.getByLabelText("GK");
-    fireEvent.click(gkSlot);
-
-    // Then click on Player 1 to assign them
+    // GK is selected by default when the first slot is empty.
     const playerButton = screen.getByLabelText("Player 1 (#1)");
     fireEvent.click(playerButton);
 
@@ -406,8 +431,6 @@ describe("SquadBuilder", () => {
       screen.queryByTitle(/tactics.squadBuilder.assignTo GK/),
     ).not.toBeInTheDocument();
 
-    const gkSlot = screen.getByLabelText("GK");
-    fireEvent.click(gkSlot);
     fireEvent.click(screen.getByLabelText("Player 1 (#1)"));
 
     expect(screen.getByLabelText(/GK - Player 1/)).toBeInTheDocument();
@@ -461,9 +484,7 @@ describe("SquadBuilder", () => {
       />,
     );
 
-    // Click GK position to activate
     const gkSlot = screen.getByLabelText("GK");
-    fireEvent.click(gkSlot);
     expect(
       screen.getByText(/tactics.squadBuilder.selectPlayer/),
     ).toBeInTheDocument();
