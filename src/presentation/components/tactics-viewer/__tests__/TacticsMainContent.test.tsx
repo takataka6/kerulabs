@@ -383,6 +383,10 @@ describe("TacticsMainContent", () => {
   });
 
   it("主要なサブコンポーネントが描画される", async () => {
+    mockPreferencesGet.mockImplementation((key: string) => {
+      if (key === "tacticsViewerGuideDismissed") return true;
+      return undefined;
+    });
     render(<TacticsMainContent />);
 
     expect(screen.getByTestId("squad-panel")).toBeInTheDocument();
@@ -587,6 +591,10 @@ describe("TacticsMainContent", () => {
     });
 
     it("ViewLockPanel onCameraAction delegates to context", () => {
+      mockPreferencesGet.mockImplementation((key: string) => {
+        if (key === "tacticsViewerGuideDismissed") return true;
+        return undefined;
+      });
       render(<TacticsMainContent />);
 
       const onCameraAction = capturedViewLockPanelProps.onCameraAction as (
@@ -597,6 +605,10 @@ describe("TacticsMainContent", () => {
     });
 
     it("ViewLockPanel onToggleTouchlineLock toggles touchlineLocked via context", () => {
+      mockPreferencesGet.mockImplementation((key: string) => {
+        if (key === "tacticsViewerGuideDismissed") return true;
+        return undefined;
+      });
       render(<TacticsMainContent />);
 
       const toggle =

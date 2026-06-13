@@ -71,6 +71,10 @@ export function TacticsMainContent() {
   const hasOpenPopup =
     showGuide ||
     bgSettings.showSceneBgSettings ||
+    ui.showPlayerManagement ||
+    ui.showSquadBuilder ||
+    opponentsHook.showOpponentFormationSelect ||
+    opponentsHook.showOpponentSquadBuilder ||
     (!!teams?.length &&
       (opponentsHook.opponentPlacementMode ||
         !!opponentsHook.selectedOpponentPlayerId) &&
@@ -510,7 +514,7 @@ export function TacticsMainContent() {
       />
 
       {/* ビューコントロール */}
-      {!ui.captureMode && !playerView.playerViewEnabled && (
+      {!ui.captureMode && !playerView.playerViewEnabled && !hasOpenPopup && (
         <ViewLockPanel
           onCameraAction={ui.setCameraAction}
           touchlineLocked={ui.touchlineLocked}
