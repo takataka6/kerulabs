@@ -517,7 +517,11 @@ export const Scene = memo(function Scene({
           number={players[index]?.number || index + 1}
           name={players[index]?.name}
           imageUrl={players[index]?.imageUrl}
-          showName={showPlayerNames && !hiddenPlayerIndices.has(index)}
+          showName={
+            showPlayerNames
+              ? !hiddenPlayerIndices.has(index)
+              : hiddenPlayerIndices.has(index)
+          }
           showNumber={showPlayerNumbers}
           showPhoto={showPlayerPhotos}
           labelFixed={labelFixed}
