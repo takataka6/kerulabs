@@ -346,7 +346,7 @@ describe("RightControlsColumn", () => {
     it("名前表示切り替えボタンが表示される", () => {
       render(<RightControlsColumn {...defaultProps()} />);
 
-      expect(screen.getByText("tactics.hideNames")).toBeInTheDocument();
+      expect(screen.getByText("tactics.names.label")).toBeInTheDocument();
     });
 
     it("選手名が非表示の場合、ラベルが変わる", () => {
@@ -354,7 +354,7 @@ describe("RightControlsColumn", () => {
         <RightControlsColumn {...defaultProps({ showPlayerNames: false })} />,
       );
 
-      expect(screen.getByText("tactics.showNames")).toBeInTheDocument();
+      expect(screen.getByText("tactics.names.label")).toBeInTheDocument();
     });
 
     it("名前設定パネルが表示される場合、選手リストが表示される", () => {
