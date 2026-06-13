@@ -2,7 +2,7 @@
  * @module Player
  * @description 選手の3Dコンポーネント。円錐メッシュ・名前/番号テキスト・ドラッグ移動・カード表示を含む選手マーカーをレンダリングする。
  */
-import { memo, useRef, useCallback, useMemo, useEffect } from "react";
+import { memo, useRef, useCallback, useMemo, useEffect, useState } from "react";
 import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { CanvasText as Text } from "./CanvasText";
 import {
@@ -86,6 +86,7 @@ export const Player = memo(function Player({
   groupDragState,
   fieldBounds,
 }: PlayerProps) {
+  const [isDraggingState, setIsDraggingState] = useState(false);
   const fieldBoundsResolved = useMemo(
     () => fieldBounds ?? DEFAULT_FIELD_BOUNDS,
     [fieldBounds],
@@ -118,6 +119,7 @@ export const Player = memo(function Player({
     };
   }, []);
 
+  const groupRef = useRef<Group>(null);
   const meshRef = useRef<Mesh>(null);
   const textRef = useRef<Mesh>(null);
   const selectedRingRef = useRef<Mesh>(null);
@@ -174,6 +176,7 @@ export const Player = memo(function Player({
       if (!draggable) return;
       e.stopPropagation();
       isDragging.current = true;
+      setIsDraggingState(true);
       // ドラッグ開始時にバウンディング矩形を一度キャッシュ
       cachedRect.current = gl.domElement.getBoundingClientRect();
       gl.domElement.style.cursor = "grabbing";
@@ -194,10 +197,10 @@ export const Player = memo(function Player({
       const handlePointerMove = (ev: PointerEvent) => {
         if (!isDragging.current) return;
         const pos = getFieldPosition(ev);
-        if (pos && meshRef.current) {
+        if (pos && groupRef.current) {
           // メッシュを直接移動 — Reactのstate更新なし
-          meshRef.current.position.x = pos.x;
-          meshRef.current.position.z = pos.z;
+          groupRef.current.position.x = pos.x;
+          groupRef.current.position.z = pos.z;
           dragPositionRef.current = pos;
           // グループドラッグ差分を更新
           if (isGroupDrag && groupDragState) {
@@ -215,6 +218,7 @@ export const Player = memo(function Player({
         dragCleanupRef.current = null;
         if (!isDragging.current) return; // guard against double-fire
         isDragging.current = false;
+        setIsDraggingState(false);
         const finalPos = dragPositionRef.current;
         dragPositionRef.current = null;
         cachedRect.current = null;
@@ -222,8 +226,8 @@ export const Player = memo(function Player({
         // React がtargetPositionを更新するまでlerp巻き戻しを防ぐためドラッグ終了位置を保持
         const endPos =
           finalPos ??
-          (meshRef.current
-            ? { x: meshRef.current.position.x, z: meshRef.current.position.z }
+          (groupRef.current
+            ? { x: groupRef.current.position.x, z: groupRef.current.position.z }
             : null);
         dragEndPosRef.current = endPos;
 
@@ -285,7 +289,7 @@ export const Player = memo(function Player({
     if (
       groupDragState?.current.active &&
       !isDragging.current &&
-      meshRef.current
+      groupRef.current
     ) {
       const myKey = `player_${index}`;
       const startPos = groupDragState.current.startPositions[myKey];
@@ -297,13 +301,13 @@ export const Player = memo(function Player({
           },
           fieldBoundsResolved,
         );
-        meshRef.current.position.x = clamped.x;
-        meshRef.current.position.z = clamped.z;
+        groupRef.current.position.x = clamped.x;
+        groupRef.current.position.z = clamped.z;
       }
     }
 
-    // スムーズな移動アニメーション（ドラッグ中はスキップ: meshRef は直接更新される）
-    if (meshRef.current && targetPosition && !isDragging.current) {
+    // スムーズな移動アニメーション（ドラッグ中はスキップ: groupRef は直接更新される）
+    if (groupRef.current && targetPosition && !isDragging.current) {
       // グループドラッグ follower 中はスキップ（上で直接設定済み）
       if (groupDragState?.current.active) {
         // lerpをスキップ
@@ -314,76 +318,27 @@ export const Player = memo(function Player({
           dragEndPosRef.current = null;
         } else {
           // targetPosition が古い値のままなので、メッシュをドラッグ終了位置に固定
-          meshRef.current.position.x = ep.x;
-          meshRef.current.position.z = ep.z;
+          groupRef.current.position.x = ep.x;
+          groupRef.current.position.z = ep.z;
         }
       } else {
         const speed = getPlaybackSpeed();
         const lerp = 1 - Math.pow(1 - ANIMATION.LERP_PLAYER, speed);
-        const dx = targetPosition.x - meshRef.current.position.x;
-        const dz = targetPosition.z - meshRef.current.position.z;
-        meshRef.current.position.x += dx * lerp;
-        meshRef.current.position.z += dz * lerp;
+        const dx = targetPosition.x - groupRef.current.position.x;
+        const dz = targetPosition.z - groupRef.current.position.z;
+        groupRef.current.position.x += dx * lerp;
+        groupRef.current.position.z += dz * lerp;
       }
     }
 
-    // 写真テクスチャの追従
-    if (photoRef.current && meshRef.current) {
-      photoRef.current.position.x = meshRef.current.position.x;
-      photoRef.current.position.z = meshRef.current.position.z;
-      photoRef.current.position.y =
-        meshRef.current.position.y + PLAYER_OFFSETS.PHOTO_Y;
-    }
-
-    // テキストの追従
-    if (textRef.current && meshRef.current) {
-      textRef.current.position.x = meshRef.current.position.x;
-      textRef.current.position.z = meshRef.current.position.z;
-      textRef.current.position.y =
-        meshRef.current.position.y + PLAYER_OFFSETS.TEXT_Y;
-    }
-
-    // 名前ラベルの追従
-    if (meshRef.current) {
-      if (labelFixedRef.current) {
-        // Billboard: カメラ方向に向ける
-        if (labelGroupRef.current) {
-          labelGroupRef.current.position.x = meshRef.current.position.x;
-          labelGroupRef.current.position.z = meshRef.current.position.z;
-          labelGroupRef.current.quaternion.copy(state.camera.quaternion);
-        }
-      } else {
-        // Flat: 地面に平行
-        if (nameBgRef.current) {
-          nameBgRef.current.position.x = meshRef.current.position.x;
-          nameBgRef.current.position.z =
-            meshRef.current.position.z + PLAYER_OFFSETS.NAME_Z;
-        }
-        if (nameTextRef.current) {
-          nameTextRef.current.position.x = meshRef.current.position.x;
-          nameTextRef.current.position.z =
-            meshRef.current.position.z + PLAYER_OFFSETS.NAME_Z;
-        }
-      }
-      // カード表示の追従
-      if (cardRef.current) {
-        cardRef.current.position.x =
-          meshRef.current.position.x + CARD_DISPLAY.SINGLE_X;
-        cardRef.current.position.z =
-          meshRef.current.position.z + CARD_DISPLAY.Z_OFFSET;
-      }
-      if (cardRef2.current) {
-        cardRef2.current.position.x =
-          meshRef.current.position.x + CARD_DISPLAY.DOUBLE_X1;
-        cardRef2.current.position.z =
-          meshRef.current.position.z + CARD_DISPLAY.Z_OFFSET;
-      }
+    // 名前ラベルの追従 (Billboard)
+    if (labelFixedRef.current && labelGroupRef.current) {
+      // Billboard: カメラ方向に向ける
+      labelGroupRef.current.quaternion.copy(state.camera.quaternion);
     }
 
     // 選択リングのアニメーション
-    if (selectedRingRef.current && meshRef.current) {
-      selectedRingRef.current.position.x = meshRef.current.position.x;
-      selectedRingRef.current.position.z = meshRef.current.position.z;
+    if (selectedRingRef.current) {
       selectedRingRef.current.rotation.z += ANIMATION.RING_ROTATION_SPEED;
       const { scale: pulse, opacity } = computeSelectionRingPulse(time);
       selectedRingRef.current.scale.setScalar(pulse);
@@ -415,226 +370,220 @@ export const Player = memo(function Player({
   }, []);
 
   return (
-    <group scale={[markerScale, markerScale, markerScale]}>
-      {/* ディスク本体 */}
-      <mesh
-        ref={meshRef}
-        position={[position.x, DISK_GEOMETRY.Y_POSITION, position.z]}
-        castShadow
-        onClick={onClick ? handleClick : undefined}
-        onPointerDown={draggable ? handlePointerDown : undefined}
-        onPointerOver={handlePointerOver}
-        onPointerOut={handlePointerOut}
-      >
-        <cylinderGeometry
-          args={[
-            DISK_GEOMETRY.RADIUS,
-            DISK_GEOMETRY.RADIUS,
-            DISK_GEOMETRY.HEIGHT,
-            DISK_GEOMETRY.SEGMENTS,
-          ]}
-        />
-        <meshStandardMaterial
-          color={color}
-          emissive={color}
-          emissiveIntensity={PLAYER_MATERIAL.EMISSIVE_INTENSITY}
-          metalness={PLAYER_MATERIAL.METALNESS}
-          roughness={PLAYER_MATERIAL.ROUGHNESS}
-          fog={false}
-        />
-      </mesh>
-
-      {/* 写真テクスチャ（シリンダー上面） */}
-      {texture && showPhoto && (
+    <group ref={groupRef} position={[position.x, 0, position.z]}>
+      <group scale={[markerScale, markerScale, markerScale]}>
+        {/* ディスク本体 */}
         <mesh
-          ref={photoRef}
-          position={[position.x, PLAYER_OFFSETS.PHOTO_Y, position.z]}
-          rotation={[-Math.PI / 2, 0, Math.PI]}
+          ref={meshRef}
+          position={[0, DISK_GEOMETRY.Y_POSITION, 0]}
+          castShadow
+          onClick={onClick ? handleClick : undefined}
+          onPointerDown={draggable ? handlePointerDown : undefined}
+          onPointerOver={handlePointerOver}
+          onPointerOut={handlePointerOut}
         >
-          <circleGeometry
-            args={[DISK_GEOMETRY.RADIUS, DISK_GEOMETRY.SEGMENTS]}
-          />
-          <meshBasicMaterial
-            map={texture}
-            fog={false}
-            polygonOffset
-            polygonOffsetFactor={PLAYER_MATERIAL.POLYGON_OFFSET_FACTOR}
-            polygonOffsetUnits={PLAYER_MATERIAL.POLYGON_OFFSET_UNITS}
-          />
-        </mesh>
-      )}
-
-      {/* 選択時のハイライトリング */}
-      {isSelected && (
-        <mesh
-          ref={selectedRingRef}
-          position={[position.x, SELECTION_RING.Y_POSITION, position.z]}
-          rotation={[-Math.PI / 2, 0, 0]}
-        >
-          <ringGeometry
+          <cylinderGeometry
             args={[
-              SELECTION_RING.INNER_RADIUS,
-              SELECTION_RING.OUTER_RADIUS,
-              SELECTION_RING.SEGMENTS,
+              DISK_GEOMETRY.RADIUS,
+              DISK_GEOMETRY.RADIUS,
+              DISK_GEOMETRY.HEIGHT,
+              DISK_GEOMETRY.SEGMENTS,
             ]}
           />
-          <meshBasicMaterial
-            color="#fbbf24"
-            transparent
-            opacity={SELECTION_RING.OPACITY}
+          <meshStandardMaterial
+            color={color}
+            emissive={color}
+            emissiveIntensity={PLAYER_MATERIAL.EMISSIVE_INTENSITY}
+            metalness={PLAYER_MATERIAL.METALNESS}
+            roughness={PLAYER_MATERIAL.ROUGHNESS}
             fog={false}
           />
         </mesh>
-      )}
 
-      {/* 番号テキスト（写真がない場合のみ表示） */}
-      {!texture && showNumber && (
-        <Text
-          ref={textRef}
-          position={[position.x, PLAYER_OFFSETS.NUMBER_Y, position.z]}
-          rotation={[-Math.PI / 2, 0, Math.PI]}
-          fontSize={TEXT_LABEL.NUMBER_FONT_SIZE}
-          color="white"
-          anchorX="center"
-          anchorY="middle"
-          fontWeight="bold"
-          outlineWidth={TEXT_LABEL.NUMBER_OUTLINE_WIDTH}
-          outlineColor="#000000"
-        >
-          {number}
-        </Text>
-      )}
-
-      {/* 名前テキスト（フラット表示） */}
-      {showName && name && !labelFixed && (
-        <>
+        {/* 写真テクスチャ（シリンダー上面） */}
+        {texture && showPhoto && (
           <mesh
-            ref={nameBgRef}
-            position={[
-              position.x,
-              PLAYER_OFFSETS.NAME_BG_Y,
-              position.z + PLAYER_OFFSETS.NAME_Z,
-            ]}
+            ref={photoRef}
+            position={[0, PLAYER_OFFSETS.PHOTO_Y, 0]}
+            rotation={[-Math.PI / 2, 0, Math.PI]}
+          >
+            <circleGeometry
+              args={[DISK_GEOMETRY.RADIUS, DISK_GEOMETRY.SEGMENTS]}
+            />
+            <meshBasicMaterial
+              map={texture}
+              fog={false}
+              polygonOffset
+              polygonOffsetFactor={PLAYER_MATERIAL.POLYGON_OFFSET_FACTOR}
+              polygonOffsetUnits={PLAYER_MATERIAL.POLYGON_OFFSET_UNITS}
+            />
+          </mesh>
+        )}
+
+        {/* 選択時またはドラッグ時のハイライトリング */}
+        {(isSelected || isDraggingState) && (
+          <mesh
+            ref={selectedRingRef}
+            position={[0, SELECTION_RING.Y_POSITION, 0]}
             rotation={[-Math.PI / 2, 0, 0]}
           >
-            <planeGeometry
+            <ringGeometry
               args={[
-                name.length * TEXT_LABEL.NAME_WIDTH_FACTOR +
-                  TEXT_LABEL.NAME_WIDTH_PADDING,
-                TEXT_LABEL.NAME_HEIGHT,
+                SELECTION_RING.INNER_RADIUS,
+                SELECTION_RING.OUTER_RADIUS,
+                SELECTION_RING.SEGMENTS,
               ]}
             />
             <meshBasicMaterial
-              color={TEXT_LABEL.NAME_BG_COLOR}
-              transparent={false}
-              fog={true}
+              color="#fbbf24"
+              transparent
+              opacity={SELECTION_RING.OPACITY}
+              fog={false}
             />
           </mesh>
+        )}
+
+        {/* 番号テキスト（写真がない場合のみ表示） */}
+        {!texture && showNumber && (
           <Text
-            ref={nameTextRef}
-            position={[
-              position.x,
-              PLAYER_OFFSETS.NAME_TEXT_Y,
-              position.z + PLAYER_OFFSETS.NAME_Z,
-            ]}
+            ref={textRef}
+            position={[0, PLAYER_OFFSETS.NUMBER_Y, 0]}
             rotation={[-Math.PI / 2, 0, Math.PI]}
-            fontSize={TEXT_LABEL.NAME_FONT_SIZE}
+            fontSize={TEXT_LABEL.NUMBER_FONT_SIZE}
             color="white"
             anchorX="center"
             anchorY="middle"
             fontWeight="bold"
-            outlineWidth={TEXT_LABEL.OUTLINE_WIDTH}
+            outlineWidth={TEXT_LABEL.NUMBER_OUTLINE_WIDTH}
             outlineColor="#000000"
           >
-            {name}
+            {number}
           </Text>
-        </>
-      )}
+        )}
 
-      {/* 名前テキスト（Billboard: 常にカメラ向き） */}
-      {showName && name && labelFixed && (
-        <group ref={labelGroupRef} position={[position.x, 0.3, position.z]}>
-          <mesh position={[0, -0.18, 0]}>
-            <planeGeometry
-              args={[
-                name.length * TEXT_LABEL.NAME_WIDTH_FACTOR +
-                  TEXT_LABEL.NAME_WIDTH_PADDING,
-                TEXT_LABEL.NAME_HEIGHT,
+        {/* 名前テキスト（フラット表示） */}
+        {showName && name && !labelFixed && (
+          <>
+            <mesh
+              ref={nameBgRef}
+              position={[0, PLAYER_OFFSETS.NAME_BG_Y, PLAYER_OFFSETS.NAME_Z]}
+              rotation={[-Math.PI / 2, 0, 0]}
+            >
+              <planeGeometry
+                args={[
+                  name.length * TEXT_LABEL.NAME_WIDTH_FACTOR +
+                    TEXT_LABEL.NAME_WIDTH_PADDING,
+                  TEXT_LABEL.NAME_HEIGHT,
+                ]}
+              />
+              <meshBasicMaterial
+                color={TEXT_LABEL.NAME_BG_COLOR}
+                transparent={false}
+                fog={true}
+              />
+            </mesh>
+            <Text
+              ref={nameTextRef}
+              position={[0, PLAYER_OFFSETS.NAME_TEXT_Y, PLAYER_OFFSETS.NAME_Z]}
+              rotation={[-Math.PI / 2, 0, Math.PI]}
+              fontSize={TEXT_LABEL.NAME_FONT_SIZE}
+              color="white"
+              anchorX="center"
+              anchorY="middle"
+              fontWeight="bold"
+              outlineWidth={TEXT_LABEL.OUTLINE_WIDTH}
+              outlineColor="#000000"
+            >
+              {name}
+            </Text>
+          </>
+        )}
+
+        {/* 名前テキスト（Billboard: 常にカメラ向き） */}
+        {showName && name && labelFixed && (
+          <group ref={labelGroupRef} position={[0, 0.3, 0]}>
+            <mesh position={[0, -0.18, 0]}>
+              <planeGeometry
+                args={[
+                  name.length * TEXT_LABEL.NAME_WIDTH_FACTOR +
+                    TEXT_LABEL.NAME_WIDTH_PADDING,
+                  TEXT_LABEL.NAME_HEIGHT,
+                ]}
+              />
+              <meshBasicMaterial color={TEXT_LABEL.NAME_BG_COLOR} />
+            </mesh>
+            <Text
+              position={[0, -0.18, 0.001]}
+              fontSize={TEXT_LABEL.NAME_FONT_SIZE}
+              color="white"
+              anchorX="center"
+              anchorY="middle"
+              fontWeight="bold"
+              outlineWidth={TEXT_LABEL.OUTLINE_WIDTH}
+              outlineColor="#000000"
+            >
+              {name}
+            </Text>
+          </group>
+        )}
+
+        {/* カード表示（右上） */}
+        {card === "yellow" && (
+          <mesh
+            ref={cardRef}
+            position={[
+              CARD_DISPLAY.SINGLE_X,
+              CARD_DISPLAY.Y_POSITION,
+              CARD_DISPLAY.Z_OFFSET,
+            ]}
+            rotation={[-Math.PI / 2, 0, 0]}
+          >
+            <planeGeometry args={[CARD_DISPLAY.WIDTH, CARD_DISPLAY.HEIGHT]} />
+            <meshBasicMaterial color="#facc15" fog={false} />
+          </mesh>
+        )}
+        {card === "double_yellow" && (
+          <group>
+            <mesh
+              ref={cardRef2}
+              position={[
+                CARD_DISPLAY.DOUBLE_X1,
+                CARD_DISPLAY.Y_POSITION,
+                CARD_DISPLAY.Z_OFFSET,
               ]}
-            />
-            <meshBasicMaterial color={TEXT_LABEL.NAME_BG_COLOR} />
-          </mesh>
-          <Text
-            position={[0, -0.18, 0.001]}
-            fontSize={TEXT_LABEL.NAME_FONT_SIZE}
-            color="white"
-            anchorX="center"
-            anchorY="middle"
-            fontWeight="bold"
-            outlineWidth={TEXT_LABEL.OUTLINE_WIDTH}
-            outlineColor="#000000"
-          >
-            {name}
-          </Text>
-        </group>
-      )}
-
-      {/* カード表示（右上） */}
-      {card === "yellow" && (
-        <mesh
-          ref={cardRef}
-          position={[
-            position.x + CARD_DISPLAY.SINGLE_X,
-            CARD_DISPLAY.Y_POSITION,
-            position.z + CARD_DISPLAY.Z_OFFSET,
-          ]}
-          rotation={[-Math.PI / 2, 0, 0]}
-        >
-          <planeGeometry args={[CARD_DISPLAY.WIDTH, CARD_DISPLAY.HEIGHT]} />
-          <meshBasicMaterial color="#facc15" fog={false} />
-        </mesh>
-      )}
-      {card === "double_yellow" && (
-        <group>
+              rotation={[-Math.PI / 2, 0, 0]}
+            >
+              <planeGeometry args={[CARD_DISPLAY.WIDTH, CARD_DISPLAY.HEIGHT]} />
+              <meshBasicMaterial color="#facc15" fog={false} />
+            </mesh>
+            <mesh
+              position={[
+                CARD_DISPLAY.DOUBLE_X2,
+                CARD_DISPLAY.Y_POSITION,
+                CARD_DISPLAY.Z_OFFSET,
+              ]}
+              rotation={[-Math.PI / 2, 0, 0]}
+            >
+              <planeGeometry args={[CARD_DISPLAY.WIDTH, CARD_DISPLAY.HEIGHT]} />
+              <meshBasicMaterial color="#facc15" fog={false} />
+            </mesh>
+          </group>
+        )}
+        {card === "red" && (
           <mesh
-            ref={cardRef2}
+            ref={cardRef}
             position={[
-              position.x + CARD_DISPLAY.DOUBLE_X1,
+              CARD_DISPLAY.SINGLE_X,
               CARD_DISPLAY.Y_POSITION,
-              position.z + CARD_DISPLAY.Z_OFFSET,
+              CARD_DISPLAY.Z_OFFSET,
             ]}
             rotation={[-Math.PI / 2, 0, 0]}
           >
             <planeGeometry args={[CARD_DISPLAY.WIDTH, CARD_DISPLAY.HEIGHT]} />
-            <meshBasicMaterial color="#facc15" fog={false} />
+            <meshBasicMaterial color="#ef4444" fog={false} />
           </mesh>
-          <mesh
-            position={[
-              position.x + CARD_DISPLAY.DOUBLE_X2,
-              CARD_DISPLAY.Y_POSITION,
-              position.z + CARD_DISPLAY.Z_OFFSET,
-            ]}
-            rotation={[-Math.PI / 2, 0, 0]}
-          >
-            <planeGeometry args={[CARD_DISPLAY.WIDTH, CARD_DISPLAY.HEIGHT]} />
-            <meshBasicMaterial color="#facc15" fog={false} />
-          </mesh>
-        </group>
-      )}
-      {card === "red" && (
-        <mesh
-          ref={cardRef}
-          position={[
-            position.x + CARD_DISPLAY.SINGLE_X,
-            CARD_DISPLAY.Y_POSITION,
-            position.z + CARD_DISPLAY.Z_OFFSET,
-          ]}
-          rotation={[-Math.PI / 2, 0, 0]}
-        >
-          <planeGeometry args={[CARD_DISPLAY.WIDTH, CARD_DISPLAY.HEIGHT]} />
-          <meshBasicMaterial color="#ef4444" fog={false} />
-        </mesh>
-      )}
+        )}
+      </group>
     </group>
   );
 });

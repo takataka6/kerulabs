@@ -2,7 +2,7 @@
  * @module OpponentMarker
  * @description 相手チームマーカーの3Dコンポーネント。ドラッグ移動・右クリック削除・名前/番号表示を提供する。
  */
-import { memo, useRef, useCallback, useMemo, useEffect } from "react";
+import { memo, useRef, useCallback, useMemo, useEffect, useState } from "react";
 import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { CanvasText as Text } from "./CanvasText";
 import {
@@ -75,6 +75,7 @@ export const OpponentMarker = memo(function OpponentMarker({
   fieldBounds,
   markerScale = 1,
 }: OpponentMarkerProps) {
+  const [isDraggingState, setIsDraggingState] = useState(false);
   const fieldBoundsResolved = useMemo(
     () => fieldBounds ?? DEFAULT_FIELD_BOUNDS,
     [fieldBounds],
@@ -129,6 +130,7 @@ export const OpponentMarker = memo(function OpponentMarker({
     (e: ThreeEvent<PointerEvent>) => {
       e.stopPropagation();
       isDragging.current = true;
+      setIsDraggingState(true);
       cachedRect.current = gl.domElement.getBoundingClientRect();
       gl.domElement.style.cursor = "grabbing";
       onDragStart?.();
@@ -169,6 +171,7 @@ export const OpponentMarker = memo(function OpponentMarker({
 
       const cleanup = () => {
         isDragging.current = false;
+        setIsDraggingState(false);
         cachedRect.current = null;
         gl.domElement.style.cursor = "auto";
 
@@ -302,8 +305,8 @@ export const OpponentMarker = memo(function OpponentMarker({
         position={[position.x, 0, position.z]}
         scale={[markerScale, markerScale, markerScale]}
       >
-        {/* 選択時のハイライトリング */}
-        {isSelected && (
+        {/* 選択時またはドラッグ時のハイライトリング */}
+        {(isSelected || isDraggingState) && (
           <mesh
             ref={selectedRingRef}
             rotation={[-Math.PI / 2, 0, 0]}
