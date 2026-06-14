@@ -12,7 +12,6 @@ interface OpponentSquadSelectorPopupProps {
   opponentsHook: ReturnType<typeof useOpponents>;
   teams: Team[] | undefined;
   selectedTeamId: string | null;
-  headerVisible: boolean;
   t: TranslationFn;
 }
 
@@ -21,7 +20,6 @@ export const OpponentSquadSelectorPopup = memo(
     opponentsHook,
     teams,
     selectedTeamId,
-    headerVisible,
     t,
   }: OpponentSquadSelectorPopupProps) {
     const popupRef = useRef<HTMLDivElement>(null);
@@ -61,9 +59,7 @@ export const OpponentSquadSelectorPopup = memo(
       <div
         ref={popupRef}
         data-testid="opponent-squad-selector-popup"
-        className={`fixed z-40 w-[300px] max-w-[calc(100vw-1rem)] ${
-          headerVisible ? "top-[94px] sm:top-[110px]" : "top-2"
-        } right-14 sm:right-[164px] xl:right-[176px]`}
+        className="absolute top-2 right-14 z-40 w-[320px] max-w-[calc(100vw-1rem)] sm:top-3 sm:right-[164px] xl:right-[176px]"
       >
         <OpponentSquadSelector
           opponentsHook={opponentsHook}

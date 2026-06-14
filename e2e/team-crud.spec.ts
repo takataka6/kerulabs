@@ -22,9 +22,12 @@ test.describe("チーム管理 (CRUD)", () => {
 
   /** チーム作成後のメイン画面から選択画面に戻る */
   async function goBackToTeamSelection(page: import("@playwright/test").Page) {
+    await expect(page.locator('button[aria-label="チーム選択"]')).toBeVisible({
+      timeout: 10000,
+    });
     await page
       .locator('button[aria-label="チーム選択"]')
-      .click({ timeout: 5000 });
+      .dispatchEvent("click");
     await page.waitForSelector("text=チームを選択してください", {
       timeout: 10000,
     });
