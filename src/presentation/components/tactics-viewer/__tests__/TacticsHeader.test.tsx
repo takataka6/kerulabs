@@ -126,6 +126,7 @@ function createDefaultContexts(overrides: ContextOverrides = {}) {
         setShowOpponentFormationSelect: mockSetShowOpponentFormationSelect,
         setOpponentFormationId: mockSetOpponentFormationId,
         setShowOpponentSquadBuilder: mockSetShowOpponentSquadBuilder,
+        opponentTeam: undefined as Team | undefined,
       },
       ballHook: {
         setBallPosition: mockSetBallPosition,
