@@ -542,6 +542,10 @@ export function TacticsMainContent() {
         playersData={playersData}
         colorsData={colorsData}
         opponents={opponentsHook.opponents}
+        showPlayerNames={ui.showPlayerNames}
+        showPlayerNumbers={ui.showPlayerNumbers}
+        showOpponentNames={opponentsHook.showOpponentNames}
+        showOpponentNumbers={opponentsHook.showOpponentNumbers}
         isFirstPerson={playerView.isFirstPerson}
         onExitPlayerView={playerView.exitPlayerView}
         onRotateLeft={playerView.rotateLeft}

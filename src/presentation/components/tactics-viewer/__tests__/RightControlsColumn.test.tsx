@@ -238,6 +238,18 @@ describe("RightControlsColumn", () => {
       expect(screen.getAllByLabelText("tactics.undo")[0]).toBeInTheDocument();
     });
 
+    it("Undo/Redo パネルは右ボタン列の下部に配置される", () => {
+      render(<RightControlsColumn {...defaultProps()} />);
+
+      const historyPanel = screen.getByTestId("right-history-panel");
+      const sketchButton = screen.getByLabelText("tactics.sketch");
+
+      expect(
+        historyPanel.compareDocumentPosition(sketchButton) &
+          Node.DOCUMENT_POSITION_PRECEDING,
+      ).toBeTruthy();
+    });
+
     it("Undoが不可の場合、Undoボタンが無効になる", () => {
       render(<RightControlsColumn {...defaultProps({ canUndo: false })} />);
 

@@ -13,6 +13,10 @@ interface PlayerViewHUDProps {
   playersData: PlayerData[];
   colorsData: ColorsData;
   opponents: Opponent[];
+  showPlayerNames: boolean;
+  showPlayerNumbers: boolean;
+  showOpponentNames: boolean;
+  showOpponentNumbers: boolean;
   isFirstPerson: boolean;
   onExitPlayerView: () => void;
   onRotateLeft: () => void;
@@ -29,6 +33,10 @@ export const PlayerViewHUD = memo(function PlayerViewHUD({
   playersData,
   colorsData,
   opponents,
+  showPlayerNames,
+  showPlayerNumbers,
+  showOpponentNames,
+  showOpponentNumbers,
   isFirstPerson,
   onExitPlayerView,
   onRotateLeft,
@@ -65,12 +73,16 @@ export const PlayerViewHUD = memo(function PlayerViewHUD({
               </div>
             )}
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent px-3 py-3 xl:px-4 xl:py-4">
-              <p className="text-white font-bold text-sm xl:text-base leading-tight">
-                {player.name}
-              </p>
-              <p className="text-slate-300 text-xs xl:text-sm">
-                #{player.number}
-              </p>
+              {showPlayerNames && (
+                <p className="text-white font-bold text-sm xl:text-base leading-tight">
+                  {player.name}
+                </p>
+              )}
+              {showPlayerNumbers && (
+                <p className="text-slate-300 text-xs xl:text-sm">
+                  #{player.number}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -88,12 +100,14 @@ export const PlayerViewHUD = memo(function PlayerViewHUD({
               backgroundColor: opp.color ?? "#475569",
             }}
           >
-            {opp.playerNumber ?? "?"}
+            {showOpponentNumbers ? (opp.playerNumber ?? "?") : "?"}
           </div>
           <div className="mt-2 px-1">
-            <p className="text-white font-bold text-sm xl:text-base">
-              {opp.playerName || `#${opp.playerNumber ?? opp.id}`}
-            </p>
+            {showOpponentNames && (
+              <p className="text-white font-bold text-sm xl:text-base">
+                {opp.playerName || `#${opp.playerNumber ?? opp.id}`}
+              </p>
+            )}
           </div>
         </div>
       );
@@ -224,17 +238,21 @@ export const PlayerViewHUD = memo(function PlayerViewHUD({
             <span className="text-amber-400 text-xs font-bold tracking-widest uppercase">
               {t("tactics.playerView.following")}
             </span>
-            <div
-              className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-md"
-              style={{ backgroundColor: colorsData.df }}
-            >
-              {playersData[selectedPlayerIndex]?.number ||
-                selectedPlayerIndex + 1}
-            </div>
-            <span className="text-white font-bold text-sm xl:text-base tracking-wide">
-              {playersData[selectedPlayerIndex]?.name ||
-                `#${selectedPlayerIndex + 1}`}
-            </span>
+            {showPlayerNumbers && (
+              <div
+                className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-md"
+                style={{ backgroundColor: colorsData.df }}
+              >
+                {playersData[selectedPlayerIndex]?.number ||
+                  selectedPlayerIndex + 1}
+              </div>
+            )}
+            {showPlayerNames && (
+              <span className="text-white font-bold text-sm xl:text-base tracking-wide">
+                {playersData[selectedPlayerIndex]?.name ||
+                  `#${selectedPlayerIndex + 1}`}
+              </span>
+            )}
           </div>
         </div>
         {bottomControls}
@@ -256,15 +274,19 @@ export const PlayerViewHUD = memo(function PlayerViewHUD({
             <span className="text-red-400 text-xs font-bold tracking-widest uppercase">
               {t("tactics.playerView.followingOpponent")}
             </span>
-            <div
-              className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-md bg-slate-600"
-              style={opp.color ? { backgroundColor: opp.color } : undefined}
-            >
-              {opp.playerNumber ?? "?"}
-            </div>
-            <span className="text-white font-bold text-sm xl:text-base tracking-wide">
-              {opp.playerName || `#${opp.playerNumber ?? opp.id}`}
-            </span>
+            {showOpponentNumbers && (
+              <div
+                className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-md bg-slate-600"
+                style={opp.color ? { backgroundColor: opp.color } : undefined}
+              >
+                {opp.playerNumber ?? "?"}
+              </div>
+            )}
+            {showOpponentNames && (
+              <span className="text-white font-bold text-sm xl:text-base tracking-wide">
+                {opp.playerName || `#${opp.playerNumber ?? opp.id}`}
+              </span>
+            )}
           </div>
         </div>
         {bottomControls}
