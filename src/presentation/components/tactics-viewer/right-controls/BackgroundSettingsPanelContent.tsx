@@ -94,7 +94,7 @@ export const BackgroundSettingsPanelContent = memo(
           <div className="text-[10px] text-slate-400 font-bold tracking-widest uppercase">
             {t("tactics.sceneBackground")}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <button
               onClick={bgSettings.handleResetAllBgSettings}
               disabled={!bgSettings.canResetBackgroundSettings}
