@@ -32,6 +32,9 @@ export const TacticsHeader = memo(function TacticsHeader() {
 
   const { captureMode, headerVisible } = ui;
   const isHidden = captureMode || !headerVisible;
+  const titleText = opponentsHook.opponentTeam
+    ? `${selectedTeam.name} vs ${opponentsHook.opponentTeam.name}`
+    : selectedTeam.name;
 
   // Phase 3: Use centralized mode reset
   const { resetInteractionModes } = useTacticsModeReset({
@@ -229,7 +232,7 @@ export const TacticsHeader = memo(function TacticsHeader() {
             )}
             <div className="text-center">
               <h1 className="text-sm sm:text-lg font-bold text-slate-100 tracking-tight truncate max-w-[140px] sm:max-w-none">
-                {selectedTeam.name}
+                {titleText}
               </h1>
               <p className="text-slate-400 text-[10px] sm:text-xs font-light tracking-wide truncate max-w-[140px] sm:max-w-none">
                 {selectedTeam.subtitle} • {currentFormation.name}

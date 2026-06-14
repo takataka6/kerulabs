@@ -126,6 +126,7 @@ function createDefaultContexts(overrides: ContextOverrides = {}) {
         setShowOpponentFormationSelect: mockSetShowOpponentFormationSelect,
         setOpponentFormationId: mockSetOpponentFormationId,
         setShowOpponentSquadBuilder: mockSetShowOpponentSquadBuilder,
+        opponentTeam: undefined as Team | undefined,
       },
       ballHook: {
         setBallPosition: mockSetBallPosition,
@@ -217,6 +218,19 @@ describe("TacticsHeader", () => {
     renderHeader();
     expect(screen.getByText("FC Test")).toBeInTheDocument();
     expect(screen.getByText(/Test Subtitle.*4-3-3/)).toBeInTheDocument();
+  });
+
+  it("相手チーム選択時はヘッダーに対戦カードを表示する", () => {
+    renderHeader();
+
+    mockExecutionContext.opponentsHook.opponentTeam = createTeam({
+      id: "opp-1" as never,
+      name: "Opponent FC",
+    });
+
+    render(<TacticsHeader />);
+
+    expect(screen.getByText("FC Test vs Opponent FC")).toBeInTheDocument();
   });
 
   it("チーム選択ボタンをクリックすると setShowTeamSelection が呼ばれる", () => {

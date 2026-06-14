@@ -34,7 +34,6 @@ vi.mock("../right-controls", () => ({
   ConnectionLinesButton: () => (
     <div data-testid="connection-lines-button">Connection Lines</div>
   ),
-  RightHistoryPanel: () => <div data-testid="right-history-panel">History</div>,
 }));
 
 /* ------------------------------------------------------------------ */
@@ -229,39 +228,14 @@ describe("RightControlsColumn", () => {
     });
   });
 
-  // ── Undo/Redo ─────────────────────────────────────────
+  // ── Undo/Redo 非表示 ──────────────────────────────────
 
-  describe("Undo/Redo", () => {
-    it("Undoセクションが表示される", () => {
+  describe("Undo/Redo 非表示", () => {
+    it("Undo/Redo ボタンを表示しない", () => {
       render(<RightControlsColumn {...defaultProps()} />);
 
-      expect(screen.getAllByLabelText("tactics.undo")[0]).toBeInTheDocument();
-    });
-
-    it("Undo/Redo パネルは右ボタン列の下部に配置される", () => {
-      render(<RightControlsColumn {...defaultProps()} />);
-
-      const historyPanel = screen.getByTestId("right-history-panel");
-      const sketchButton = screen.getByLabelText("tactics.sketch");
-
-      expect(
-        historyPanel.compareDocumentPosition(sketchButton) &
-          Node.DOCUMENT_POSITION_PRECEDING,
-      ).toBeTruthy();
-    });
-
-    it("Undoが不可の場合、Undoボタンが無効になる", () => {
-      render(<RightControlsColumn {...defaultProps({ canUndo: false })} />);
-
-      const undoBtns = screen.getAllByLabelText("tactics.undo");
-      undoBtns.forEach((btn) => expect(btn).toBeDisabled());
-    });
-
-    it("Redoが不可の場合、Redoボタンが無効になる", () => {
-      render(<RightControlsColumn {...defaultProps({ canRedo: false })} />);
-
-      const redoBtns = screen.getAllByLabelText("tactics.redo");
-      redoBtns.forEach((btn) => expect(btn).toBeDisabled());
+      expect(screen.queryByLabelText("tactics.undo")).not.toBeInTheDocument();
+      expect(screen.queryByLabelText("tactics.redo")).not.toBeInTheDocument();
     });
   });
 
@@ -551,24 +525,6 @@ describe("RightControlsColumn", () => {
 
       fireEvent.click(screen.getByLabelText("tactics.editFormations"));
       expect(props.onToggleFormationEditor).toHaveBeenCalled();
-    });
-
-    it("Undoボタンクリックで onUndo が呼ばれる", () => {
-      const props = defaultProps({ canUndo: true, undoRedoEnabled: true });
-      render(<RightControlsColumn {...props} />);
-
-      const undoBtns = screen.getAllByLabelText("tactics.undo");
-      fireEvent.click(undoBtns[0]);
-      expect(props.onUndo).toHaveBeenCalled();
-    });
-
-    it("Redoボタンクリックで onRedo が呼ばれる", () => {
-      const props = defaultProps({ canRedo: true, undoRedoEnabled: true });
-      render(<RightControlsColumn {...props} />);
-
-      const redoBtns = screen.getAllByLabelText("tactics.redo");
-      fireEvent.click(redoBtns[0]);
-      expect(props.onRedo).toHaveBeenCalled();
     });
 
     it("敵配置ボタンクリックで toggleOpponentPlacement が呼ばれる", () => {
