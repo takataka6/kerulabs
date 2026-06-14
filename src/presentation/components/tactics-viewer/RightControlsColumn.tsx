@@ -115,9 +115,6 @@ interface RightControlsColumnProps {
   sketchMode: boolean;
   onToggleSketchMode: () => void;
 
-  // ヘッダー表示
-  headerVisible: boolean;
-
   // i18n
   t: TranslationFn;
 }
@@ -163,7 +160,6 @@ export const RightControlsColumn = memo(function RightControlsColumn({
   connLines,
   sketchMode,
   onToggleSketchMode,
-  headerVisible,
   t,
 }: RightControlsColumnProps) {
   const currentFormation = gameModeFormations.find(
@@ -193,7 +189,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
   return (
     <div
       data-testid="right-controls-rail"
-      className={`absolute ${headerVisible ? "top-[90px] sm:top-[106px]" : "top-2"} right-2 sm:right-3 z-10 flex flex-col gap-1 sm:gap-1.5 items-end max-w-[calc(100%-1rem)] sm:max-w-[calc(100%-2rem)] pointer-events-none [&>*]:pointer-events-auto`}
+      className="absolute top-2 right-2 z-10 flex flex-col gap-1 sm:top-3 sm:right-3 sm:gap-1.5 items-end max-w-[calc(100%-1rem)] sm:max-w-[calc(100%-2rem)] pointer-events-none [&>*]:pointer-events-auto"
     >
       {/* フォーメーション選択 + Undo/Redo + 開閉トグル */}
       <div className="flex items-start gap-2 [&>*]:pointer-events-auto">
@@ -213,7 +209,10 @@ export const RightControlsColumn = memo(function RightControlsColumn({
         </button>
 
         {showRightControls && (
-          <div className="flex flex-col items-end gap-1 sm:gap-1.5">
+          <div
+            data-testid="right-controls-scroll-area"
+            className="flex max-h-[calc(100vh-8.5rem-env(safe-area-inset-bottom,0px))] flex-col items-end gap-1 overflow-y-auto overflow-x-hidden pr-1 pb-[calc(env(safe-area-inset-bottom,0px)+0.25rem)] custom-scrollbar sm:max-h-[calc(100vh-9.5rem-env(safe-area-inset-bottom,0px))] sm:gap-1.5 sm:pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)]"
+          >
             {/* フォーメーション編集ポップオーバー */}
             {showFormationEditor && (
               <FormationEditor

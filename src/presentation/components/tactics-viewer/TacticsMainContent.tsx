@@ -277,7 +277,6 @@ export function TacticsMainContent() {
               ui.toggleSidebar();
             }
           }}
-          headerVisible={ui.headerVisible}
           t={t}
         />
       )}
