@@ -2,7 +2,7 @@
  * @module RightControlsColumn
  * @description タクティクスビューアー右側の操作パネル列コンポーネント。カメラ制御・背景設定・接続ライン・相手チーム操作をまとめる。
  */
-import { memo, useEffect, useRef } from "react";
+import { memo } from "react";
 import type { Formation } from "@domain/entities/Formation";
 import type { Tactic } from "@domain/entities/Tactic";
 import type { Team } from "@domain/entities/Team";
@@ -166,9 +166,6 @@ export const RightControlsColumn = memo(function RightControlsColumn({
   headerVisible,
   t,
 }: RightControlsColumnProps) {
-  const railRef = useRef<HTMLDivElement>(null);
-  const savedScrollTopRef = useRef(0);
-  const hasInitializedOpponentRailRef = useRef(false);
   const currentFormation = gameModeFormations.find(
     (f) => f.id.value === currentFormationId,
   );
@@ -193,49 +190,10 @@ export const RightControlsColumn = memo(function RightControlsColumn({
     opponentsHook.showOpponentFormationSelect ||
     opponentsHook.showOpponentSquadBuilder;
 
-  useEffect(() => {
-    const railElement = railRef.current;
-    if (!railElement) return;
-
-    const handleScroll = () => {
-      savedScrollTopRef.current = railElement.scrollTop;
-    };
-
-    savedScrollTopRef.current = railElement.scrollTop;
-    railElement.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      railElement.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!railRef.current) return;
-
-    if (!hasInitializedOpponentRailRef.current) {
-      hasInitializedOpponentRailRef.current = true;
-      savedScrollTopRef.current = railRef.current.scrollTop;
-      return;
-    }
-
-    requestAnimationFrame(() => {
-      if (railRef.current) {
-        railRef.current.scrollTop = savedScrollTopRef.current;
-      }
-    });
-  }, [
-    opponentsHook.opponentPlacementMode,
-    opponentsHook.selectedOpponentPlayerId,
-    opponentsHook.showOpponentFormationSelect,
-    opponentsHook.showOpponentSquadBuilder,
-    isOpponentSelectorActive,
-  ]);
-
   return (
     <div
-      ref={railRef}
       data-testid="right-controls-rail"
-      className={`fixed ${headerVisible ? "top-[90px] bottom-2 sm:top-[106px] sm:bottom-3" : "top-2 bottom-2"} right-2 sm:right-3 z-10 flex flex-col gap-1 sm:gap-1.5 items-end max-w-[calc(100%-1rem)] sm:max-w-[calc(100%-2rem)] overflow-y-auto overflow-x-hidden custom-scrollbar [overflow-anchor:none] pointer-events-none [&>*]:pointer-events-auto`}
+      className={`absolute ${headerVisible ? "top-[90px] sm:top-[106px]" : "top-2"} right-2 sm:right-3 z-10 flex flex-col gap-1 sm:gap-1.5 items-end max-w-[calc(100%-1rem)] sm:max-w-[calc(100%-2rem)] pointer-events-none [&>*]:pointer-events-auto`}
     >
       {/* フォーメーション選択 + Undo/Redo + 開閉トグル */}
       <div className="flex items-start gap-2 [&>*]:pointer-events-auto">
