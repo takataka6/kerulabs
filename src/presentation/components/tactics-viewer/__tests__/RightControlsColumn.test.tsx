@@ -328,6 +328,77 @@ describe("RightControlsColumn", () => {
       expect(button).toHaveAttribute("aria-expanded", "true");
       expect(button.className).toContain("from-red-600/28");
     });
+
+    it("相手選手ポップアップを閉じた際に右レールのスクロール位置を復元する", () => {
+      const requestAnimationFrameSpy = vi
+        .spyOn(window, "requestAnimationFrame")
+        .mockImplementation((callback: FrameRequestCallback) => {
+          callback(0);
+          return 1;
+        });
+
+      const { rerender } = render(
+        <RightControlsColumn
+          {...defaultProps({
+            opponentsHook: {
+              opponentPlacementMode: false,
+              toggleOpponentPlacement: vi.fn(),
+              opponents: [],
+              clearOpponents: vi.fn(),
+              showOpponentNames: false,
+              setShowOpponentNames: vi.fn(),
+              showOpponentNumbers: true,
+              setShowOpponentNumbers: vi.fn(),
+            } as never,
+            teams: [{ id: { value: "team-2" }, name: "Sample Team" } as never],
+          })}
+        />,
+      );
+
+      const rail = screen.getByTestId("right-controls-rail");
+      rail.scrollTop = 18;
+
+      rerender(
+        <RightControlsColumn
+          {...defaultProps({
+            opponentsHook: {
+              opponentPlacementMode: true,
+              toggleOpponentPlacement: vi.fn(),
+              opponents: [],
+              clearOpponents: vi.fn(),
+              showOpponentNames: false,
+              setShowOpponentNames: vi.fn(),
+              showOpponentNumbers: true,
+              setShowOpponentNumbers: vi.fn(),
+            } as never,
+            teams: [{ id: { value: "team-2" }, name: "Sample Team" } as never],
+          })}
+        />,
+      );
+
+      rail.scrollTop = 72;
+
+      rerender(
+        <RightControlsColumn
+          {...defaultProps({
+            opponentsHook: {
+              opponentPlacementMode: false,
+              toggleOpponentPlacement: vi.fn(),
+              opponents: [],
+              clearOpponents: vi.fn(),
+              showOpponentNames: false,
+              setShowOpponentNames: vi.fn(),
+              showOpponentNumbers: true,
+              setShowOpponentNumbers: vi.fn(),
+            } as never,
+            teams: [{ id: { value: "team-2" }, name: "Sample Team" } as never],
+          })}
+        />,
+      );
+
+      expect(rail.scrollTop).toBe(18);
+      requestAnimationFrameSpy.mockRestore();
+    });
   });
 
   // ── 名前表示 ──────────────────────────────────────────
