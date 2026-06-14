@@ -24,9 +24,11 @@ import { TimelineEditor } from "./TimelineEditor";
 import { ViewLockPanel } from "./ViewLockPanel";
 import { SketchOverlay } from "./SketchOverlay";
 import { SketchToolbar } from "./SketchToolbar";
+import { OpponentFormationSelectModal } from "./OpponentFormationSelectModal";
 import { BackgroundSettingsPanelContent } from "./right-controls/BackgroundSettingsPanelContent";
 import { OpponentSquadSelectorPopup } from "./right-controls/OpponentSquadSelectorPopup";
 import { ImageCaptureLayout } from "./ImageCaptureLayout";
+import { getFormationOptionsWithDefault } from "@shared/constants/formations";
 
 import { TacticsCanvas } from "./TacticsCanvas";
 
@@ -68,17 +70,10 @@ export function TacticsMainContent() {
   const [showGuide, setShowGuide] = useState(
     () => !preferencesService.get("tacticsViewerGuideDismissed"),
   );
-  const hasOpenPopup =
-    bgSettings.showSceneBgSettings ||
+  const hasBlockingPopup =
     ui.showPlayerManagement ||
     ui.showSquadBuilder ||
-    opponentsHook.showOpponentFormationSelect ||
     opponentsHook.showOpponentSquadBuilder ||
-    (!!teams?.length &&
-      (opponentsHook.opponentPlacementMode ||
-        !!opponentsHook.selectedOpponentPlayerId) &&
-      !opponentsHook.showOpponentFormationSelect &&
-      !opponentsHook.showOpponentSquadBuilder) ||
     tOrch.isExecuting ||
     !!tOrch.tacticCreation.creation?.timelineOpen ||
     (ui.showFlowchart && !!tOrch.activeTactic) ||
@@ -86,11 +81,49 @@ export function TacticsMainContent() {
 
   const { playersData, colorsData, lineupPlayers, lineupTeamInfo } =
     displayData;
+  const availableOpponentFormationIds = opponentsHook.opponentTeam
+    ? new Set(
+        getFormationOptionsWithDefault(
+          opponentsHook.opponentTeam.availableFormations,
+          playModePhase.gameMode,
+        ),
+      )
+    : null;
+  const availableOpponentFormations = availableOpponentFormationIds
+    ? formationMgmt.gameModeFormations.filter((formation) =>
+        availableOpponentFormationIds.has(formation.id.value),
+      )
+    : [];
 
   const handleDismissGuide = useCallback(() => {
     setShowGuide(false);
     preferencesService.set("tacticsViewerGuideDismissed", true);
   }, [preferencesService]);
+  const handleCloseOpponentFormationSelect = useCallback(() => {
+    opponentsHook.setShowOpponentFormationSelect(false);
+    opponentsHook.setOpponentFormationId(null);
+  }, [opponentsHook]);
+  const handleSelectOpponentFormation = useCallback(
+    (formationId: string) => {
+      const team = opponentsHook.opponentTeam;
+      if (!team) return;
+
+      if (team.selectedSquad && team.selectedSquad.length > 0) {
+        const players = team.selectedSquad.map((playerId) =>
+          playerId
+            ? team.players.find((player) => player.id.value === playerId) ||
+              null
+            : null,
+        );
+        opponentsHook.placeSquadDirectly(formationId, players);
+      } else {
+        opponentsHook.setOpponentFormationId(formationId);
+        opponentsHook.setShowOpponentFormationSelect(false);
+        opponentsHook.setShowOpponentSquadBuilder(true);
+      }
+    },
+    [opponentsHook],
+  );
 
   useEffect(() => {
     if (!sketch.sketchMode) return;
@@ -277,17 +310,12 @@ export function TacticsMainContent() {
               ui.toggleSidebar();
             }
           }}
-          headerVisible={ui.headerVisible}
           t={t}
         />
       )}
 
       {!ui.captureMode && (
-        <BackgroundSettingsPanelContent
-          bgSettings={bgSettings}
-          headerVisible={ui.headerVisible}
-          t={t}
-        />
+        <BackgroundSettingsPanelContent bgSettings={bgSettings} t={t} />
       )}
 
       {!ui.captureMode && (
@@ -295,10 +323,20 @@ export function TacticsMainContent() {
           opponentsHook={opponentsHook}
           teams={teams}
           selectedTeamId={teamMgmt.selectedTeamId}
-          headerVisible={ui.headerVisible}
           t={t}
         />
       )}
+
+      {!ui.captureMode &&
+        opponentsHook.showOpponentFormationSelect &&
+        opponentsHook.opponentTeam && (
+          <OpponentFormationSelectModal
+            teamName={opponentsHook.opponentTeam.name}
+            formations={availableOpponentFormations}
+            onSelect={handleSelectOpponentFormation}
+            onClose={handleCloseOpponentFormationSelect}
+          />
+        )}
 
       {/* 3Dキャンバス */}
       {(() => {
@@ -521,17 +559,19 @@ export function TacticsMainContent() {
       />
 
       {/* ビューコントロール */}
-      {!ui.captureMode && !playerView.playerViewEnabled && !hasOpenPopup && (
-        <ViewLockPanel
-          onCameraAction={ui.setCameraAction}
-          fieldLocked={ui.fieldLocked}
-          onToggleFieldLock={() => ui.setFieldLocked((prev) => !prev)}
-          touchlineLocked={ui.touchlineLocked}
-          onToggleTouchlineLock={() => ui.setTouchlineLocked((prev) => !prev)}
-          disabled={false}
-          t={t}
-        />
-      )}
+      {!ui.captureMode &&
+        !playerView.playerViewEnabled &&
+        !hasBlockingPopup && (
+          <ViewLockPanel
+            onCameraAction={ui.setCameraAction}
+            fieldLocked={ui.fieldLocked}
+            onToggleFieldLock={() => ui.setFieldLocked((prev) => !prev)}
+            touchlineLocked={ui.touchlineLocked}
+            onToggleTouchlineLock={() => ui.setTouchlineLocked((prev) => !prev)}
+            disabled={false}
+            t={t}
+          />
+        )}
 
       {/* プレイヤービューHUD */}
       <PlayerViewHUD

@@ -75,11 +75,7 @@ function renderComponent(
     ...render(
       <>
         <BackgroundSettingsPanel bgSettings={bgSettings} t={mockT} />
-        <BackgroundSettingsPanelContent
-          bgSettings={bgSettings}
-          headerVisible={true}
-          t={mockT}
-        />
+        <BackgroundSettingsPanelContent bgSettings={bgSettings} t={mockT} />
       </>,
     ),
     bgSettings,

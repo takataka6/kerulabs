@@ -44,6 +44,8 @@ export function PlayerCameraController({
   const targetCamPosRef = useRef(new Vector3());
   const targetLookAtRef = useRef(new Vector3());
   const wasPlayerView = useRef(false);
+  const savedOrbitCamPosRef = useRef(new Vector3(0, defaultCamY, defaultCamZ));
+  const savedOrbitLookAtRef = useRef(new Vector3(0, 0, defaultTargetZ));
 
   // マウスドラッグによる視点回転
   const yawAngle = useRef(0); // 水平回転角度（ラジアン）
@@ -54,6 +56,13 @@ export function PlayerCameraController({
   const prevSelectedPlayer = useRef<number | null>(null);
 
   const { gl } = useThree();
+
+  const saveOrbitCameraState = useCallback(() => {
+    if (!controlsRef.current) return;
+
+    controlsRef.current.getPosition(savedOrbitCamPosRef.current, false);
+    controlsRef.current.getTarget(savedOrbitLookAtRef.current, false);
+  }, []);
 
   // 修飾キー（Cmd/Ctrl/Shift）押下中はカメラ操作を無効化
   const [modifierKeyHeld, setModifierKeyHeld] = useState(false);
@@ -146,6 +155,8 @@ export function PlayerCameraController({
       defaultTargetZ,
       false,
     );
+    savedOrbitCamPosRef.current.set(0, defaultCamY, defaultCamZ);
+    savedOrbitLookAtRef.current.set(0, 0, defaultTargetZ);
   }, [defaultCamY, defaultCamZ, defaultTargetZ]);
 
   // カメラアクション処理（真上 / デフォルト位置）
@@ -180,6 +191,7 @@ export function PlayerCameraController({
     }
     smoothCamPos.current.set(0, defaultCamY, defaultCamZ);
     smoothLookAt.current.set(0, 0, defaultTargetZ);
+    saveOrbitCameraState();
     onCameraActionDone?.();
   }, [
     cameraAction,
@@ -188,6 +200,7 @@ export function PlayerCameraController({
     defaultCamZ,
     defaultTargetZ,
     onCameraActionDone,
+    saveOrbitCameraState,
   ]);
 
   // タッチライン水平固定: 水平回転(azimuth)をロックし、ズーム・チルトは許可
@@ -207,22 +220,26 @@ export function PlayerCameraController({
   useFrame((_, delta) => {
     if (!controlsRef.current) return;
 
+    if (!wasPlayerView.current && isPlayerView) {
+      saveOrbitCameraState();
+    }
+
     // プレイヤービュー → 俯瞰に戻る遷移
     if (wasPlayerView.current && !isPlayerView) {
       wasPlayerView.current = false;
       yawAngle.current = 0;
       pitchAngle.current = 0;
       controlsRef.current.setLookAt(
-        0,
-        defaultCamY,
-        defaultCamZ,
-        0,
-        0,
-        defaultTargetZ,
+        savedOrbitCamPosRef.current.x,
+        savedOrbitCamPosRef.current.y,
+        savedOrbitCamPosRef.current.z,
+        savedOrbitLookAtRef.current.x,
+        savedOrbitLookAtRef.current.y,
+        savedOrbitLookAtRef.current.z,
         true,
       );
-      smoothCamPos.current.set(0, defaultCamY, defaultCamZ);
-      smoothLookAt.current.set(0, 0, defaultTargetZ);
+      smoothCamPos.current.copy(savedOrbitCamPosRef.current);
+      smoothLookAt.current.copy(savedOrbitLookAtRef.current);
       // enabled=trueに戻った状態なのでdreiのuseFrameがupdate()を呼ぶ
       return;
     }

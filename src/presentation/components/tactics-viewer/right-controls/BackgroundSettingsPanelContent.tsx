@@ -17,7 +17,6 @@ import type { TranslationFn } from "../types";
 interface BackgroundSettingsPanelContentProps {
   bgSettings: ReturnType<typeof useBackgroundSettings>;
   t: TranslationFn;
-  headerVisible: boolean;
 }
 
 const ANGLE_OPTIONS = [0, 45, 90, 135, 180];
@@ -40,7 +39,6 @@ export const BackgroundSettingsPanelContent = memo(
   function BackgroundSettingsPanelContent({
     bgSettings,
     t,
-    headerVisible,
   }: BackgroundSettingsPanelContentProps) {
     const { sceneBackground } = bgSettings;
     const panelRef = useRef<HTMLDivElement>(null);
@@ -86,9 +84,7 @@ export const BackgroundSettingsPanelContent = memo(
     return (
       <div
         ref={panelRef}
-        className={`fixed z-40 right-3 w-[320px] max-w-[calc(100vw-1rem)] rounded-2xl border border-slate-700/50 bg-slate-900/95 shadow-2xl backdrop-blur-xl ${
-          headerVisible ? "top-[94px] sm:top-[110px]" : "top-2"
-        }`}
+        className="absolute top-2 right-14 z-40 w-[320px] max-w-[calc(100vw-1rem)] rounded-2xl border border-slate-700/50 bg-slate-900/95 shadow-2xl backdrop-blur-xl sm:top-3 sm:right-[164px] xl:right-[176px]"
       >
         <div className="flex items-center justify-between border-b border-slate-700/50 px-3 py-2">
           <div className="text-[10px] text-slate-400 font-bold tracking-widest uppercase">

@@ -2,9 +2,10 @@
  * @module OpponentFormationSelectModal
  * @description 相手チームのフォーメーション選択モーダル。利用可能なフォーメーションを一覧表示し、選択またはスカッドビルダーへ遷移する。
  */
+import { useRef } from "react";
 import type { Formation } from "@domain/entities/Formation";
-import { AccessibleModal } from "../ui/AccessibleModal";
 import { useLanguage } from "@presentation/contexts/LanguageContext";
+import { useClickOutside } from "@presentation/hooks/ui";
 
 interface OpponentFormationSelectModalProps {
   teamName: string;
@@ -20,47 +21,44 @@ export function OpponentFormationSelectModal({
   onClose,
 }: OpponentFormationSelectModalProps) {
   const { t } = useLanguage();
+  const popupRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(popupRef, onClose);
 
   return (
-    <AccessibleModal
-      isOpen={true}
-      onClose={onClose}
-      ariaLabel={t("tactics.opponents.selectFormation")}
-      className="bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl max-w-sm w-full relative z-10 overflow-hidden"
+    <div
+      ref={popupRef}
+      data-testid="opponent-formation-select-popup"
+      className="absolute top-2 right-14 z-40 w-[320px] max-w-[calc(100vw-1rem)] overflow-hidden rounded-[24px] border border-slate-600/40 bg-[linear-gradient(180deg,rgba(15,23,42,0.96)_0%,rgba(2,6,23,0.94)_100%)] shadow-[0_18px_40px_rgba(2,6,23,0.32),0_4px_12px_rgba(2,6,23,0.16)] ring-1 ring-white/5 backdrop-blur-xl sm:top-3 sm:right-[164px] xl:right-[176px]"
     >
-      <div className="bg-gradient-to-r from-red-800 to-red-600 px-5 py-3 border-b border-slate-700">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3
-              id="opponent-formation-title"
-              className="text-base font-bold text-white"
-            >
-              {t("tactics.opponents.selectFormation")}
-            </h3>
-            <p className="text-white/70 text-xs">{teamName}</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-white/60 hover:text-white text-xl w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10"
-            aria-label={t("a11y.closeModal")}
-          >
-            <span aria-hidden="true">✕</span>
-          </button>
-        </div>
+      <div className="flex items-center justify-end gap-2 border-b border-slate-700/50 px-4 py-3">
+        <button
+          onClick={onClose}
+          className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-700/60 bg-slate-900/85 text-slate-400 transition-colors hover:border-slate-500 hover:text-white"
+          aria-label={t("a11y.closeModal")}
+        >
+          <span aria-hidden="true">✕</span>
+        </button>
       </div>
-      <div className="p-4">
-        <div className="flex flex-wrap gap-2">
+      <div className="border-b border-slate-700/50 px-4 py-3">
+        <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-300/90">
+          {t("tactics.opponents.selectFormation")}
+        </div>
+        <p className="mt-1 text-xs text-slate-400">{teamName}</p>
+      </div>
+      <div className="max-h-[min(70vh,560px)] overflow-y-auto p-4 custom-scrollbar">
+        <div className="grid grid-cols-2 gap-2">
           {formations.map((f) => (
             <button
               key={f.id.value}
               onClick={() => onSelect(f.id.value)}
-              className="py-2 px-4 rounded-lg text-sm font-bold bg-slate-800/50 text-slate-300 hover:bg-red-600/30 hover:text-red-200 border border-slate-700/30 hover:border-red-500/30 transition-all duration-300"
+              className="rounded-xl border border-slate-700/50 bg-slate-800/60 px-3 py-3 text-sm font-semibold text-slate-200 transition-all hover:border-slate-500 hover:bg-slate-700/70"
             >
               {f.name}
             </button>
           ))}
         </div>
       </div>
-    </AccessibleModal>
+    </div>
   );
 }

@@ -48,7 +48,6 @@ function defaultProps(
   return {
     showRightControls: true,
     onToggleRightControls: vi.fn(),
-    headerVisible: true,
     gameModeFormations: [
       {
         id: { value: "4-4-2-flat" },
@@ -327,6 +326,28 @@ describe("RightControlsColumn", () => {
       const button = screen.getByLabelText("tactics.opponents");
       expect(button).toHaveAttribute("aria-expanded", "true");
       expect(button.className).toContain("from-red-600/28");
+    });
+
+    it("右レールは左サイド同様にスクロールコンテナ化しない", () => {
+      render(<RightControlsColumn {...defaultProps()} />);
+
+      const rail = screen.getByTestId("right-controls-rail");
+      expect(rail.className).not.toContain("overflow-y-auto");
+      expect(rail.className).toContain("absolute");
+      expect(rail.className).toContain("top-2");
+    });
+
+    it("縦幅が狭い時に備えて右ボタン列だけスクロール可能にする", () => {
+      render(<RightControlsColumn {...defaultProps()} />);
+
+      const scrollArea = screen.getByTestId("right-controls-scroll-area");
+      expect(scrollArea.className).toContain("overflow-y-auto");
+      expect(scrollArea.className).toContain(
+        "max-h-[calc(100vh-8.5rem-env(safe-area-inset-bottom,0px))]",
+      );
+      expect(scrollArea.className).toContain(
+        "pb-[calc(env(safe-area-inset-bottom,0px)+0.25rem)]",
+      );
     });
   });
 

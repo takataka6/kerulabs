@@ -46,6 +46,7 @@ let capturedRightControlsProps: Record<string, unknown> = {};
 let capturedSquadPanelProps: Record<string, unknown> = {};
 let capturedViewLockPanelProps: Record<string, unknown> = {};
 let capturedTacticsCanvasProps: Record<string, unknown> = {};
+let capturedOpponentFormationSelectProps: Record<string, unknown> = {};
 
 vi.mock("../RightControlsColumn", () => ({
   RightControlsColumn: (props: Record<string, unknown>) => {
@@ -84,6 +85,12 @@ vi.mock("../ViewLockPanel", () => ({
   ViewLockPanel: (props: Record<string, unknown>) => {
     capturedViewLockPanelProps = props;
     return <div data-testid="view-lock-panel" />;
+  },
+}));
+vi.mock("../OpponentFormationSelectModal", () => ({
+  OpponentFormationSelectModal: (props: Record<string, unknown>) => {
+    capturedOpponentFormationSelectProps = props;
+    return <div data-testid="opponent-formation-select-popup" />;
   },
 }));
 vi.mock("../SketchOverlay", () => ({
@@ -252,10 +259,14 @@ function createMockExecutionContext() {
       showOpponentFormationSelect: false,
       showOpponentSquadBuilder: false,
       showOpponentNames: false,
+      setShowOpponentFormationSelect: noop,
+      setOpponentFormationId: noop,
+      setShowOpponentSquadBuilder: noop,
+      placeSquadDirectly: noop,
       handleOpponentDrag: noop,
       handleOpponentRemove: noop,
       toggleOpponentPlacement: noop,
-    },
+    } as Record<string, unknown>,
     ballHook: { ballPlacementMode: false },
     connLines: {
       connectionLines: [],
@@ -459,6 +470,143 @@ describe("TacticsMainContent", () => {
     render(<TacticsMainContent />);
 
     expect(capturedTacticsCanvasProps.showFieldLockButton).toBe(false);
+  });
+
+  it("相手選手ポップアップ表示中も右下ビューコントロールは表示する", () => {
+    mockExecutionContext.opponentsHook.opponentPlacementMode = true;
+    mockTeamContext.teams = [
+      { id: { value: "team-2" }, name: "Opponent" } as never,
+    ];
+
+    render(<TacticsMainContent />);
+
+    expect(screen.getByTestId("view-lock-panel")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("opponent-squad-selector-popup"),
+    ).toBeInTheDocument();
+  });
+
+  it("相手フォーメーション選択中はインラインポップアップを表示する", () => {
+    mockExecutionContext.opponentsHook.showOpponentFormationSelect = true;
+    (
+      mockExecutionContext.opponentsHook as Record<string, unknown>
+    ).opponentTeam = {
+      name: "Opponent Team",
+      availableFormations: ["4-3-3"],
+      players: [],
+    };
+    mockTeamContext.formationMgmt.gameModeFormations = [
+      { id: { value: "4-3-3" }, name: "4-3-3" } as never,
+    ];
+
+    render(<TacticsMainContent />);
+
+    expect(
+      screen.getByTestId("opponent-formation-select-popup"),
+    ).toBeInTheDocument();
+    expect(capturedOpponentFormationSelectProps.teamName).toBe("Opponent Team");
+    expect(capturedOpponentFormationSelectProps.formations).toEqual([
+      { id: { value: "4-3-3" }, name: "4-3-3" },
+    ]);
+  });
+
+  it("相手フォーメーションポップアップを閉じると選択状態をリセットする", () => {
+    const setShowOpponentFormationSelect = vi.fn();
+    const setOpponentFormationId = vi.fn();
+    mockExecutionContext.opponentsHook.showOpponentFormationSelect = true;
+    (
+      mockExecutionContext.opponentsHook as Record<string, unknown>
+    ).opponentTeam = {
+      name: "Opponent Team",
+      availableFormations: ["4-3-3"],
+      players: [],
+    };
+    (
+      mockExecutionContext.opponentsHook as Record<string, unknown>
+    ).setShowOpponentFormationSelect = setShowOpponentFormationSelect;
+    (
+      mockExecutionContext.opponentsHook as Record<string, unknown>
+    ).setOpponentFormationId = setOpponentFormationId;
+    mockTeamContext.formationMgmt.gameModeFormations = [
+      { id: { value: "4-3-3" }, name: "4-3-3" } as never,
+    ];
+
+    render(<TacticsMainContent />);
+
+    (capturedOpponentFormationSelectProps.onClose as () => void)();
+
+    expect(setShowOpponentFormationSelect).toHaveBeenCalledWith(false);
+    expect(setOpponentFormationId).toHaveBeenCalledWith(null);
+  });
+
+  it("相手フォーメーション選択でスカッドビルダーへ遷移する", () => {
+    const setOpponentFormationId = vi.fn();
+    const setShowOpponentFormationSelect = vi.fn();
+    const setShowOpponentSquadBuilder = vi.fn();
+    mockExecutionContext.opponentsHook.showOpponentFormationSelect = true;
+    (
+      mockExecutionContext.opponentsHook as Record<string, unknown>
+    ).opponentTeam = {
+      name: "Opponent Team",
+      availableFormations: ["4-3-3"],
+      players: [],
+    };
+    (
+      mockExecutionContext.opponentsHook as Record<string, unknown>
+    ).setOpponentFormationId = setOpponentFormationId;
+    (
+      mockExecutionContext.opponentsHook as Record<string, unknown>
+    ).setShowOpponentFormationSelect = setShowOpponentFormationSelect;
+    (
+      mockExecutionContext.opponentsHook as Record<string, unknown>
+    ).setShowOpponentSquadBuilder = setShowOpponentSquadBuilder;
+    mockTeamContext.formationMgmt.gameModeFormations = [
+      { id: { value: "4-3-3" }, name: "4-3-3" } as never,
+    ];
+
+    render(<TacticsMainContent />);
+
+    (
+      capturedOpponentFormationSelectProps.onSelect as (
+        formationId: string,
+      ) => void
+    )("4-3-3");
+
+    expect(setOpponentFormationId).toHaveBeenCalledWith("4-3-3");
+    expect(setShowOpponentFormationSelect).toHaveBeenCalledWith(false);
+    expect(setShowOpponentSquadBuilder).toHaveBeenCalledWith(true);
+  });
+
+  it("相手スカッドがある場合は選択フォーメーションで直接配置する", () => {
+    const placeSquadDirectly = vi.fn();
+    mockExecutionContext.opponentsHook.showOpponentFormationSelect = true;
+    (
+      mockExecutionContext.opponentsHook as Record<string, unknown>
+    ).opponentTeam = {
+      name: "Opponent Team",
+      availableFormations: ["4-3-3"],
+      players: [{ id: { value: "p1" } }, { id: { value: "p2" } }],
+      selectedSquad: ["p1", "p2"],
+    };
+    (
+      mockExecutionContext.opponentsHook as Record<string, unknown>
+    ).placeSquadDirectly = placeSquadDirectly;
+    mockTeamContext.formationMgmt.gameModeFormations = [
+      { id: { value: "4-3-3" }, name: "4-3-3" } as never,
+    ];
+
+    render(<TacticsMainContent />);
+
+    (
+      capturedOpponentFormationSelectProps.onSelect as (
+        formationId: string,
+      ) => void
+    )("4-3-3");
+
+    expect(placeSquadDirectly).toHaveBeenCalledWith("4-3-3", [
+      { id: { value: "p1" } },
+      { id: { value: "p2" } },
+    ]);
   });
 
   it("戦術実行中はフィールド横のロックボタンを表示しない", () => {

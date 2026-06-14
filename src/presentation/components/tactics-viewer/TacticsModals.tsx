@@ -9,59 +9,21 @@
  */
 import { PlayerManagement } from "../player-management/PlayerManagement";
 import { SquadBuilder } from "@presentation/components/team";
-import { OpponentFormationSelectModal } from "./OpponentFormationSelectModal";
 import { useTacticsUI } from "@presentation/contexts/TacticsUIContext";
 import { useTacticsTeam } from "@presentation/contexts/TacticsTeamContext";
 import { useTacticsExecution } from "@presentation/contexts/TacticsExecutionContext";
-import { getFormationOptionsWithDefault } from "@shared/constants/formations";
 
 export function TacticsModals() {
   const { ui } = useTacticsUI();
   const { selectedTeam, currentFormation, teamMgmt, formationMgmt } =
     useTacticsTeam();
-  const { opponentsHook, playModePhase } = useTacticsExecution();
-
-  const { opponentTeam } = opponentsHook;
-  const availableOpponentFormationIds = opponentTeam
-    ? new Set(
-        getFormationOptionsWithDefault(
-          opponentTeam.availableFormations,
-          playModePhase.gameMode,
-        ),
-      )
-    : null;
-  const availableOpponentFormations = availableOpponentFormationIds
-    ? formationMgmt.gameModeFormations.filter((f) =>
-        availableOpponentFormationIds.has(f.id.value),
-      )
-    : [];
+  const { opponentsHook } = useTacticsExecution();
 
   const opponentFormation = opponentsHook.opponentFormationId
     ? formationMgmt.gameModeFormations.find(
         (f) => f.id.value === opponentsHook.opponentFormationId,
       )
     : undefined;
-
-  const handleCloseFormationSelect = () => {
-    opponentsHook.setShowOpponentFormationSelect(false);
-    opponentsHook.setOpponentFormationId(null);
-  };
-
-  const handleSelectFormation = (formationId: string) => {
-    const team = opponentsHook.opponentTeam;
-    if (!team) return;
-
-    if (team.selectedSquad && team.selectedSquad.length > 0) {
-      const players = team.selectedSquad.map((pid) =>
-        pid ? team.players.find((p) => p.id.value === pid) || null : null,
-      );
-      opponentsHook.placeSquadDirectly(formationId, players);
-    } else {
-      opponentsHook.setOpponentFormationId(formationId);
-      opponentsHook.setShowOpponentFormationSelect(false);
-      opponentsHook.setShowOpponentSquadBuilder(true);
-    }
-  };
 
   return (
     <>
@@ -82,16 +44,6 @@ export function TacticsModals() {
           onClose={() => ui.setShowSquadBuilder(false)}
         />
       )}
-
-      {opponentsHook.showOpponentFormationSelect &&
-        opponentsHook.opponentTeam && (
-          <OpponentFormationSelectModal
-            teamName={opponentsHook.opponentTeam.name}
-            formations={availableOpponentFormations}
-            onSelect={handleSelectFormation}
-            onClose={handleCloseFormationSelect}
-          />
-        )}
 
       {/* 相手チーム SquadBuilder */}
       {opponentsHook.showOpponentSquadBuilder &&

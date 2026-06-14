@@ -13,6 +13,7 @@ interface AccessibleModalProps {
   ariaLabel?: string;
   children: ReactNode;
   className?: string;
+  modalStyle?: React.CSSProperties;
   overlayClassName?: string;
   overlayStyle?: React.CSSProperties;
 }
@@ -24,6 +25,7 @@ export function AccessibleModal({
   ariaLabel,
   children,
   className = "",
+  modalStyle,
   overlayClassName = "fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4",
   overlayStyle,
 }: AccessibleModalProps) {
@@ -103,6 +105,7 @@ export function AccessibleModal({
         tabIndex={-1}
         onKeyDown={handleKeyDown}
         className={className}
+        style={modalStyle}
       >
         {children}
       </div>

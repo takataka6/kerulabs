@@ -36,7 +36,6 @@ function renderComponent(overrides: Record<string, unknown> = {}) {
       opponentsHook={createOpponentsHook(overrides.opponentsHook as never)}
       teams={[{ id: { value: "team-2" }, name: "Sample Team" } as never]}
       selectedTeamId="team-1"
-      headerVisible={true}
       t={mockT}
     />,
   );

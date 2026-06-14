@@ -8,7 +8,7 @@
  * - モーダル内操作のコールバック呼び出しを検証
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { TacticsModals } from "../TacticsModals";
 import { Team } from "@domain/entities/Team";
 import { Player } from "@domain/entities/Player";
@@ -80,8 +80,6 @@ vi.mock("@presentation/components/team", () => ({
 /* ------------------------------------------------------------------ */
 
 const teamId = new TeamId("team-1");
-const opponentTeamId = new TeamId("opp-1");
-
 function createTeam(
   id: TeamId,
   name: string,
@@ -125,15 +123,10 @@ function createFormation(id: string, name: string): Formation {
 }
 
 const selectedTeam = createTeam(teamId, "My Team");
-const opponentTeam = createTeam(opponentTeamId, "Opponent Team", [
+const opponentTeam = createTeam(new TeamId("opp-1"), "Opponent Team", [
   "4-4-2-flat",
 ]);
 const formation442 = createFormation("4-4-2-flat", "4-4-2 Flat");
-const futsalFormation22 = {
-  ...createFormation("futsal-2-2", "2-2"),
-  type: "futsal",
-  gameMode: "futsal",
-} as Formation;
 
 /** 各Contextに値を分配するヘルパー */
 function shallowMerge<T extends Record<string, unknown>>(
@@ -247,125 +240,6 @@ describe("TacticsModals", () => {
     it("showSquadBuilder が true のとき表示する", () => {
       renderComponent({ ui: { showSquadBuilder: true } });
       expect(screen.getByTestId("squad-builder")).toBeInTheDocument();
-    });
-  });
-
-  // ── 相手チームフォーメーション選択 ──────────────────────────
-
-  describe("相手チームフォーメーション選択", () => {
-    it("showOpponentFormationSelect が false のとき表示しない", () => {
-      renderComponent({
-        opponentsHook: { showOpponentFormationSelect: false },
-      });
-      expect(
-        screen.queryByText("tactics.opponents.selectFormation"),
-      ).not.toBeInTheDocument();
-    });
-
-    it("opponentTeam がない場合は表示しない", () => {
-      renderComponent({
-        opponentsHook: {
-          showOpponentFormationSelect: true,
-          opponentTeam: undefined,
-        },
-      });
-      expect(
-        screen.queryByText("tactics.opponents.selectFormation"),
-      ).not.toBeInTheDocument();
-    });
-
-    it("両方設定されていればフォーメーション選択を表示する", () => {
-      renderComponent({
-        opponentsHook: {
-          showOpponentFormationSelect: true,
-          opponentTeam,
-        },
-      });
-      expect(
-        screen.getByText("tactics.opponents.selectFormation"),
-      ).toBeInTheDocument();
-      expect(screen.getByText("Opponent Team")).toBeInTheDocument();
-    });
-
-    it("利用可能なフォーメーションのボタンが表示される", () => {
-      renderComponent({
-        opponentsHook: {
-          showOpponentFormationSelect: true,
-          opponentTeam,
-        },
-      });
-      expect(screen.getByText("4-4-2 Flat")).toBeInTheDocument();
-    });
-
-    it("相手チームに現在ゲームモードの設定がない場合はデフォルトフォーメーションを表示する", () => {
-      renderComponent({
-        playModePhase: {
-          gameMode: "futsal",
-        },
-        opponentsHook: {
-          showOpponentFormationSelect: true,
-          opponentTeam,
-        },
-        formationMgmt: {
-          gameModeFormations: [futsalFormation22],
-        },
-      });
-
-      expect(screen.getByText("2-2")).toBeInTheDocument();
-    });
-
-    it("フォーメーションボタンをクリックすると opponentsHook の状態遷移が呼ばれる", () => {
-      const setOpponentFormationId = vi.fn();
-      const setShowOpponentFormationSelect = vi.fn();
-      const setShowOpponentSquadBuilder = vi.fn();
-      renderComponent({
-        opponentsHook: {
-          showOpponentFormationSelect: true,
-          opponentTeam,
-          setOpponentFormationId,
-          setShowOpponentFormationSelect,
-          setShowOpponentSquadBuilder,
-        },
-      });
-      fireEvent.click(screen.getByText("4-4-2 Flat"));
-      // When opponentTeam has no selectedSquad, it should transition to squad builder
-      expect(setOpponentFormationId).toHaveBeenCalledWith("4-4-2-flat");
-      expect(setShowOpponentFormationSelect).toHaveBeenCalledWith(false);
-      expect(setShowOpponentSquadBuilder).toHaveBeenCalledWith(true);
-    });
-
-    it("閉じるボタンをクリックすると setShowOpponentFormationSelect(false) が呼ばれる", () => {
-      const setShowOpponentFormationSelect = vi.fn();
-      const setOpponentFormationId = vi.fn();
-      renderComponent({
-        opponentsHook: {
-          showOpponentFormationSelect: true,
-          opponentTeam,
-          setShowOpponentFormationSelect,
-          setOpponentFormationId,
-        },
-      });
-      fireEvent.click(screen.getByLabelText("a11y.closeModal"));
-      expect(setShowOpponentFormationSelect).toHaveBeenCalledWith(false);
-      expect(setOpponentFormationId).toHaveBeenCalledWith(null);
-    });
-
-    it("オーバーレイクリックで setShowOpponentFormationSelect(false) が呼ばれる", () => {
-      const setShowOpponentFormationSelect = vi.fn();
-      const setOpponentFormationId = vi.fn();
-      renderComponent({
-        opponentsHook: {
-          showOpponentFormationSelect: true,
-          opponentTeam,
-          setShowOpponentFormationSelect,
-          setOpponentFormationId,
-        },
-      });
-      // portal により document.body 直下にレンダリングされる
-      const overlay = screen.getByRole("dialog").parentElement as HTMLElement;
-      fireEvent.click(overlay);
-      expect(setShowOpponentFormationSelect).toHaveBeenCalledWith(false);
-      expect(setOpponentFormationId).toHaveBeenCalledWith(null);
     });
   });
 
