@@ -28,6 +28,8 @@ const AvailablePlayerItem = memo(function AvailablePlayerItem({
   onAddSubstitute,
   addToSubsLabel,
 }: AvailablePlayerItemProps) {
+  const categoryBg = getPositionBg(player.position || "mf");
+  const posLabel = (player.position || "mf").toUpperCase();
   return (
     <div
       className={`rounded-lg p-2 border transition-all duration-150 ${
@@ -50,19 +52,28 @@ const AvailablePlayerItem = memo(function AvailablePlayerItem({
               src={player.imageUrl}
               alt={player.name}
               loading="lazy"
-              className="w-8 h-8 rounded-full object-cover shadow-sm flex-shrink-0"
+              className="w-8 h-8 rounded-md object-cover shadow-sm flex-shrink-0"
             />
           ) : (
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-sm flex-shrink-0">
+            <div
+              className={`w-8 h-8 ${categoryBg} rounded-md flex items-center justify-center text-white font-bold text-sm shadow-sm flex-shrink-0`}
+            >
               {player.number}
             </div>
           )}
-          <span
-            className="text-white text-sm font-medium truncate"
-            title={player.name}
-          >
-            {player.name}
-          </span>
+          <div className="flex items-center gap-1.5 min-w-0 flex-1">
+            <span
+              className="text-white text-sm font-medium truncate"
+              title={player.name}
+            >
+              {player.name}
+            </span>
+            <span
+              className={`shrink-0 px-1 py-0.5 rounded text-[8px] font-bold tracking-wider uppercase ${categoryBg} text-white`}
+            >
+              {posLabel}
+            </span>
+          </div>
         </button>
         <button
           type="button"
@@ -89,6 +100,7 @@ const SubstituteItem = memo(function SubstituteItem({
   removeLabel,
 }: SubstituteItemProps) {
   const categoryColor = getPositionBg(player.position || "mf");
+  const posLabel = (player.position || "mf").toUpperCase();
   return (
     <div className="bg-slate-800/50 rounded-lg p-2 border border-slate-700/50 transition-all duration-200">
       <div className="flex items-center gap-2">
@@ -97,7 +109,7 @@ const SubstituteItem = memo(function SubstituteItem({
             src={player.imageUrl}
             alt={player.name}
             loading="lazy"
-            className="w-7 h-7 rounded-full object-cover shadow-sm flex-shrink-0"
+            className="w-7 h-7 rounded-md object-cover shadow-sm flex-shrink-0"
           />
         ) : (
           <div
@@ -106,12 +118,19 @@ const SubstituteItem = memo(function SubstituteItem({
             {player.number}
           </div>
         )}
-        <span
-          className="text-white text-xs font-medium flex-1 truncate"
-          title={player.name}
-        >
-          {player.name}
-        </span>
+        <div className="flex items-center gap-1 min-w-0 flex-1">
+          <span
+            className="text-white text-xs font-medium truncate"
+            title={player.name}
+          >
+            {player.name}
+          </span>
+          <span
+            className={`shrink-0 px-1 py-0.5 rounded text-[8px] font-bold tracking-wider uppercase ${categoryColor} text-white scale-90 origin-left`}
+          >
+            {posLabel}
+          </span>
+        </div>
         <button
           onClick={() => onRemove(player.id.value)}
           aria-label={removeLabel}
