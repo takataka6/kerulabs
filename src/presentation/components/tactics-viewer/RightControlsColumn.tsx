@@ -23,7 +23,6 @@ import { getFormationOptionsWithDefault } from "@shared/constants/formations";
 import {
   BackgroundSettingsPanel,
   ConnectionLinesButton,
-  RightHistoryPanel,
 } from "./right-controls";
 
 const SECONDARY_PANEL_CLASS =
@@ -136,11 +135,6 @@ export const RightControlsColumn = memo(function RightControlsColumn({
   onChangeFormation,
   onToggleFormationEditor,
   onUpdateTeam,
-  canUndo,
-  canRedo,
-  undoRedoEnabled,
-  onUndo,
-  onRedo,
   playerView,
   opponentsHook,
   teams,
@@ -621,50 +615,6 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                     {t("tactics.sketch")}
                   </span>
                 </button>
-              </div>
-
-              {/* Undo / Redo - sm+のみ表示 */}
-              <RightHistoryPanel
-                canUndo={canUndo}
-                canRedo={canRedo}
-                undoRedoEnabled={undoRedoEnabled}
-                onUndo={onUndo}
-                onRedo={onRedo}
-                t={t}
-              />
-
-              {/* Undo / Redo - モバイルのみ表示 */}
-              <div
-                className={`sm:hidden ${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} flex flex-col min-h-[36px] justify-center`}
-              >
-                <div className="py-0.5 px-1 flex items-center justify-center gap-2 flex-1">
-                  <button
-                    onClick={onUndo}
-                    disabled={!canUndo || !undoRedoEnabled}
-                    className={`flex-1 min-h-[26px] rounded-lg text-xs font-bold transition-all duration-300 flex items-center justify-center ${
-                      canUndo && undoRedoEnabled
-                        ? "bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] hover:text-white border border-white/5 hover:scale-105"
-                        : "bg-white/[0.03] border border-white/5 opacity-25 cursor-not-allowed"
-                    }`}
-                    title={`${t("tactics.undo")} (${navigator.platform?.includes("Mac") ? "⌘" : "Ctrl"}+Z)`}
-                    aria-label={t("tactics.undo")}
-                  >
-                    <span aria-hidden="true">↩️</span>
-                  </button>
-                  <button
-                    onClick={onRedo}
-                    disabled={!canRedo || !undoRedoEnabled}
-                    className={`flex-1 min-h-[26px] rounded-lg text-xs font-bold transition-all duration-300 flex items-center justify-center ${
-                      canRedo && undoRedoEnabled
-                        ? "bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] hover:text-white border border-white/5 hover:scale-105"
-                        : "bg-white/[0.03] border border-white/5 opacity-25 cursor-not-allowed"
-                    }`}
-                    title={`${t("tactics.redo")} (${navigator.platform?.includes("Mac") ? "⌘" : "Ctrl"}+Shift+Z)`}
-                    aria-label={t("tactics.redo")}
-                  >
-                    <span aria-hidden="true">↪️</span>
-                  </button>
-                </div>
               </div>
             </div>
           </div>
