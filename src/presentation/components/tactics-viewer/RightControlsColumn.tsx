@@ -168,7 +168,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
 }: RightControlsColumnProps) {
   const railRef = useRef<HTMLDivElement>(null);
   const savedScrollTopRef = useRef(0);
-  const wasOpponentSelectorActiveRef = useRef(false);
+  const hasInitializedOpponentRailRef = useRef(false);
   const currentFormation = gameModeFormations.find(
     (f) => f.id.value === currentFormationId,
   );
@@ -197,21 +197,39 @@ export const RightControlsColumn = memo(function RightControlsColumn({
     const railElement = railRef.current;
     if (!railElement) return;
 
-    if (isOpponentSelectorActive && !wasOpponentSelectorActiveRef.current) {
+    const handleScroll = () => {
       savedScrollTopRef.current = railElement.scrollTop;
-    } else if (
-      !isOpponentSelectorActive &&
-      wasOpponentSelectorActiveRef.current
-    ) {
-      requestAnimationFrame(() => {
-        if (railRef.current) {
-          railRef.current.scrollTop = savedScrollTopRef.current;
-        }
-      });
+    };
+
+    savedScrollTopRef.current = railElement.scrollTop;
+    railElement.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      railElement.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!railRef.current) return;
+
+    if (!hasInitializedOpponentRailRef.current) {
+      hasInitializedOpponentRailRef.current = true;
+      savedScrollTopRef.current = railRef.current.scrollTop;
+      return;
     }
 
-    wasOpponentSelectorActiveRef.current = isOpponentSelectorActive;
-  }, [isOpponentSelectorActive]);
+    requestAnimationFrame(() => {
+      if (railRef.current) {
+        railRef.current.scrollTop = savedScrollTopRef.current;
+      }
+    });
+  }, [
+    opponentsHook.opponentPlacementMode,
+    opponentsHook.selectedOpponentPlayerId,
+    opponentsHook.showOpponentFormationSelect,
+    opponentsHook.showOpponentSquadBuilder,
+    isOpponentSelectorActive,
+  ]);
 
   return (
     <div
