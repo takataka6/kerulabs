@@ -53,6 +53,10 @@ function renderHUD(
     playersData: defaultPlayers,
     colorsData: defaultColors,
     opponents: defaultOpponents,
+    showPlayerNames: true,
+    showPlayerNumbers: true,
+    showOpponentNames: true,
+    showOpponentNumbers: true,
     isFirstPerson: false,
     onExitPlayerView: vi.fn(),
     onRotateLeft: vi.fn(),
@@ -138,6 +142,16 @@ describe("PlayerViewHUD", () => {
       // フォールバック: #100
       expect(screen.getByText("#100")).toBeInTheDocument();
     });
+
+    it("showPlayerNames=false の場合、選手名を表示しない", () => {
+      renderHUD({ selectedPlayerIndex: 0, showPlayerNames: false });
+      expect(screen.queryByText("Player A")).not.toBeInTheDocument();
+    });
+
+    it("showPlayerNumbers=false の場合、背番号を表示しない", () => {
+      renderHUD({ selectedPlayerIndex: 0, showPlayerNumbers: false });
+      expect(screen.queryByText("10")).not.toBeInTheDocument();
+    });
   });
 
   // ── 相手選手追跡 ─────────────────────────────────────────
@@ -180,6 +194,16 @@ describe("PlayerViewHUD", () => {
       const opponents: Opponent[] = [{ id: 2, x: 0, z: 0, playerNumber: 5 }];
       renderHUD({ opponents, selectedOpponentViewId: 2 });
       expect(screen.getByText("#5")).toBeInTheDocument();
+    });
+
+    it("showOpponentNames=false の場合、相手選手名を表示しない", () => {
+      renderHUD({ selectedOpponentViewId: 1, showOpponentNames: false });
+      expect(screen.queryByText("Player D")).not.toBeInTheDocument();
+    });
+
+    it("showOpponentNumbers=false の場合、相手選手の背番号を表示しない", () => {
+      renderHUD({ selectedOpponentViewId: 1, showOpponentNumbers: false });
+      expect(screen.queryByText("9")).not.toBeInTheDocument();
     });
   });
 });
