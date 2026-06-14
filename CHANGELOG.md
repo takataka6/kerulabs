@@ -7,6 +7,19 @@
 
 ## [Unreleased]
 
+## [0.9.4] - 2026-06-14
+
+### Changed
+
+- **タクティクスビューアー右サイド popup の配置と見た目を統一**: `FormationEditor` を含む右サイド popup 群の表示基準を `main-content` 配下へ揃え、相手選手設定やシーン背景設定と一貫したシェル・配置になるよう整理しました。
+- **フォーメーション編集 popup の操作方針を統一**: `FormationEditor` の外側クリックで閉じる挙動を廃止し、明示的なクローズボタンで閉じる方式に統一しました。
+
+### Fixed
+
+- **iPad / 狭い縦幅環境での右サイド UX 崩れを修正**: 右コントロール群のレイアウトとスクロール領域を見直し、相手選手・背景・フォーメーション関連 popup 表示時の位置ずれや見切れを改善しました。
+- **選手視点解除後のカメラ復元**: 選手視点モードに入る前のカメラ位置と注視点を保持し、解除時に元のフィールド視点へ戻るよう修正しました。
+- **チーム CRUD E2E の不安定な戻り操作を安定化**: Playwright の `team-crud` シナリオで、ヘッダーの「チーム選択」ボタン押下が負荷時に失敗する flaky 挙動を、より安定した click dispatch に揃えることで解消しました。
+
 ## [0.9.3] - 2026-06-14
 
 ### Changed
@@ -251,7 +264,8 @@
 - **Husky + lint-staged**: コミット時の自動リント・フォーマット
 - **GitHub Actions CI**: 型チェック・リント・テストの自動実行
 
-[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.9.3...HEAD
+[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.9.4...HEAD
+[0.9.4]: https://github.com/takataka6/kerulabs/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/takataka6/kerulabs/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/takataka6/kerulabs/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/takataka6/kerulabs/compare/v0.9.0...v0.9.1
