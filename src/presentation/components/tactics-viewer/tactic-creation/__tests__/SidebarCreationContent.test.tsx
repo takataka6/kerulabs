@@ -207,8 +207,10 @@ describe("SidebarCreationContent", () => {
 
     it("セットプレーモードの場合、フェーズドロップダウンが静的表示される", () => {
       const props = defaultProps({
-        creation: makeCreationState({ wizardStep: "metadata" }),
-        isSetPlayMode: true,
+        creation: makeCreationState({
+          wizardStep: "metadata",
+          creationMode: "setPlay",
+        }),
       });
       render(<SidebarCreationContent {...props} />);
 

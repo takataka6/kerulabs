@@ -4,7 +4,11 @@
  */
 import { memo } from "react";
 import type { TranslationKey } from "@shared/i18n/translations";
-import type { CreationState, WizardStep } from "@presentation/hooks/tactic";
+import {
+  getCreationMode,
+  type CreationState,
+  type WizardStep,
+} from "@presentation/hooks/tactic";
 import {
   STEP_INDICATOR,
   SECTION_TITLE,
@@ -25,6 +29,9 @@ export const SidebarSetPositionStep = memo(function SidebarSetPositionStep({
   onWizardStep,
 }: SidebarSetPositionStepProps) {
   const posCount = creation.setPositions.size;
+  const creationMode = getCreationMode(creation);
+  const stepCurrent = creationMode === "setPlay" ? "4" : "2";
+  const stepTotal = creationMode === "setPlay" ? "6" : "4";
 
   return (
     <div className="flex flex-col gap-0">
@@ -38,8 +45,8 @@ export const SidebarSetPositionStep = memo(function SidebarSetPositionStep({
           </h3>
           <p className={STEP_INDICATOR}>
             {t("tactics.creation.stepIndicator")
-              .replace("{current}", "4")
-              .replace("{total}", "6")}
+              .replace("{current}", stepCurrent)
+              .replace("{total}", stepTotal)}
           </p>
         </div>
         <p className="text-slate-400 text-xs text-center mb-2">
@@ -70,7 +77,11 @@ export const SidebarSetPositionStep = memo(function SidebarSetPositionStep({
         </button>
         <button
           type="button"
-          onClick={() => onWizardStep("ballTrajectory")}
+          onClick={() =>
+            onWizardStep(
+              creationMode === "setPlay" ? "ballTrajectory" : "metadata",
+            )
+          }
           className={SIDEBAR_BTN_SECONDARY}
         >
           <span>←</span> {t("tactics.creation.back")}

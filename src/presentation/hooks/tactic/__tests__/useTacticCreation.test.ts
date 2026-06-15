@@ -154,6 +154,16 @@ describe("useTacticCreation", () => {
     expect(result.current.creation!.icon).toBe("\uD83D\uDEE1\uFE0F");
   });
 
+  it("startCreation: シチュエーション作成モードを保持する", () => {
+    const { result } = renderHook(() => useTacticCreation());
+
+    act(() => {
+      result.current.startCreation("4-3-3", "attack", undefined, "situation");
+    });
+
+    expect(result.current.creation?.creationMode).toBe("situation");
+  });
+
   it("cancelCreation: creation を null に戻す", () => {
     const { result } = renderHook(() => useTacticCreation());
 

@@ -470,6 +470,8 @@
   "tactics.creation.entry.title": "Choose Creation Type",
   "tactics.creation.entry.description": "Choose whether to start from scratch or create from an existing tactic.",
   "tactics.creation.entry.new": "Create New",
+  "tactics.creation.entry.standard": "Create Standard Tactic",
+  "tactics.creation.entry.situation": "Create from Situation",
   "tactics.creation.entry.fromExisting": "Create from Existing",
   "tactics.creation.entry.selectSource": "Choose the tactic to use as the source.",
   "tactics.creation.name": "Tactic Name",

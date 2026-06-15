@@ -470,6 +470,8 @@
   "tactics.creation.entry.title": "作成方法を選択",
   "tactics.creation.entry.description": "新規作成するか、既存戦術を元に作成するか選択してください。",
   "tactics.creation.entry.new": "新規作成",
+  "tactics.creation.entry.standard": "通常戦術を作成",
+  "tactics.creation.entry.situation": "シチュエーションから作成",
   "tactics.creation.entry.fromExisting": "既存から作成",
   "tactics.creation.entry.selectSource": "コピー元にする戦術を選択してください。",
   "tactics.creation.name": "戦術名",

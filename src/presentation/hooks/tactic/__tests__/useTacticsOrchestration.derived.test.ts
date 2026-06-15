@@ -305,6 +305,25 @@ describe("useTacticsOrchestration — 派生状態", () => {
       expect(result.current.mergedArrows).toHaveLength(1);
       expect(mockGetPreviewArrows).not.toHaveBeenCalled();
     });
+
+    it("setPosition ステップ中は creationArrows を表示しない", () => {
+      setMockExecutionState({
+        arrows: [{ start: { x: 0, z: 0 }, end: { x: 1, z: 1 }, color: "#000" }],
+      });
+      mockGetPreviewArrows.mockReturnValue([
+        { start: { x: 2, z: 2 }, end: { x: 3, z: 3 }, color: "#fff" },
+      ]);
+      setMockCreationState(
+        createMockCreationState({ wizardStep: "setPosition" }),
+      );
+
+      const { result } = renderHook(
+        () => useTacticsOrchestration(createDefaultParams()),
+        { wrapper: createWrapper() },
+      );
+      expect(result.current.mergedArrows).toHaveLength(1);
+      expect(mockGetPreviewArrows).not.toHaveBeenCalled();
+    });
   });
 
   // ==========================================================================

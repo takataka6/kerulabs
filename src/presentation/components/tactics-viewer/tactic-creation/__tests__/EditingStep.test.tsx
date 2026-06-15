@@ -233,16 +233,31 @@ describe("EditingStep", () => {
   describe("ナビゲーション", () => {
     it("通常モードで戻るボタンをクリックするとmetadataステップに移動する", () => {
       const onWizardStep = vi.fn();
-      renderComponent({ isSetPlayMode: false, onWizardStep });
+      renderComponent({ onWizardStep });
 
       fireEvent.click(screen.getByText("tactics.creation.back"));
 
       expect(onWizardStep).toHaveBeenCalledWith("metadata");
     });
 
+    it("シチュエーション作成で戻るボタンをクリックするとsetPositionステップに移動する", () => {
+      const onWizardStep = vi.fn();
+      renderComponent({
+        creation: createCreationState({ creationMode: "situation" }),
+        onWizardStep,
+      });
+
+      fireEvent.click(screen.getByText("tactics.creation.back"));
+
+      expect(onWizardStep).toHaveBeenCalledWith("setPosition");
+    });
+
     it("セットプレーモードで戻るボタンをクリックするとsetPositionステップに移動する", () => {
       const onWizardStep = vi.fn();
-      renderComponent({ isSetPlayMode: true, onWizardStep });
+      renderComponent({
+        creation: createCreationState({ creationMode: "setPlay" }),
+        onWizardStep,
+      });
 
       fireEvent.click(screen.getByText("tactics.creation.back"));
 

@@ -5,7 +5,11 @@
 import { memo } from "react";
 import type { TranslationKey } from "@shared/i18n/translations";
 import type { TrajectoryType } from "@domain/entities/BallPass";
-import type { CreationState, WizardStep } from "@presentation/hooks/tactic";
+import {
+  getCreationMode,
+  type CreationState,
+  type WizardStep,
+} from "@presentation/hooks/tactic";
 import {
   TRAJECTORY_OPTIONS,
   SIDEBAR_BTN_PRIMARY,
@@ -17,7 +21,7 @@ import {
 interface SidebarEditingStepProps {
   creation: CreationState;
   language: string;
-  isSetPlayMode: boolean;
+  isSetPlayMode?: boolean;
   t: (key: TranslationKey) => string;
   onWizardStep: (step: WizardStep) => void;
   onSwitchStep: (index: number) => void;
@@ -33,7 +37,6 @@ interface SidebarEditingStepProps {
 export const SidebarEditingStep = memo(function SidebarEditingStep({
   creation,
   language,
-  isSetPlayMode,
   t,
   onWizardStep,
   onSwitchStep,
@@ -46,6 +49,7 @@ export const SidebarEditingStep = memo(function SidebarEditingStep({
   onBallPassTrajectoryTypeChange,
 }: SidebarEditingStepProps) {
   const currentStep = creation.steps[creation.currentStepIndex];
+  const creationMode = getCreationMode(creation);
   const movementCount = currentStep?.movements.size ?? 0;
   const ballPassCount = currentStep?.ballPasses.length ?? 0;
   const stepContentCount = movementCount + ballPassCount;
@@ -205,7 +209,9 @@ export const SidebarEditingStep = memo(function SidebarEditingStep({
         <button
           type="button"
           onClick={() =>
-            onWizardStep(isSetPlayMode ? "setPosition" : "metadata")
+            onWizardStep(
+              creationMode === "standard" ? "metadata" : "setPosition",
+            )
           }
           className={SIDEBAR_BTN_SECONDARY}
         >

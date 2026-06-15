@@ -232,6 +232,26 @@ describe("useTacticsOrchestration — CRUD操作", () => {
         "4-3-3",
         "defense",
         "4-3-3",
+        "standard",
+      );
+    });
+
+    it("field モードで situation 指定時はシチュエーション作成として開始する", () => {
+      const params = createDefaultParams({
+        playMode: "field",
+        selectedPhase: "attack",
+      });
+      const { result } = renderHook(() => useTacticsOrchestration(params), {
+        wrapper: createWrapper(),
+      });
+      act(() => {
+        result.current.startTacticCreation("situation");
+      });
+      expect(mockStartCreation).toHaveBeenCalledWith(
+        "4-3-3",
+        "attack",
+        "4-3-3",
+        "situation",
       );
     });
 
@@ -250,6 +270,7 @@ describe("useTacticsOrchestration — CRUD操作", () => {
         "4-3-3",
         "throw_in",
         "4-3-3",
+        "setPlay",
       );
     });
 

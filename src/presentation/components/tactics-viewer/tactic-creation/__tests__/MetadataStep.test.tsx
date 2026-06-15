@@ -201,7 +201,6 @@ describe("MetadataStep", () => {
       const onWizardStep = vi.fn();
       renderComponent({
         creation: createCreationState({ nameJa: "テスト" }),
-        isSetPlayMode: false,
         onWizardStep,
       });
 
@@ -210,11 +209,28 @@ describe("MetadataStep", () => {
       expect(onWizardStep).toHaveBeenCalledWith("editing");
     });
 
+    it("シチュエーション作成では次へボタンをクリックするとsetPositionステップに移動する", () => {
+      const onWizardStep = vi.fn();
+      renderComponent({
+        creation: createCreationState({
+          nameJa: "テスト",
+          creationMode: "situation",
+        }),
+        onWizardStep,
+      });
+
+      fireEvent.click(screen.getByText("tactics.creation.next"));
+
+      expect(onWizardStep).toHaveBeenCalledWith("setPosition");
+    });
+
     it("セットプレーモードで次へボタンをクリックするとballPositionステップに移動する", () => {
       const onWizardStep = vi.fn();
       renderComponent({
-        creation: createCreationState({ nameJa: "テスト" }),
-        isSetPlayMode: true,
+        creation: createCreationState({
+          nameJa: "テスト",
+          creationMode: "setPlay",
+        }),
         onWizardStep,
       });
 
@@ -236,7 +252,7 @@ describe("MetadataStep", () => {
 
   describe("フェーズ選択（通常モード）", () => {
     it("フェーズドロップダウンボタンが表示される", () => {
-      renderComponent({ isSetPlayMode: false });
+      renderComponent();
 
       const phaseButton = screen.getByRole("button", {
         name: /phase\./,
@@ -245,7 +261,7 @@ describe("MetadataStep", () => {
     });
 
     it("ドロップダウンをクリックするとフェーズ一覧が表示される", () => {
-      renderComponent({ isSetPlayMode: false });
+      renderComponent();
 
       const phaseButton = screen.getByRole("button", {
         name: /phase\./,
@@ -262,7 +278,9 @@ describe("MetadataStep", () => {
 
   describe("フェーズ表示（セットプレーモード）", () => {
     it("セットプレーモードではフェーズが読み取り専用で表示される", () => {
-      renderComponent({ isSetPlayMode: true });
+      renderComponent({
+        creation: createCreationState({ creationMode: "setPlay" }),
+      });
 
       // ドロップダウンボタンではなく、静的表示
       expect(

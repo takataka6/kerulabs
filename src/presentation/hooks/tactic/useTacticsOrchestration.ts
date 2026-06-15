@@ -21,7 +21,11 @@ import {
   POSITION_HEX_COLORS,
   POSITION_FALLBACK_HEX_COLOR,
 } from "@shared/constants/positionColors";
-import { useTacticCreation, type WizardStep } from "./useTacticCreation";
+import {
+  useTacticCreation,
+  type CreationMode,
+  type WizardStep,
+} from "./useTacticCreation";
 import { useTacticExecution } from "./useTacticExecution";
 import { useConfirm } from "@presentation/components/ui";
 import { useSaveTactic } from "../queries/useSaveTactic";
@@ -264,25 +268,34 @@ export function useTacticsOrchestration(params: {
   );
 
   // ── タクティクス作成ハンドラー ──
-  const startTacticCreation = useCallback(() => {
-    if (!currentFormation) return;
-    clearPendingTacticCopyCreation();
-    resetInteractionModes();
-    const phase = playMode === "field" ? selectedPhase : selectedSetPlayType;
-    tacticCreation.startCreation(
-      currentFormation.name,
-      phase,
-      currentFormation.id.value,
-    );
-  }, [
-    currentFormation,
-    selectedPhase,
-    selectedSetPlayType,
-    playMode,
-    resetInteractionModes,
-    tacticCreation,
-    clearPendingTacticCopyCreation,
-  ]);
+  const startTacticCreation = useCallback(
+    (
+      creationMode: Extract<
+        CreationMode,
+        "standard" | "situation"
+      > = "standard",
+    ) => {
+      if (!currentFormation) return;
+      clearPendingTacticCopyCreation();
+      resetInteractionModes();
+      const phase = playMode === "field" ? selectedPhase : selectedSetPlayType;
+      tacticCreation.startCreation(
+        currentFormation.name,
+        phase,
+        currentFormation.id.value,
+        playMode === "setPlay" ? "setPlay" : creationMode,
+      );
+    },
+    [
+      currentFormation,
+      selectedPhase,
+      selectedSetPlayType,
+      playMode,
+      resetInteractionModes,
+      tacticCreation,
+      clearPendingTacticCopyCreation,
+    ],
+  );
 
   const startTacticCreationFromCopy = useCallback(
     (tacticId: string, copyUntilStep?: number) => {

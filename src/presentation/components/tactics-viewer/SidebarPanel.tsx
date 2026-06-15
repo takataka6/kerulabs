@@ -73,7 +73,7 @@ export interface TacticListProps {
   stepExecution?: StepExecutionState;
   onExecuteNextStep?: () => void;
   onExitStepMode?: () => void;
-  onStartCreation: () => void;
+  onStartCreation: (mode?: "standard" | "situation") => void;
   onImportTactics: () => void;
   onExportTactics: () => void;
 }
@@ -81,7 +81,7 @@ export interface TacticListProps {
 /** 戦術作成ウィザード（isCreating が true の場合のみ使用） */
 export interface TacticCreationProps {
   creation: CreationState | null;
-  isSetPlayMode: boolean;
+  isSetPlayMode?: boolean;
   onNameJaChange: (name: string) => void;
   onNameEnChange: (name: string) => void;
   onIconChange: (icon: string) => void;
@@ -454,7 +454,6 @@ export const SidebarPanel = memo(function SidebarPanel(
               creation={creation!.creation!}
               language={language}
               isExecuting={tactics.isExecuting}
-              isSetPlayMode={creation!.isSetPlayMode}
               t={t}
               onNameJaChange={creation!.onNameJaChange}
               onNameEnChange={creation!.onNameEnChange}
@@ -807,11 +806,17 @@ export const SidebarPanel = memo(function SidebarPanel(
       {creationEntryOpen && (
         <TacticCreationEntryModal
           t={t}
+          isSetPlayMode={phase.playMode === "setPlay"}
           onClose={() => setCreationEntryOpen(false)}
-          onCreateNew={() => {
+          onCreateStandard={() => {
             setCreationEntryOpen(false);
             setSourceSelectionMode(false);
-            tactics.onStartCreation();
+            tactics.onStartCreation("standard");
+          }}
+          onCreateSituation={() => {
+            setCreationEntryOpen(false);
+            setSourceSelectionMode(false);
+            tactics.onStartCreation("situation");
           }}
           onCreateFromExisting={() => {
             setCreationEntryOpen(false);

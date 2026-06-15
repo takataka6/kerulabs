@@ -120,8 +120,16 @@ describe("SetPositionStep", () => {
   // ── ナビゲーション ──────────────────────────────────────────
 
   describe("ナビゲーション", () => {
-    it("戻るボタンで ballTrajectory ステップに移動する", () => {
+    it("シチュエーション作成では戻るボタンで metadata ステップに移動する", () => {
       const { onWizardStep } = renderComponent();
+      fireEvent.click(screen.getByText("tactics.creation.back"));
+      expect(onWizardStep).toHaveBeenCalledWith("metadata");
+    });
+
+    it("セットプレー作成では戻るボタンで ballTrajectory ステップに移動する", () => {
+      const { onWizardStep } = renderComponent({
+        creation: createCreationState({ creationMode: "setPlay" }),
+      });
       fireEvent.click(screen.getByText("tactics.creation.back"));
       expect(onWizardStep).toHaveBeenCalledWith("ballTrajectory");
     });

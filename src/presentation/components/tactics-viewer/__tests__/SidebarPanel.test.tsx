@@ -405,15 +405,24 @@ describe("SidebarPanel", () => {
       );
     });
 
-    it("clicking create button opens entry modal and selecting new calls onStartCreation", () => {
+    it("clicking create button opens entry modal and selecting standard calls onStartCreation", () => {
       const { props } = renderSidebarPanel();
 
       fireEvent.click(screen.getByText("tactics.creation.create"));
       expect(
         screen.getByText("tactics.creation.entry.title"),
       ).toBeInTheDocument();
-      fireEvent.click(screen.getByText("tactics.creation.entry.new"));
-      expect(props.tactics.onStartCreation).toHaveBeenCalled();
+      fireEvent.click(screen.getByText("tactics.creation.entry.standard"));
+      expect(props.tactics.onStartCreation).toHaveBeenCalledWith("standard");
+    });
+
+    it("field モードではシチュエーション作成を選べる", () => {
+      const { props } = renderSidebarPanel();
+
+      fireEvent.click(screen.getByText("tactics.creation.create"));
+      fireEvent.click(screen.getByText("tactics.creation.entry.situation"));
+
+      expect(props.tactics.onStartCreation).toHaveBeenCalledWith("situation");
     });
 
     it("selecting create from existing shows source selection guidance", () => {

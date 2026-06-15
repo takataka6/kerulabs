@@ -78,6 +78,8 @@ export type WizardStep =
   | "editing"
   | "confirm";
 
+export type CreationMode = "standard" | "situation" | "setPlay";
+
 export interface CreationState {
   nameJa: string;
   nameEn: string;
@@ -90,6 +92,7 @@ export interface CreationState {
   timelineOpen: boolean;
   movementDelays: Record<number, Record<string, number>>;
   wizardStep: WizardStep;
+  creationMode?: CreationMode;
   ballPosition: { x: number; z: number } | null;
   ballTrajectory: {
     endX: number;
@@ -113,6 +116,13 @@ export function createEmptyStep(id: number): CreationStep {
     ballPasses: [],
     duration: 1000,
   };
+}
+
+export function getCreationMode(creation: CreationState): CreationMode {
+  if (creation.creationMode) return creation.creationMode;
+  if (creation.ballPosition || creation.ballTrajectory) return "setPlay";
+  if (creation.setPositions.size > 0) return "situation";
+  return "standard";
 }
 
 // ---------------------------------------------------------------------------
