@@ -7,7 +7,11 @@ import { PHASE_CONFIG, Z_INDEX } from "@shared/constants";
 import { useClickOutside } from "@presentation/hooks/ui";
 import type { PhaseKey } from "@shared/constants";
 import type { TranslationKey } from "@shared/i18n/translations";
-import type { CreationState, WizardStep } from "@presentation/hooks/tactic";
+import {
+  getCreationMode,
+  type CreationState,
+  type WizardStep,
+} from "@presentation/hooks/tactic";
 import {
   PHASE_DROPDOWN_KEYS,
   ICON_OPTIONS,
@@ -21,7 +25,7 @@ import {
 
 interface SidebarMetadataStepProps {
   creation: CreationState;
-  isSetPlayMode: boolean;
+  isSetPlayMode?: boolean;
   t: (key: TranslationKey) => string;
   onNameJaChange: (name: string) => void;
   onNameEnChange: (name: string) => void;
@@ -33,7 +37,6 @@ interface SidebarMetadataStepProps {
 
 export const SidebarMetadataStep = memo(function SidebarMetadataStep({
   creation,
-  isSetPlayMode,
   t,
   onNameJaChange,
   onNameEnChange,
@@ -49,6 +52,9 @@ export const SidebarMetadataStep = memo(function SidebarMetadataStep({
   const nameJaInputRef = useRef<HTMLInputElement>(null);
 
   const currentPhaseConfig = PHASE_CONFIG[creation.gamePhase];
+  const creationMode = getCreationMode(creation);
+  const stepTotal =
+    creationMode === "setPlay" ? "6" : creationMode === "situation" ? "4" : "3";
 
   const closePhaseDropdown = useCallback(() => setPhaseDropdownOpen(false), []);
   const closeIconPicker = useCallback(() => setIconPickerOpen(false), []);
@@ -70,7 +76,7 @@ export const SidebarMetadataStep = memo(function SidebarMetadataStep({
           <p className={STEP_INDICATOR}>
             {t("tactics.creation.stepIndicator")
               .replace("{current}", "1")
-              .replace("{total}", isSetPlayMode ? "6" : "3")}
+              .replace("{total}", stepTotal)}
           </p>
         </div>
       </div>
@@ -149,7 +155,7 @@ export const SidebarMetadataStep = memo(function SidebarMetadataStep({
         </div>
 
         {/* フェーズ選択 */}
-        {isSetPlayMode ? (
+        {creationMode === "setPlay" ? (
           <div className="mb-2">
             <label className="text-[9px] text-slate-500 font-bold tracking-widest uppercase mb-0.5 block">
               {t("tactics.creation.gamePhase")}
@@ -212,9 +218,17 @@ export const SidebarMetadataStep = memo(function SidebarMetadataStep({
       <div className="px-3 py-2 space-y-1.5">
         <button
           type="button"
-          onClick={() =>
-            onWizardStep(isSetPlayMode ? "ballPosition" : "editing")
-          }
+          onClick={() => {
+            if (creationMode === "setPlay") {
+              onWizardStep("ballPosition");
+              return;
+            }
+            if (creationMode === "situation") {
+              onWizardStep("setPosition");
+              return;
+            }
+            onWizardStep("editing");
+          }}
           disabled={!hasName}
           className={hasName ? SIDEBAR_BTN_PRIMARY : SIDEBAR_BTN_DISABLED}
         >

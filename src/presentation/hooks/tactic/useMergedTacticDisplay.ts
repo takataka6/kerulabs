@@ -120,6 +120,7 @@ export function useMergedTacticDisplay(
   const creationArrows = useMemo(() => {
     if (!tacticCreation.creation || !currentFormation) return [];
     if (isExecuting) return [];
+    if (tacticCreation.creation.wizardStep === "setPosition") return [];
     return tacticCreation.getPreviewArrows(currentFormation);
   }, [tacticCreation, currentFormation, isExecuting]);
 

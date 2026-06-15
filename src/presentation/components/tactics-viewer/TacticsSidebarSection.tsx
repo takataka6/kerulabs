@@ -109,7 +109,6 @@ export function TacticsSidebarSection() {
             tOrch.tacticCreation.creation
               ? {
                   creation: tOrch.tacticCreation.creation,
-                  isSetPlayMode: playModePhase.playMode === "setPlay",
                   onNameJaChange: tOrch.tacticCreation.setNameJa,
                   onNameEnChange: tOrch.tacticCreation.setNameEn,
                   onIconChange: tOrch.tacticCreation.setIcon,

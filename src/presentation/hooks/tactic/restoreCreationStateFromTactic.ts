@@ -5,6 +5,7 @@ import type { PhaseKey } from "@shared/constants/phases";
 import { Movement } from "@domain/entities/Movement";
 import { BallPass } from "@domain/entities/BallPass";
 import type {
+  CreationMode,
   CreationState,
   CreationStep,
   CreationStepBallPass,
@@ -254,6 +255,11 @@ export function restoreCreationStateFromTactic({
   // (instead of jumping straight to editing with the original name).
   const baseNameJa = tactic.name.ja ?? "";
   const baseNameEn = tactic.name.en ?? "";
+  const creationMode: CreationMode = hasBall
+    ? "setPlay"
+    : setPositions.size > 0
+      ? "situation"
+      : "standard";
 
   return {
     nameJa: baseNameJa ? `${baseNameJa} (コピー)` : "",
@@ -267,6 +273,7 @@ export function restoreCreationStateFromTactic({
     timelineOpen: false,
     movementDelays,
     wizardStep: "metadata",
+    creationMode,
     ballPosition: tactic.ballPosition ? { ...tactic.ballPosition } : null,
     ballTrajectory: setupBallPass
       ? {

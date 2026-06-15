@@ -57,7 +57,6 @@ export function TacticCreationToolbar(props: TacticCreationToolbarProps) {
     creation,
     language,
     isExecuting,
-    isSetPlayMode = false,
     t,
     onNameJaChange,
     onNameEnChange,
@@ -99,7 +98,6 @@ export function TacticCreationToolbar(props: TacticCreationToolbarProps) {
       return (
         <MetadataStep
           creation={creation}
-          isSetPlayMode={isSetPlayMode}
           {...dragProps}
           t={t}
           onNameJaChange={onNameJaChange}
@@ -147,7 +145,6 @@ export function TacticCreationToolbar(props: TacticCreationToolbarProps) {
         <EditingStep
           creation={creation}
           language={language}
-          isSetPlayMode={isSetPlayMode}
           {...dragProps}
           t={t}
           onWizardStep={onWizardStep}

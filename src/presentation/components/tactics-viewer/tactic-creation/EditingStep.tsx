@@ -5,13 +5,17 @@
 import { memo } from "react";
 import type { TranslationKey } from "@shared/i18n/translations";
 import type { TrajectoryType } from "@domain/entities/BallPass";
-import type { CreationState, WizardStep } from "@presentation/hooks/tactic";
+import {
+  getCreationMode,
+  type CreationState,
+  type WizardStep,
+} from "@presentation/hooks/tactic";
 import { TRAJECTORY_OPTIONS, WIZARD_WRAPPER, CARD_BASE } from "./constants";
 
 interface EditingStepProps {
   creation: CreationState;
   language: string;
-  isSetPlayMode: boolean;
+  isSetPlayMode?: boolean;
   offset: { x: number; y: number };
   isDragging: boolean;
   handlePointerDown: (e: React.PointerEvent) => void;
@@ -30,7 +34,6 @@ interface EditingStepProps {
 export const EditingStep = memo(function EditingStep({
   creation,
   language,
-  isSetPlayMode,
   offset,
   isDragging,
   handlePointerDown,
@@ -46,6 +49,7 @@ export const EditingStep = memo(function EditingStep({
   onBallPassTrajectoryTypeChange,
 }: EditingStepProps) {
   const currentStep = creation.steps[creation.currentStepIndex];
+  const creationMode = getCreationMode(creation);
   const movementCount = currentStep?.movements.size ?? 0;
   const ballPassCount = currentStep?.ballPasses.length ?? 0;
   const stepContentCount = movementCount + ballPassCount;
@@ -188,7 +192,9 @@ export const EditingStep = memo(function EditingStep({
           <button
             type="button"
             onClick={() =>
-              onWizardStep(isSetPlayMode ? "setPosition" : "metadata")
+              onWizardStep(
+                creationMode === "standard" ? "metadata" : "setPosition",
+              )
             }
             className="h-8 px-2.5 rounded-lg text-xs font-medium transition-all duration-200 bg-slate-800/60 text-slate-400 hover:bg-slate-800 hover:text-slate-200 flex items-center gap-1"
           >

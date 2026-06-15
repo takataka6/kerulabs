@@ -3,15 +3,19 @@ import { AccessibleModal } from "@presentation/components/ui";
 
 interface TacticCreationEntryModalProps {
   t: (key: TranslationKey) => string;
+  isSetPlayMode: boolean;
   onClose: () => void;
-  onCreateNew: () => void;
+  onCreateStandard: () => void;
+  onCreateSituation: () => void;
   onCreateFromExisting: () => void;
 }
 
 export function TacticCreationEntryModal({
   t,
+  isSetPlayMode,
   onClose,
-  onCreateNew,
+  onCreateStandard,
+  onCreateSituation,
   onCreateFromExisting,
 }: TacticCreationEntryModalProps) {
   return (
@@ -37,11 +41,23 @@ export function TacticCreationEntryModal({
 
         <div className="space-y-2">
           <button
-            onClick={onCreateNew}
+            onClick={onCreateStandard}
             className="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 px-3 py-3 text-left text-sm font-semibold text-white transition-all duration-200 hover:from-emerald-500 hover:to-emerald-400"
           >
-            {t("tactics.creation.entry.new")}
+            {t(
+              isSetPlayMode
+                ? "tactics.creation.entry.new"
+                : "tactics.creation.entry.standard",
+            )}
           </button>
+          {!isSetPlayMode && (
+            <button
+              onClick={onCreateSituation}
+              className="w-full rounded-xl border border-teal-500/40 bg-teal-500/10 px-3 py-3 text-left text-sm font-medium text-teal-100 transition-all duration-200 hover:bg-teal-500/15"
+            >
+              {t("tactics.creation.entry.situation")}
+            </button>
+          )}
           <button
             onClick={onCreateFromExisting}
             className="w-full rounded-xl border border-slate-700/50 bg-white/[0.03] px-3 py-3 text-left text-sm font-medium text-slate-200 transition-all duration-200 hover:bg-white/[0.06]"

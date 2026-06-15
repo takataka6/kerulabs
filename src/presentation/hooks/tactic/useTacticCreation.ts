@@ -16,6 +16,7 @@ import type { PhaseKey } from "@shared/constants/phases";
 import { PHASE_CONFIG } from "@shared/constants/phases";
 import {
   createEmptyStep,
+  type CreationMode,
   type CreationState,
   type WizardStep,
   type ArrowPreview,
@@ -29,6 +30,7 @@ import { restoreCreationStateFromTactic } from "./restoreCreationStateFromTactic
 // 型の再エクスポート（後方互換性）
 export { phaseKeyToPhaseType } from "./tacticCreationTypes";
 export type {
+  CreationMode,
   CreationStepBallPass,
   CreationStep,
   WizardStep,
@@ -47,6 +49,7 @@ export interface UseTacticCreationReturn {
     formationName: string,
     gamePhase: PhaseKey,
     formationId?: string,
+    creationMode?: CreationMode,
   ) => void;
   startCreationFromTactic: (
     tactic: Tactic,
@@ -166,7 +169,12 @@ export function useTacticCreation(): UseTacticCreationReturn {
   // ----- ライフサイクル -------------------------------------------------------
 
   const startCreation = useCallback(
-    (formationName: string, gamePhase: PhaseKey, formationId?: string) => {
+    (
+      formationName: string,
+      gamePhase: PhaseKey,
+      formationId?: string,
+      creationMode: CreationMode = "standard",
+    ) => {
       setCreation({
         nameJa: "",
         nameEn: "",
@@ -179,6 +187,7 @@ export function useTacticCreation(): UseTacticCreationReturn {
         timelineOpen: false,
         movementDelays: {},
         wizardStep: "metadata",
+        creationMode,
         ballPosition: null,
         ballTrajectory: null,
         setPositions: new Map(),

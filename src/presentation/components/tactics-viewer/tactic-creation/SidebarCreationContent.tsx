@@ -22,7 +22,7 @@ interface SidebarCreationContentProps {
   creation: CreationState;
   language: string;
   isExecuting: boolean;
-  isSetPlayMode: boolean;
+  isSetPlayMode?: boolean;
   t: (key: TranslationKey) => string;
   onNameJaChange: (name: string) => void;
   onNameEnChange: (name: string) => void;
@@ -57,7 +57,6 @@ export const SidebarCreationContent = memo(function SidebarCreationContent(
       return (
         <SidebarMetadataStep
           creation={props.creation}
-          isSetPlayMode={props.isSetPlayMode}
           t={props.t}
           onNameJaChange={props.onNameJaChange}
           onNameEnChange={props.onNameEnChange}
@@ -97,7 +96,6 @@ export const SidebarCreationContent = memo(function SidebarCreationContent(
         <SidebarEditingStep
           creation={props.creation}
           language={props.language}
-          isSetPlayMode={props.isSetPlayMode}
           t={props.t}
           onWizardStep={props.onWizardStep}
           onSwitchStep={props.onSwitchStep}

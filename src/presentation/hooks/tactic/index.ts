@@ -15,7 +15,11 @@ export {
   useTacticBuilder,
   type UseTacticBuilderReturn,
 } from "./useTacticBuilder";
-export { type ArrowPreview, type BallPassPreview } from "./tacticCreationTypes";
+export {
+  getCreationMode,
+  type ArrowPreview,
+  type BallPassPreview,
+} from "./tacticCreationTypes";
 export {
   useTacticExecution,
   type BallTrajectoryEntry,

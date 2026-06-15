@@ -7,7 +7,11 @@ import { PHASE_CONFIG, Z_INDEX } from "@shared/constants";
 import { useClickOutside } from "@presentation/hooks/ui";
 import type { PhaseKey } from "@shared/constants";
 import type { TranslationKey } from "@shared/i18n/translations";
-import type { CreationState, WizardStep } from "@presentation/hooks/tactic";
+import {
+  getCreationMode,
+  type CreationState,
+  type WizardStep,
+} from "@presentation/hooks/tactic";
 import {
   PHASE_DROPDOWN_KEYS,
   ICON_OPTIONS,
@@ -20,7 +24,7 @@ import {
 
 interface MetadataStepProps {
   creation: CreationState;
-  isSetPlayMode: boolean;
+  isSetPlayMode?: boolean;
   offset: { x: number; y: number };
   isDragging: boolean;
   handlePointerDown: (e: React.PointerEvent) => void;
@@ -35,7 +39,6 @@ interface MetadataStepProps {
 
 export const MetadataStep = memo(function MetadataStep({
   creation,
-  isSetPlayMode,
   offset,
   isDragging,
   handlePointerDown,
@@ -54,6 +57,9 @@ export const MetadataStep = memo(function MetadataStep({
   const nameJaInputRef = useRef<HTMLInputElement>(null);
 
   const currentPhaseConfig = PHASE_CONFIG[creation.gamePhase];
+  const creationMode = getCreationMode(creation);
+  const stepTotal =
+    creationMode === "setPlay" ? "6" : creationMode === "situation" ? "4" : "3";
 
   // ドロップダウン外クリックで閉じる
   const closePhaseDropdown = useCallback(() => setPhaseDropdownOpen(false), []);
@@ -86,7 +92,7 @@ export const MetadataStep = memo(function MetadataStep({
           <p className={STEP_INDICATOR}>
             {t("tactics.creation.stepIndicator")
               .replace("{current}", "1")
-              .replace("{total}", isSetPlayMode ? "6" : "3")}
+              .replace("{total}", stepTotal)}
           </p>
         </div>
 
@@ -173,7 +179,7 @@ export const MetadataStep = memo(function MetadataStep({
         </div>
 
         {/* フェーズ選択 */}
-        {isSetPlayMode ? (
+        {creationMode === "setPlay" ? (
           /* セットプレーモード時はフェーズ固定表示 */
           <div className="mb-4">
             <label className="text-[10px] text-slate-500 font-bold tracking-widest uppercase mb-1 block">
@@ -240,9 +246,17 @@ export const MetadataStep = memo(function MetadataStep({
           </button>
           <button
             type="button"
-            onClick={() =>
-              onWizardStep(isSetPlayMode ? "ballPosition" : "editing")
-            }
+            onClick={() => {
+              if (creationMode === "setPlay") {
+                onWizardStep("ballPosition");
+                return;
+              }
+              if (creationMode === "situation") {
+                onWizardStep("setPosition");
+                return;
+              }
+              onWizardStep("editing");
+            }}
             disabled={!creation.nameJa.trim() && !creation.nameEn.trim()}
             className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center justify-center gap-1.5 ${
               creation.nameJa.trim() || creation.nameEn.trim()

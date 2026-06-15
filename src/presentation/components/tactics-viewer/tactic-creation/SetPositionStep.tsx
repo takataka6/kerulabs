@@ -4,7 +4,11 @@
  */
 import { memo } from "react";
 import type { TranslationKey } from "@shared/i18n/translations";
-import type { CreationState, WizardStep } from "@presentation/hooks/tactic";
+import {
+  getCreationMode,
+  type CreationState,
+  type WizardStep,
+} from "@presentation/hooks/tactic";
 import {
   WIZARD_WRAPPER,
   CARD_BASE,
@@ -31,6 +35,9 @@ export const SetPositionStep = memo(function SetPositionStep({
   onWizardStep,
 }: SetPositionStepProps) {
   const posCount = creation.setPositions.size;
+  const creationMode = getCreationMode(creation);
+  const stepCurrent = creationMode === "setPlay" ? "4" : "2";
+  const stepTotal = creationMode === "setPlay" ? "6" : "4";
 
   return (
     <div
@@ -57,8 +64,8 @@ export const SetPositionStep = memo(function SetPositionStep({
           </h3>
           <p className={STEP_INDICATOR}>
             {t("tactics.creation.stepIndicator")
-              .replace("{current}", "4")
-              .replace("{total}", "6")}
+              .replace("{current}", stepCurrent)
+              .replace("{total}", stepTotal)}
           </p>
         </div>
 
@@ -83,7 +90,11 @@ export const SetPositionStep = memo(function SetPositionStep({
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={() => onWizardStep("ballTrajectory")}
+            onClick={() =>
+              onWizardStep(
+                creationMode === "setPlay" ? "ballTrajectory" : "metadata",
+              )
+            }
             className={`${BTN_SECONDARY} px-4 flex items-center justify-center gap-1`}
           >
             <span>←</span>
