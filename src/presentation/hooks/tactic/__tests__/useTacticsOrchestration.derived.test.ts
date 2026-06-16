@@ -426,6 +426,21 @@ describe("useTacticsOrchestration — 派生状態", () => {
   // ballHighlightPosition
   // ==========================================================================
   describe("ballHighlightPosition", () => {
+    it("ballPassStartPos があるときは開始位置をハイライトする", () => {
+      const params = createDefaultParams();
+      params.ballHook.ballPosition = null;
+
+      const { result } = renderHook(() => useTacticsOrchestration(params), {
+        wrapper: createWrapper(),
+      });
+
+      act(() => {
+        result.current.setBallPassStartPos({ x: 12, z: 6 });
+      });
+
+      expect(result.current.ballHighlightPosition).toEqual({ x: 12, z: 6 });
+    });
+
     it("executionPhase が highlight でないとき null", () => {
       setMockExecutionState({ executionPhase: "run" });
       const { result } = renderHook(
