@@ -409,6 +409,7 @@ describe("SidebarPanel", () => {
       const { props } = renderSidebarPanel();
 
       fireEvent.click(screen.getByText("tactics.creation.create"));
+      expect(props.phase.onResetTactic).toHaveBeenCalledTimes(1);
       expect(
         screen.getByText("tactics.creation.entry.title"),
       ).toBeInTheDocument();

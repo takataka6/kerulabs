@@ -719,7 +719,10 @@ export const SidebarPanel = memo(function SidebarPanel(
                 {/* 戦術作成/インポート/エクスポート */}
                 <div className="mt-3 pt-3 border-t border-slate-800/40 space-y-1.5">
                   <button
-                    onClick={() => setCreationEntryOpen(true)}
+                    onClick={() => {
+                      phase.onResetTactic();
+                      setCreationEntryOpen(true);
+                    }}
                     disabled={tactics.isCreating || tactics.isExecuting}
                     className={`w-full py-1.5 px-2.5 rounded-xl text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 ${
                       tactics.isCreating
