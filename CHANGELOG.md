@@ -7,6 +7,21 @@
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-06-16
+
+### Added
+
+- **通常のフィールドプレー戦術作成にシチュエーションモードを追加**: `standard / situation / setPlay` の作成モードを導入し、通常モードでも開始位置を先に調整した状態から戦術作成を始められるようにしました。
+
+### Changed
+
+- **戦術作成フローをモード別に整理**: フィールドプレーでは `通常戦術を作成` と `シチュエーションから作成` を選択できるようにし、`situation` では `metadata -> setPosition -> editing -> confirm` の流れで作成できるようにしました。
+
+### Fixed
+
+- **パス作成時の開始点フィードバック不足を修正**: パスの始点を設定した際に既存の `BallHighlight` を表示し、開始点が選択済みかどうかを視覚的に判別できるようにしました。
+- **戦術作成開始時の選択状態残りを修正**: `戦術作成` ボタン押下時に現在選択中の戦術を未選択へ戻し、作成導線に入った時点でUI状態が切り替わるようにしました。
+
 ## [0.9.4] - 2026-06-14
 
 ### Changed
@@ -264,7 +279,8 @@
 - **Husky + lint-staged**: コミット時の自動リント・フォーマット
 - **GitHub Actions CI**: 型チェック・リント・テストの自動実行
 
-[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.9.4...HEAD
+[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/takataka6/kerulabs/compare/v0.9.4...v0.10.0
 [0.9.4]: https://github.com/takataka6/kerulabs/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/takataka6/kerulabs/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/takataka6/kerulabs/compare/v0.9.1...v0.9.2
