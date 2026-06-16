@@ -186,6 +186,9 @@ export function useMergedTacticDisplay(
 
   // ── ボールハイライト位置 ──
   const ballHighlightPosition = useMemo(() => {
+    if (ballPassStartPos) {
+      return ballPassStartPos;
+    }
     if (executionPhase !== "highlight") return null;
     if (tacticCreation.creation?.ballPosition) {
       return tacticCreation.creation.ballPosition;
@@ -194,7 +197,12 @@ export function useMergedTacticDisplay(
       return executingBallPosition;
     }
     return null;
-  }, [executionPhase, tacticCreation.creation, executingBallPosition]);
+  }, [
+    ballPassStartPos,
+    executionPhase,
+    tacticCreation.creation,
+    executingBallPosition,
+  ]);
 
   return {
     mergedPlayerPositions,
