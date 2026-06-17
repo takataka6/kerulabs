@@ -32,6 +32,8 @@ export const TacticsHeader = memo(function TacticsHeader() {
 
   const { captureMode, headerVisible } = ui;
   const isHidden = captureMode || !headerVisible;
+  const awayTeamCountry =
+    opponentsHook.opponentTeam?.country ?? selectedTeam.country;
   const titleText = opponentsHook.opponentTeam
     ? `${selectedTeam.name} vs ${opponentsHook.opponentTeam.name}`
     : selectedTeam.name;
@@ -224,25 +226,31 @@ export const TacticsHeader = memo(function TacticsHeader() {
             </button>
           </div>
 
-          <div className="flex items-center gap-3">
-            {selectedTeam.country && (
-              <div className="text-xl sm:text-2xl hidden sm:block">
-                {getCountryInfo(selectedTeam.country, language).flag}
-              </div>
-            )}
-            <div className="text-center">
+          <div className="flex flex-col items-center gap-0.5">
+            <div className="flex items-center gap-3">
+              {selectedTeam.country && (
+                <div
+                  data-testid="tactics-header-home-flag"
+                  className="hidden h-8 items-center justify-center text-xl leading-none sm:flex sm:h-9 sm:text-2xl"
+                >
+                  {getCountryInfo(selectedTeam.country, language).flag}
+                </div>
+              )}
               <h1 className="text-sm sm:text-lg font-bold text-slate-100 tracking-tight truncate max-w-[140px] sm:max-w-none">
                 {titleText}
               </h1>
-              <p className="text-slate-400 text-[10px] sm:text-xs font-light tracking-wide truncate max-w-[140px] sm:max-w-none">
-                {selectedTeam.subtitle} • {currentFormation.name}
-              </p>
+              {awayTeamCountry && (
+                <div
+                  data-testid="tactics-header-away-flag"
+                  className="hidden h-8 items-center justify-center text-xl leading-none sm:flex sm:h-9 sm:text-2xl"
+                >
+                  {getCountryInfo(awayTeamCountry, language).flag}
+                </div>
+              )}
             </div>
-            {selectedTeam.country && (
-              <div className="text-xl sm:text-2xl hidden sm:block">
-                {getCountryInfo(selectedTeam.country, language).flag}
-              </div>
-            )}
+            <p className="text-slate-400 text-[10px] sm:text-xs font-light tracking-wide truncate max-w-[140px] sm:max-w-none">
+              {selectedTeam.subtitle} • {currentFormation.name}
+            </p>
           </div>
         </div>
       </header>

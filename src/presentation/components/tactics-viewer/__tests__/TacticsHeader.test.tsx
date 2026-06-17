@@ -67,6 +67,7 @@ function createFormation() {
 interface ContextOverrides {
   selectedTeam?: Team;
   currentFormation?: ReturnType<typeof createFormation>;
+  opponentTeam?: Team;
   ui?: Partial<{
     captureMode: boolean;
     headerVisible: boolean;
@@ -126,7 +127,7 @@ function createDefaultContexts(overrides: ContextOverrides = {}) {
         setShowOpponentFormationSelect: mockSetShowOpponentFormationSelect,
         setOpponentFormationId: mockSetOpponentFormationId,
         setShowOpponentSquadBuilder: mockSetShowOpponentSquadBuilder,
-        opponentTeam: undefined as Team | undefined,
+        opponentTeam: overrides.opponentTeam,
       },
       ballHook: {
         setBallPosition: mockSetBallPosition,
@@ -165,7 +166,14 @@ let mockExecutionContext: ReturnType<typeof createDefaultContexts>["execCtx"];
 
 vi.mock("@shared/constants/countries", () => ({
   getCountryInfo: (name: string) => ({
-    flag: "🏴",
+    flag:
+      name === "Japan"
+        ? "🇯🇵"
+        : name === "Spain"
+          ? "🇪🇸"
+          : name === "England"
+            ? "🏴"
+            : "🌍",
     name,
   }),
 }));
@@ -221,16 +229,32 @@ describe("TacticsHeader", () => {
   });
 
   it("相手チーム選択時はヘッダーに対戦カードを表示する", () => {
-    renderHeader();
-
-    mockExecutionContext.opponentsHook.opponentTeam = createTeam({
-      id: "opp-1" as never,
-      name: "Opponent FC",
+    renderHeader({
+      opponentTeam: createTeam({
+        id: "opp-1" as never,
+        name: "Opponent FC",
+        country: "Spain",
+      }),
     });
 
-    render(<TacticsHeader />);
-
     expect(screen.getByText("FC Test vs Opponent FC")).toBeInTheDocument();
+    expect(screen.getByTestId("tactics-header-home-flag")).toHaveTextContent(
+      "🇯🇵",
+    );
+    expect(screen.getByTestId("tactics-header-away-flag")).toHaveTextContent(
+      "🇪🇸",
+    );
+  });
+
+  it("相手チーム未選択時は左右とも自チームの国旗を表示する", () => {
+    renderHeader();
+
+    expect(screen.getByTestId("tactics-header-home-flag")).toHaveTextContent(
+      "🇯🇵",
+    );
+    expect(screen.getByTestId("tactics-header-away-flag")).toHaveTextContent(
+      "🇯🇵",
+    );
   });
 
   it("チーム選択ボタンをクリックすると setShowTeamSelection が呼ばれる", () => {
