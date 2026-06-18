@@ -238,6 +238,7 @@ vi.mock("../../hooks/ui", () => ({
     touchlineLocked: false,
     cameraAction: null,
     playerMarkerScale: 1,
+    playerMarkerShape: "circle",
     headerVisible: true,
     toggleSidebar: vi.fn(),
     setSidebarAnimating: vi.fn(),
@@ -256,6 +257,7 @@ vi.mock("../../hooks/ui", () => ({
     setTouchlineLocked: vi.fn(),
     setCameraAction: vi.fn(),
     setPlayerMarkerScale: vi.fn(),
+    setPlayerMarkerShape: vi.fn(),
     setHeaderVisible: vi.fn(),
   }),
   usePlayModePhase: () => ({

@@ -32,6 +32,8 @@ import {
   clampToFieldBounds,
 } from "@presentation/utils/threeCalculations";
 import type { GroupDragState, CardStatus } from "./SceneTypes";
+import type { MarkerShape } from "@shared/types";
+import { getMarkerShapeSegments } from "./markerShape";
 
 interface PlayerProps {
   position: { x: number; z: number };
@@ -50,6 +52,7 @@ interface PlayerProps {
   isSelected?: boolean;
   selectedRingColor?: string;
   markerScale?: number;
+  markerShape?: MarkerShape;
   draggable?: boolean;
   onDragStart?: () => void;
   onDragEnd?: (index: number, pos: { x: number; z: number }) => void;
@@ -81,6 +84,7 @@ export const Player = memo(function Player({
   isSelected = false,
   selectedRingColor,
   markerScale = 1,
+  markerShape = "circle",
   draggable = false,
   onDragStart,
   onDragEnd,
@@ -365,6 +369,8 @@ export const Player = memo(function Player({
     }
   }, [draggable, onClick]);
 
+  const markerSegments = getMarkerShapeSegments(markerShape);
+
   const handlePointerOut = useCallback(() => {
     if (!isDragging.current) {
       document.body.style.cursor = "auto";
@@ -389,7 +395,7 @@ export const Player = memo(function Player({
               DISK_GEOMETRY.RADIUS,
               DISK_GEOMETRY.RADIUS,
               DISK_GEOMETRY.HEIGHT,
-              DISK_GEOMETRY.SEGMENTS,
+              markerSegments,
             ]}
           />
           <meshStandardMaterial
@@ -409,9 +415,7 @@ export const Player = memo(function Player({
             position={[0, PLAYER_OFFSETS.PHOTO_Y, 0]}
             rotation={[-Math.PI / 2, 0, Math.PI]}
           >
-            <circleGeometry
-              args={[DISK_GEOMETRY.RADIUS, DISK_GEOMETRY.SEGMENTS]}
-            />
+            <circleGeometry args={[DISK_GEOMETRY.RADIUS, markerSegments]} />
             <meshBasicMaterial
               map={texture}
               fog={false}

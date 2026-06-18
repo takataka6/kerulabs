@@ -545,6 +545,7 @@
   "tactics.hideCards": "Hide cards",
   "tactics.showCards": "Show cards",
   "a11y.markerSize": "Marker size: {size}",
+  "a11y.markerShape": "Marker shape: {shape}",
   "a11y.lineColor": "{color} line color",
   "timeline.close": "Close timeline",
   "timeline.stepDuration": "Step {step} duration (ms)",

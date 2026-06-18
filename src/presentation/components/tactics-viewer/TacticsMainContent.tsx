@@ -297,6 +297,8 @@ export function TacticsMainContent() {
           onToggleCards={() => cardMgmt.setShowCards((prev) => !prev)}
           playerMarkerScale={ui.playerMarkerScale}
           onMarkerScaleChange={ui.setPlayerMarkerScale}
+          playerMarkerShape={ui.playerMarkerShape}
+          onMarkerShapeChange={ui.setPlayerMarkerShape}
           activeTactic={tOrch.activeTactic}
           showFlowchart={ui.showFlowchart}
           onToggleFlowchart={() => ui.setShowFlowchart((prev) => !prev)}
@@ -359,6 +361,7 @@ export function TacticsMainContent() {
             hiddenPlayerIndices={ui.hiddenPlayerIndices}
             labelFixed={ui.labelFixed}
             playerMarkerScale={ui.playerMarkerScale}
+            playerMarkerShape={ui.playerMarkerShape}
             playerCards={canvasMemo.canvasPlayerCards}
             teamName={selectedTeam.name}
             opponentTeamName={opponentsHook.opponentTeam?.name || ""}

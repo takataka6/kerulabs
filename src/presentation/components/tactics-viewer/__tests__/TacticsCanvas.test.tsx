@@ -91,6 +91,7 @@ function createDefaultProps(): React.ComponentProps<typeof TacticsCanvas> {
     hiddenPlayerIndices: new Set(),
     labelFixed: false,
     playerMarkerScale: 1,
+    playerMarkerShape: "circle",
     playerCards: {},
     teamName: "Home",
     opponentTeamName: "Away",

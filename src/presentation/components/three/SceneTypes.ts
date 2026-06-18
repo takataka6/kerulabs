@@ -8,6 +8,7 @@
 import type { ConnectionLine } from "./PlayerConnectionLines";
 import type { PitchConfig } from "@shared/constants/pitchConfig";
 import type { SceneBackgroundPreferenceV1 } from "@shared/types";
+import type { MarkerShape } from "@shared/types";
 
 export type CardStatus = "none" | "yellow" | "double_yellow" | "red";
 
@@ -45,6 +46,7 @@ export interface SceneProps {
   hiddenPlayerIndices?: Set<number>;
   labelFixed?: boolean;
   playerMarkerScale?: number;
+  playerMarkerShape?: MarkerShape;
   playerCards?: Record<number, CardStatus>;
   teamName?: string;
   opponentTeamName?: string;
