@@ -545,6 +545,7 @@
   "tactics.hideCards": "カード非表示",
   "tactics.showCards": "カード表示",
   "a11y.markerSize": "マーカーサイズ: {size}",
+  "a11y.markerShape": "マーカー形状: {shape}",
   "a11y.lineColor": "{color}ラインカラー",
   "timeline.close": "タイムラインを閉じる",
   "timeline.stepDuration": "ステップ{step}の持続時間(ms)",

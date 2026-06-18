@@ -27,6 +27,8 @@ import {
   clampToFieldBounds,
 } from "@presentation/utils/threeCalculations";
 import type { GroupDragState } from "./SceneTypes";
+import type { MarkerShape } from "@shared/types";
+import { getMarkerShapeRotationY, getMarkerShapeSegments } from "./markerShape";
 
 interface OpponentMarkerProps {
   position: { x: number; z: number };
@@ -53,6 +55,7 @@ interface OpponentMarkerProps {
   groupDragState?: React.MutableRefObject<GroupDragState>;
   fieldBounds?: { minX: number; maxX: number; minZ: number; maxZ: number };
   markerScale?: number;
+  markerShape?: MarkerShape;
 }
 
 export const OpponentMarker = memo(function OpponentMarker({
@@ -74,6 +77,7 @@ export const OpponentMarker = memo(function OpponentMarker({
   groupDragState,
   fieldBounds,
   markerScale = 1,
+  markerShape = "circle",
 }: OpponentMarkerProps) {
   const [isDraggingState, setIsDraggingState] = useState(false);
   const fieldBoundsResolved = useMemo(
@@ -97,6 +101,8 @@ export const OpponentMarker = memo(function OpponentMarker({
   const cachedRect = useRef<DOMRect | null>(null);
 
   const colors = useMemo(() => deriveOpponentColors(color), [color]);
+  const markerSegments = getMarkerShapeSegments(markerShape);
+  const markerRotationY = getMarkerShapeRotationY(markerShape, true);
 
   // ドラッグ中のフィールド座標を算出
   const getFieldPosition = useCallback(
@@ -332,6 +338,7 @@ export const OpponentMarker = memo(function OpponentMarker({
         <mesh
           ref={meshRef}
           position={[0, DISK_GEOMETRY.Y_POSITION, 0]}
+          rotation={[0, markerRotationY, 0]}
           onPointerDown={handlePointerDown}
           onClick={onClick ? handleClick : undefined}
           onContextMenu={handleContextMenu}
@@ -343,7 +350,7 @@ export const OpponentMarker = memo(function OpponentMarker({
               DISK_GEOMETRY.RADIUS,
               DISK_GEOMETRY.RADIUS,
               DISK_GEOMETRY.HEIGHT,
-              DISK_GEOMETRY.SEGMENTS,
+              markerSegments,
             ]}
           />
           <meshStandardMaterial

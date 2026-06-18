@@ -16,7 +16,7 @@ import type { Team } from "@domain/entities/Team";
 import type { Formation } from "@domain/entities/Formation";
 import type { PitchConfig } from "@shared/constants/pitchConfig";
 import type { ConnectionLine } from "@presentation/hooks/field";
-import type { SceneBackgroundPreferenceV1 } from "@shared/types";
+import type { MarkerShape, SceneBackgroundPreferenceV1 } from "@shared/types";
 import type {
   Opponent,
   PlayerData,
@@ -55,6 +55,7 @@ interface TacticsCanvasProps {
   hiddenPlayerIndices: Set<number>;
   labelFixed: boolean;
   playerMarkerScale: number;
+  playerMarkerShape: MarkerShape;
   playerCards: Record<number, CardStatus>;
   // チーム情報
   teamName: string;
@@ -180,6 +181,7 @@ export const TacticsCanvas = memo(function TacticsCanvas(
     hiddenPlayerIndices,
     labelFixed,
     playerMarkerScale,
+    playerMarkerShape,
     playerCards,
     teamName,
     opponentTeamName,
@@ -399,6 +401,7 @@ export const TacticsCanvas = memo(function TacticsCanvas(
           hiddenPlayerIndices={hiddenPlayerIndices}
           labelFixed={labelFixed}
           playerMarkerScale={playerMarkerScale}
+          playerMarkerShape={playerMarkerShape}
           playerCards={playerCards}
           teamName={teamName}
           opponentTeamName={opponentTeamName}

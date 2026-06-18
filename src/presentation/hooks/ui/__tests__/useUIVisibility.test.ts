@@ -67,6 +67,11 @@ describe("useUIVisibility", () => {
     expect(result.current.playerMarkerScale).toBe(1);
   });
 
+  it("playerMarkerShape のデフォルトが circle である", () => {
+    const { result } = renderHook(() => useUIVisibility());
+    expect(result.current.playerMarkerShape).toBe("circle");
+  });
+
   it("selectedImagePresetId の初期値は none である", () => {
     const { result } = renderHook(() => useUIVisibility());
     expect(result.current.selectedImagePresetId).toBe("none");

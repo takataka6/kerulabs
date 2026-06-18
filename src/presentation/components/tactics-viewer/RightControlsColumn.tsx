@@ -7,6 +7,7 @@ import type { Formation } from "@domain/entities/Formation";
 import type { Tactic } from "@domain/entities/Tactic";
 import type { Team } from "@domain/entities/Team";
 import type { GameMode } from "@shared/types/GameMode";
+import type { MarkerShape } from "@shared/types";
 import type {
   usePlayerView,
   useBackgroundSettings,
@@ -24,6 +25,16 @@ import {
   BackgroundSettingsPanel,
   ConnectionLinesButton,
 } from "./right-controls";
+
+const MARKER_SHAPE_OPTIONS: Array<{
+  value: MarkerShape;
+  label: string;
+  icon: string;
+}> = [
+  { value: "circle", label: "Circle", icon: "○" },
+  { value: "triangle", label: "Triangle", icon: "△" },
+  { value: "pentagon", label: "Pentagon", icon: "⬟" },
+];
 
 const SECONDARY_PANEL_CLASS =
   "bg-[linear-gradient(180deg,rgba(15,23,42,0.92)_0%,rgba(2,6,23,0.9)_100%)] backdrop-blur-xl rounded-[20px] border border-slate-600/35 shadow-[0_6px_16px_rgba(2,6,23,0.12),0_1px_3px_rgba(2,6,23,0.08)] overflow-hidden ring-1 ring-white/5";
@@ -99,6 +110,8 @@ interface RightControlsColumnProps {
   // マーカー
   playerMarkerScale: number;
   onMarkerScaleChange: (scale: number) => void;
+  playerMarkerShape: MarkerShape;
+  onMarkerShapeChange: (shape: MarkerShape) => void;
 
   // フローチャート
   activeTactic: Tactic | undefined;
@@ -153,6 +166,8 @@ export const RightControlsColumn = memo(function RightControlsColumn({
   onToggleCards,
   playerMarkerScale,
   onMarkerScaleChange,
+  playerMarkerShape,
+  onMarkerShapeChange,
   activeTactic,
   showFlowchart,
   onToggleFlowchart,
@@ -517,6 +532,28 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                       )}
                     >
                       {s === 0.9 ? "S" : s === 1.0 ? "M" : "L"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* マーカー形状 */}
+              <div
+                className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} flex items-center min-h-[32px] sm:min-h-[30px] xl:min-h-[36px] p-[3px] sm:p-[3px] xl:p-0.5`}
+              >
+                <div className="flex items-center gap-1 flex-1 h-full">
+                  {MARKER_SHAPE_OPTIONS.map((shape) => (
+                    <button
+                      key={shape.value}
+                      onClick={() => onMarkerShapeChange(shape.value)}
+                      className={`flex-1 min-h-[26px] py-1 px-1.5 text-sm sm:text-base xl:text-lg font-semibold rounded-lg transition-all duration-200 flex items-center justify-center ${playerMarkerShape === shape.value ? "bg-white/[0.08] text-white" : "text-slate-400 hover:bg-white/[0.06] hover:text-slate-300"}`}
+                      aria-label={t("a11y.markerShape").replace(
+                        "{shape}",
+                        shape.label,
+                      )}
+                      title={shape.label}
+                    >
+                      {shape.icon}
                     </button>
                   ))}
                 </div>

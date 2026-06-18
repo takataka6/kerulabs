@@ -69,6 +69,7 @@ export const Scene = memo(function Scene({
   hiddenPlayerIndices = new Set(),
   labelFixed = false,
   playerMarkerScale = 1,
+  playerMarkerShape = "circle",
   playerCards = {},
   teamName = "",
   opponentTeamName = "",
@@ -494,6 +495,7 @@ export const Scene = memo(function Scene({
           groupDragState={groupDragRef}
           fieldBounds={bounds}
           markerScale={playerMarkerScale}
+          markerShape={playerMarkerShape}
         />
       ))}
 
@@ -538,6 +540,7 @@ export const Scene = memo(function Scene({
             index === lineFromPlayerIndex ? lineColor : undefined
           }
           markerScale={playerMarkerScale}
+          markerShape={playerMarkerShape}
           draggable={playerDraggable}
           onDragStart={onDragStart}
           onDragEnd={onPlayerDragEnd}

@@ -113,6 +113,8 @@ function defaultProps(
     onToggleCards: vi.fn(),
     playerMarkerScale: 1.0,
     onMarkerScaleChange: vi.fn(),
+    playerMarkerShape: "circle",
+    onMarkerShapeChange: vi.fn(),
     activeTactic: undefined,
     showFlowchart: false,
     onToggleFlowchart: vi.fn(),
@@ -644,6 +646,22 @@ describe("RightControlsColumn", () => {
 
       fireEvent.click(screen.getByText("L"));
       expect(props.onMarkerScaleChange).toHaveBeenCalledWith(1.1);
+    });
+
+    it("三角形ボタンクリックで onMarkerShapeChange('triangle') が呼ばれる", () => {
+      const props = defaultProps();
+      render(<RightControlsColumn {...props} />);
+
+      fireEvent.click(screen.getByTitle("Triangle"));
+      expect(props.onMarkerShapeChange).toHaveBeenCalledWith("triangle");
+    });
+
+    it("五角形ボタンクリックで onMarkerShapeChange('pentagon') が呼ばれる", () => {
+      const props = defaultProps();
+      render(<RightControlsColumn {...props} />);
+
+      fireEvent.click(screen.getByTitle("Pentagon"));
+      expect(props.onMarkerShapeChange).toHaveBeenCalledWith("pentagon");
     });
 
     it("フローチャートボタンクリックで onToggleFlowchart が呼ばれる", () => {

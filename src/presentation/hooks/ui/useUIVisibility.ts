@@ -3,6 +3,7 @@
  * @description TacticsViewerPageのUI表示状態を一括管理するフック。モーダル・パネル・サイドバー等の表示/非表示を提供する。
  */
 import { useState, useCallback } from "react";
+import { DEFAULT_MARKER_SHAPE, type MarkerShape } from "@shared/types";
 
 /**
  * TacticsViewerPage の UI 表示状態を一括管理するフック。
@@ -52,6 +53,8 @@ export function useUIVisibility() {
 
   // ── マーカーサイズ ──
   const [playerMarkerScale, setPlayerMarkerScale] = useState(1);
+  const [playerMarkerShape, setPlayerMarkerShape] =
+    useState<MarkerShape>(DEFAULT_MARKER_SHAPE);
 
   // ── カメラ ──
   const [cameraAction, setCameraAction] = useState<
@@ -131,6 +134,8 @@ export function useUIVisibility() {
     // マーカー
     playerMarkerScale,
     setPlayerMarkerScale,
+    playerMarkerShape,
+    setPlayerMarkerShape,
 
     // カメラ
     cameraAction,

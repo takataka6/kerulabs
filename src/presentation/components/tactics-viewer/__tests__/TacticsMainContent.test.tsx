@@ -132,6 +132,7 @@ function createMockUIContext() {
       touchlineLocked: false,
       cameraAction: null,
       playerMarkerScale: 1,
+      playerMarkerShape: "circle",
       showFlowchart: false,
       sidebarOpen: false,
       headerVisible: true,
@@ -146,6 +147,7 @@ function createMockUIContext() {
       setTouchlineLocked: noop,
       setCameraAction: noop,
       setPlayerMarkerScale: noop,
+      setPlayerMarkerShape: noop,
       setShowFlowchart: noop,
       setCaptureMode: noop,
       setSelectedImagePresetId: noop,
@@ -731,6 +733,18 @@ describe("TacticsMainContent", () => {
       ) => void;
       change(1.1);
       expect(mockUIContext.ui.setPlayerMarkerScale).toHaveBeenCalledWith(1.1);
+    });
+
+    it("onMarkerShapeChange delegates to context", () => {
+      render(<TacticsMainContent />);
+
+      const change = capturedRightControlsProps.onMarkerShapeChange as (
+        shape: string,
+      ) => void;
+      change("triangle");
+      expect(mockUIContext.ui.setPlayerMarkerShape).toHaveBeenCalledWith(
+        "triangle",
+      );
     });
 
     it("onToggleSquadPanel toggles squadPanelOpen via SquadPanel props", () => {
