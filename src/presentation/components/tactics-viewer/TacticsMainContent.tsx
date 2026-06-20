@@ -89,6 +89,12 @@ export function TacticsMainContent() {
     setShowGuide(false);
     preferencesService.set("tacticsViewerGuideDismissed", true);
   }, [preferencesService]);
+  const handleTogglePlayerView = useCallback(() => {
+    if (!playerView.playerViewEnabled && connLines.lineDrawingMode) {
+      connLines.resetLineDrawingState();
+    }
+    playerView.togglePlayerView();
+  }, [connLines, playerView]);
   const handleCloseOpponentFormationSelect = useCallback(() => {
     opponentsHook.setShowOpponentFormationSelect(false);
     opponentsHook.setOpponentFormationId(null);
@@ -273,6 +279,7 @@ export function TacticsMainContent() {
           onUndo={handleUndo}
           onRedo={handleRedo}
           playerView={playerView}
+          onTogglePlayerView={handleTogglePlayerView}
           opponentsHook={opponentsHook}
           teams={teams}
           pitchConfig={playModePhase.pitchConfig}

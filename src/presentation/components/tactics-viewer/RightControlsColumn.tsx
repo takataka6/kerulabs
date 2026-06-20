@@ -82,6 +82,7 @@ interface RightControlsColumnProps {
 
   // プレイヤービュー
   playerView: ReturnType<typeof usePlayerView>;
+  onTogglePlayerView: () => void;
 
   // 相手チーム
   opponentsHook: ReturnType<typeof useOpponents>;
@@ -148,6 +149,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
   onToggleFormationEditor,
   onUpdateTeam,
   playerView,
+  onTogglePlayerView,
   opponentsHook,
   teams,
   pitchConfig,
@@ -603,7 +605,7 @@ export const RightControlsColumn = memo(function RightControlsColumn({
                   className={`${SECONDARY_PANEL_CLASS} ${RAIL_PANEL_WIDTH_CLASS} ${playerView.playerViewEnabled ? "!border-amber-500/45" : "border-slate-700/45"}`}
                 >
                   <button
-                    onClick={playerView.togglePlayerView}
+                    onClick={onTogglePlayerView}
                     className={`${RAIL_BUTTON_CLASS} ${playerView.playerViewEnabled ? "!bg-amber-600/18 !text-amber-200 hover:!bg-amber-600/24" : RAIL_BUTTON_INACTIVE_CLASS}`}
                     aria-label={t("tactics.playerView")}
                     aria-pressed={playerView.playerViewEnabled}

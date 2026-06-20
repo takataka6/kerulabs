@@ -379,14 +379,14 @@ export const SketchToolbar = memo(function SketchToolbar({
                     e.stopPropagation();
                     onRemoveLayer(layer.id);
                   }}
-                  className="w-4 h-4 flex items-center justify-center text-slate-600 hover:text-red-400 transition-colors"
+                  className="flex h-6 w-6 items-center justify-center rounded-md border border-red-400/25 bg-red-500/10 text-red-300 shadow-[0_2px_6px_rgba(127,29,29,0.2)] transition-all duration-200 hover:border-red-300/45 hover:bg-red-500/20 hover:text-red-100"
                   aria-label="Delete layer"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"
-                    className="w-3 h-3"
+                    className="h-3.5 w-3.5"
                   >
                     <path
                       fillRule="evenodd"

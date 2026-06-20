@@ -141,9 +141,7 @@ export function TacticsViewerPage() {
   const connLines = useConnectionLines(pushCurrentSnapshot, () => {
     opponentsRef.current.setOpponentPlacementMode(false);
     ballRef.current.setBallPlacementMode(false);
-    playerView.setPlayerViewEnabled(false);
-    playerView.setSelectedPlayerIndex(null);
-    playerView.setSelectedOpponentViewId(null);
+    playerView.exitPlayerView();
   });
   const ballHook = useBallPlacement(pushCurrentSnapshot, () => {
     opponentsRef.current.setOpponentPlacementMode(false);

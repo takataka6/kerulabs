@@ -81,6 +81,7 @@ function defaultProps(
       playerViewIndex: null,
       setPlayerViewIndex: vi.fn(),
     } as never,
+    onTogglePlayerView: vi.fn(),
     opponentsHook: {
       opponentPlacementMode: false,
       toggleOpponentPlacement: vi.fn(),
@@ -710,7 +711,7 @@ describe("RightControlsColumn", () => {
       render(<RightControlsColumn {...props} />);
 
       fireEvent.click(screen.getByLabelText("tactics.playerView"));
-      expect(props.playerView.togglePlayerView).toHaveBeenCalled();
+      expect(props.onTogglePlayerView).toHaveBeenCalled();
     });
 
     it("ボール配置ボタンクリックで toggleBallPlacement が呼ばれる", () => {

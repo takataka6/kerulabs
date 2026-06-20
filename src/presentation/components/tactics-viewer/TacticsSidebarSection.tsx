@@ -43,7 +43,7 @@ export function TacticsSidebarSection() {
                 : "top-[88px] sm:top-[104px]"
               : ui.captureMode
                 ? "top-auto bottom-4 sm:bottom-6"
-                : "top-auto bottom-12 sm:bottom-14"
+                : "top-auto bottom-[calc(env(safe-area-inset-bottom,0px)+5.25rem)] sm:bottom-[calc(env(safe-area-inset-bottom,0px)+6rem)] xl:bottom-[calc(env(safe-area-inset-bottom,0px)+6.75rem)]"
           } w-7 sm:w-8 h-9 sm:h-10 bg-[linear-gradient(180deg,rgba(30,41,59,0.96)_0%,rgba(15,23,42,0.96)_100%)] backdrop-blur-xl border border-slate-600/45 rounded-r-2xl flex items-center justify-center transition-all duration-300 ease-in-out shadow-[0_8px_18px_rgba(2,6,23,0.14),0_2px_4px_rgba(2,6,23,0.08)] ring-1 ring-white/5 ${
             effectiveSidebarOpen ? "left-60 xl:left-72" : "left-0"
           } ${effectiveSidebarOpen ? "text-white hover:-translate-y-[1px] hover:border-slate-400/60" : "text-slate-400 hover:-translate-y-[1px] hover:border-slate-500/60 hover:text-slate-200"} ${ui.captureMode && tOrch.isExecuting ? "opacity-0 pointer-events-none" : ""}`}
