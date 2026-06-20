@@ -81,18 +81,8 @@ export function TacticsMainContent() {
 
   const { playersData, colorsData, lineupPlayers, lineupTeamInfo } =
     displayData;
-  const availableOpponentFormationIds = opponentsHook.opponentTeam
-    ? new Set(
-        getFormationOptionsWithDefault(
-          opponentsHook.opponentTeam.availableFormations,
-          playModePhase.gameMode,
-        ),
-      )
-    : null;
-  const availableOpponentFormations = availableOpponentFormationIds
-    ? formationMgmt.gameModeFormations.filter((formation) =>
-        availableOpponentFormationIds.has(formation.id.value),
-      )
+  const availableOpponentFormations = opponentsHook.opponentTeam
+    ? formationMgmt.gameModeFormations
     : [];
 
   const handleDismissGuide = useCallback(() => {
@@ -107,8 +97,19 @@ export function TacticsMainContent() {
     (formationId: string) => {
       const team = opponentsHook.opponentTeam;
       if (!team) return;
+      const teamFormationIds = new Set(
+        getFormationOptionsWithDefault(
+          team.availableFormations,
+          playModePhase.gameMode,
+        ),
+      );
+      const canUseSelectedSquadDirectly = teamFormationIds.has(formationId);
 
-      if (team.selectedSquad && team.selectedSquad.length > 0) {
+      if (
+        canUseSelectedSquadDirectly &&
+        team.selectedSquad &&
+        team.selectedSquad.length > 0
+      ) {
         const players = team.selectedSquad.map((playerId) =>
           playerId
             ? team.players.find((player) => player.id.value === playerId) ||
@@ -122,7 +123,7 @@ export function TacticsMainContent() {
         opponentsHook.setShowOpponentSquadBuilder(true);
       }
     },
-    [opponentsHook],
+    [opponentsHook, playModePhase.gameMode],
   );
 
   useEffect(() => {
