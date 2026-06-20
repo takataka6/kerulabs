@@ -151,6 +151,7 @@ function createMockUIContext() {
       setShowFlowchart: noop,
       setCaptureMode: noop,
       setSelectedImagePresetId: noop,
+      setSidebarOpen: noop,
       toggleSidebar: noop,
       setShowCards: noop,
       setShowPlayerManagement: noop,
@@ -410,6 +411,20 @@ describe("TacticsMainContent", () => {
     expect(screen.getByTestId("manager-display")).toBeInTheDocument();
     expect(screen.getByTestId("view-lock-panel")).toBeInTheDocument();
     expect(screen.getByTestId("player-view-hud")).toBeInTheDocument();
+  });
+
+  it("左サイドバーが開いている間は監督表示を描画しない", () => {
+    mockUIContext.ui.sidebarOpen = true;
+    render(<TacticsMainContent />);
+
+    expect(screen.queryByTestId("manager-display")).not.toBeInTheDocument();
+  });
+
+  it("スケッチモード中は監督表示を描画しない", () => {
+    mockExecutionContext.sketch.sketchMode = true;
+    render(<TacticsMainContent />);
+
+    expect(screen.queryByTestId("manager-display")).not.toBeInTheDocument();
   });
 
   it("初回ガイドを表示する", () => {
@@ -835,20 +850,29 @@ describe("TacticsMainContent", () => {
         capturedRightControlsProps.onToggleSketchMode as () => void;
       toggle();
       expect(mockExecutionContext.sketch.toggleSketchMode).toHaveBeenCalled();
-      expect(mockUIContext.ui.toggleSidebar).toHaveBeenCalled();
+      expect(mockUIContext.ui.setSidebarAnimating).toHaveBeenCalledWith(true);
+      expect(mockUIContext.ui.setSidebarOpen).toHaveBeenCalledWith(false);
     });
 
     it("onToggleSketchMode does not close sidebar when exiting sketch mode", () => {
       mockExecutionContext.sketch.sketchMode = true;
-      mockUIContext.ui.sidebarOpen = true;
+      mockUIContext.ui.sidebarOpen = false;
       render(<TacticsMainContent />);
 
       const toggle =
         capturedRightControlsProps.onToggleSketchMode as () => void;
       toggle();
       expect(mockExecutionContext.sketch.toggleSketchMode).toHaveBeenCalled();
-      // willEnterSketch is false (since sketchMode was true), so sidebar should NOT be toggled
-      expect(mockUIContext.ui.toggleSidebar).not.toHaveBeenCalled();
+      expect(mockUIContext.ui.setSidebarOpen).not.toHaveBeenCalled();
+    });
+
+    it("スケッチモード中にサイドバーが開いていたら強制的に閉じる", () => {
+      mockExecutionContext.sketch.sketchMode = true;
+      mockUIContext.ui.sidebarOpen = true;
+      render(<TacticsMainContent />);
+
+      expect(mockUIContext.ui.setSidebarAnimating).toHaveBeenCalledWith(true);
+      expect(mockUIContext.ui.setSidebarOpen).toHaveBeenCalledWith(false);
     });
 
     it("スケッチモード中に他のボタンを押すとスケッチモードを解除する", () => {

@@ -17,41 +17,46 @@ import { TacticExportModal } from "./TacticExportModal";
 
 export function TacticsSidebarSection() {
   const { ui } = useTacticsUI();
-  const { playModePhase, tOrch, lineupAnimation, tacticsLoading } =
+  const { playModePhase, tOrch, lineupAnimation, tacticsLoading, sketch } =
     useTacticsExecution();
   const { t, tDynamic, language } = useLanguage();
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const effectiveSidebarOpen = !sketch.sketchMode && ui.sidebarOpen;
 
   return (
     <>
       {/* サイドバー開閉ボタン */}
-      <button
-        onClick={ui.toggleSidebar}
-        aria-label={
-          ui.sidebarOpen ? t("a11y.closeSidebar") : t("a11y.openSidebar")
-        }
-        aria-expanded={ui.sidebarOpen}
-        className={`sidebar-toggle fixed z-40 ${
-          ui.sidebarOpen
-            ? ui.captureMode || !ui.headerVisible
-              ? "top-2"
-              : "top-[88px] sm:top-[104px]"
-            : ui.captureMode
-              ? "top-auto bottom-4 sm:bottom-6"
-              : "top-auto bottom-12 sm:bottom-14"
-        } w-7 sm:w-8 h-9 sm:h-10 bg-[linear-gradient(180deg,rgba(30,41,59,0.96)_0%,rgba(15,23,42,0.96)_100%)] backdrop-blur-xl border border-slate-600/45 rounded-r-2xl flex items-center justify-center transition-all duration-300 ease-in-out shadow-[0_8px_18px_rgba(2,6,23,0.14),0_2px_4px_rgba(2,6,23,0.08)] ring-1 ring-white/5 ${
-          ui.sidebarOpen ? "left-60 xl:left-72" : "left-0"
-        } ${ui.sidebarOpen ? "text-white hover:-translate-y-[1px] hover:border-slate-400/60" : "text-slate-400 hover:-translate-y-[1px] hover:border-slate-500/60 hover:text-slate-200"} ${ui.captureMode && tOrch.isExecuting ? "opacity-0 pointer-events-none" : ""}`}
-        style={lineupAnimation.isActive ? { display: "none" } : undefined}
-      >
-        <span className="text-xs" aria-hidden="true">
-          {ui.sidebarOpen ? "◀" : "▶"}
-        </span>
-      </button>
+      {!sketch.sketchMode && (
+        <button
+          onClick={ui.toggleSidebar}
+          aria-label={
+            effectiveSidebarOpen
+              ? t("a11y.closeSidebar")
+              : t("a11y.openSidebar")
+          }
+          aria-expanded={effectiveSidebarOpen}
+          className={`sidebar-toggle fixed z-40 ${
+            effectiveSidebarOpen
+              ? ui.captureMode || !ui.headerVisible
+                ? "top-2"
+                : "top-[88px] sm:top-[104px]"
+              : ui.captureMode
+                ? "top-auto bottom-4 sm:bottom-6"
+                : "top-auto bottom-12 sm:bottom-14"
+          } w-7 sm:w-8 h-9 sm:h-10 bg-[linear-gradient(180deg,rgba(30,41,59,0.96)_0%,rgba(15,23,42,0.96)_100%)] backdrop-blur-xl border border-slate-600/45 rounded-r-2xl flex items-center justify-center transition-all duration-300 ease-in-out shadow-[0_8px_18px_rgba(2,6,23,0.14),0_2px_4px_rgba(2,6,23,0.08)] ring-1 ring-white/5 ${
+            effectiveSidebarOpen ? "left-60 xl:left-72" : "left-0"
+          } ${effectiveSidebarOpen ? "text-white hover:-translate-y-[1px] hover:border-slate-400/60" : "text-slate-400 hover:-translate-y-[1px] hover:border-slate-500/60 hover:text-slate-200"} ${ui.captureMode && tOrch.isExecuting ? "opacity-0 pointer-events-none" : ""}`}
+          style={lineupAnimation.isActive ? { display: "none" } : undefined}
+        >
+          <span className="text-xs" aria-hidden="true">
+            {effectiveSidebarOpen ? "◀" : "▶"}
+          </span>
+        </button>
+      )}
 
       {/* モバイル: サイドバー背景オーバーレイ（タップで閉じる） */}
-      {ui.sidebarOpen && !lineupAnimation.isActive && (
+      {effectiveSidebarOpen && !lineupAnimation.isActive && (
         <div
           className="fixed inset-0 bg-black/40 z-20 sm:hidden"
           onClick={ui.toggleSidebar}
@@ -70,7 +75,7 @@ export function TacticsSidebarSection() {
       >
         <SidebarPanel
           layout={{
-            sidebarOpen: ui.sidebarOpen,
+            sidebarOpen: effectiveSidebarOpen,
             sidebarAnimating: ui.sidebarAnimating,
             onTransitionEnd: () => ui.setSidebarAnimating(false),
             isActive: lineupAnimation.isActive,
