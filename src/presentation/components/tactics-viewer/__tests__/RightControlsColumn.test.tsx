@@ -85,7 +85,10 @@ function defaultProps(
       opponentPlacementMode: false,
       toggleOpponentPlacement: vi.fn(),
       opponents: [],
+      selectedOpponentPlayerId: null,
       clearOpponents: vi.fn(),
+      showOpponentFormationSelect: false,
+      showOpponentSquadBuilder: false,
       showOpponentNames: false,
       setShowOpponentNames: vi.fn(),
       showOpponentNumbers: true,
@@ -108,6 +111,7 @@ function defaultProps(
     bgSettings: {
       background: "default",
       setBackground: vi.fn(),
+      showSceneBgSettings: false,
     } as never,
     showCards: false,
     onToggleCards: vi.fn(),
@@ -160,6 +164,35 @@ describe("RightControlsColumn", () => {
       );
 
       expect(screen.queryByText("tactics.formation")).not.toBeInTheDocument();
+    });
+
+    it("ポップアップ表示中は右レールの操作レイヤーをロックする", () => {
+      render(
+        <RightControlsColumn
+          {...defaultProps({ showFormationEditor: true })}
+        />,
+      );
+
+      expect(screen.getByTestId("right-controls-action-layer")).toHaveClass(
+        "blur-[3px]",
+        "opacity-55",
+        "saturate-75",
+      );
+      expect(
+        screen.getByTestId("right-controls-lock-overlay"),
+      ).toBeInTheDocument();
+      expect(screen.getByTestId("formation-editor")).toBeInTheDocument();
+    });
+
+    it("ポップアップ非表示時は右レールの操作レイヤーをロックしない", () => {
+      render(<RightControlsColumn {...defaultProps()} />);
+
+      expect(screen.getByTestId("right-controls-action-layer")).not.toHaveClass(
+        "blur-[3px]",
+      );
+      expect(
+        screen.queryByTestId("right-controls-lock-overlay"),
+      ).not.toBeInTheDocument();
     });
   });
 

@@ -5,6 +5,7 @@ import {
   DEFAULT_PITCH_COLOR,
   DEFAULT_SCENE_BG_COLOR,
   DEFAULT_SCENE_BACKGROUND,
+  SCENE_BACKGROUND_GRADIENT_PRESETS,
   THREE_COLOR_SCENE_BACKGROUND_GRADIENT_PRESETS,
 } from "@shared/constants";
 
@@ -59,6 +60,28 @@ describe("useBackgroundSettings", () => {
       version: 1,
       mode: "solid",
       color: DEFAULT_SCENE_BG_COLOR,
+    });
+  });
+
+  it("背景タイプをグラデーションに切り替えられる", () => {
+    const { result } = renderHook(() => useBackgroundSettings());
+    const preset = SCENE_BACKGROUND_GRADIENT_PRESETS[0];
+
+    act(() => result.current.setSceneBackgroundMode("gradient"));
+
+    expect(result.current.sceneBackground).toEqual({
+      version: 1,
+      mode: "gradient",
+      gradient: {
+        kind: "linear",
+        from: preset.from,
+        mid: preset.mid,
+        midPosition: preset.midPosition,
+        midWidth: preset.midWidth,
+        to: preset.to,
+        angle: preset.angle,
+        presetId: preset.id,
+      },
     });
   });
 

@@ -7,6 +7,13 @@ import type { useBackgroundSettings } from "@presentation/hooks/ui";
 import { useClickOutside } from "@presentation/hooks/ui";
 import { ImageCropModal } from "@presentation/components/ui";
 import {
+  RIGHT_RAIL_POPUP_ANCHOR_CLASS,
+  RIGHT_RAIL_POPUP_CLOSE_BUTTON_CLASS,
+  RIGHT_RAIL_POPUP_HEADER_ACTIONS_CLASS,
+  RIGHT_RAIL_POPUP_HEADER_CLASS,
+  RIGHT_RAIL_POPUP_HEADER_TITLE_CLASS,
+} from "../rightRailPopupLayout";
+import {
   PITCH_COLOR_PRESETS,
   THREE_COLOR_SCENE_BACKGROUND_GRADIENT_PRESETS,
   TWO_COLOR_SCENE_BACKGROUND_GRADIENT_PRESETS,
@@ -84,13 +91,13 @@ export const BackgroundSettingsPanelContent = memo(
     return (
       <div
         ref={panelRef}
-        className="absolute top-2 right-14 z-40 w-[320px] max-w-[calc(100vw-1rem)] rounded-2xl border border-slate-700/50 bg-slate-900/95 shadow-2xl backdrop-blur-xl sm:top-3 sm:right-[164px] xl:right-[176px]"
+        className={`${RIGHT_RAIL_POPUP_ANCHOR_CLASS} rounded-2xl border border-slate-700/50 bg-slate-900/95 shadow-2xl backdrop-blur-xl`}
       >
-        <div className="flex items-center justify-between border-b border-slate-700/50 px-3 py-2">
-          <div className="text-[10px] text-slate-400 font-bold tracking-widest uppercase">
+        <div className={RIGHT_RAIL_POPUP_HEADER_CLASS}>
+          <div className={RIGHT_RAIL_POPUP_HEADER_TITLE_CLASS}>
             {t("tactics.sceneBackground")}
           </div>
-          <div className="flex items-center gap-3">
+          <div className={RIGHT_RAIL_POPUP_HEADER_ACTIONS_CLASS}>
             <button
               onClick={bgSettings.handleResetAllBgSettings}
               disabled={!bgSettings.canResetBackgroundSettings}
@@ -101,7 +108,7 @@ export const BackgroundSettingsPanelContent = memo(
             </button>
             <button
               onClick={handleClose}
-              className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-700/50 text-slate-400 transition-colors hover:bg-slate-700 hover:text-white"
+              className={RIGHT_RAIL_POPUP_CLOSE_BUTTON_CLASS}
               aria-label={t("a11y.closeModal")}
             >
               <span aria-hidden="true">✕</span>
