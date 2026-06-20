@@ -7,6 +7,12 @@ import type { Team } from "@domain/entities/Team";
 import type { useOpponents } from "@presentation/hooks/field";
 import { TEAM_HEADER_GRADIENT_OPTIONS } from "@shared/constants/teamHeaderGradients";
 import type { TranslationFn } from "../types";
+import {
+  RIGHT_RAIL_POPUP_HEADER_ACTIONS_CLASS,
+  RIGHT_RAIL_POPUP_HEADER_CLASS,
+  RIGHT_RAIL_POPUP_HEADER_SUBTITLE_CLASS,
+  RIGHT_RAIL_POPUP_HEADER_TITLE_CLASS,
+} from "../rightRailPopupLayout";
 
 interface OpponentSquadSelectorProps {
   opponentsHook: ReturnType<typeof useOpponents>;
@@ -14,6 +20,8 @@ interface OpponentSquadSelectorProps {
   selectedTeamId: string | null;
   t: TranslationFn;
   className?: string;
+  headerTitle?: string;
+  headerSubtitle?: string;
   headerActions?: ReactNode;
 }
 
@@ -23,6 +31,8 @@ export const OpponentSquadSelector = memo(function OpponentSquadSelector({
   selectedTeamId,
   t,
   className = "",
+  headerTitle,
+  headerSubtitle,
   headerActions,
 }: OpponentSquadSelectorProps) {
   if (!teams || teams.length === 0) {
@@ -33,9 +43,23 @@ export const OpponentSquadSelector = memo(function OpponentSquadSelector({
     <div
       className={`bg-[linear-gradient(180deg,rgba(15,23,42,0.96)_0%,rgba(2,6,23,0.94)_100%)] backdrop-blur-xl rounded-[24px] border border-slate-600/40 shadow-[0_18px_40px_rgba(2,6,23,0.32),0_4px_12px_rgba(2,6,23,0.16)] ring-1 ring-white/5 overflow-hidden ${className}`}
     >
-      {headerActions && (
-        <div className="flex items-center justify-end gap-2 border-b border-slate-700/50 px-4 py-3">
-          {headerActions}
+      {(headerTitle || headerActions) && (
+        <div className={RIGHT_RAIL_POPUP_HEADER_CLASS}>
+          <div className="min-w-0">
+            {headerTitle && (
+              <div className={RIGHT_RAIL_POPUP_HEADER_TITLE_CLASS}>
+                {headerTitle}
+              </div>
+            )}
+            {headerSubtitle && (
+              <div className={RIGHT_RAIL_POPUP_HEADER_SUBTITLE_CLASS}>
+                {headerSubtitle}
+              </div>
+            )}
+          </div>
+          <div className={RIGHT_RAIL_POPUP_HEADER_ACTIONS_CLASS}>
+            {headerActions}
+          </div>
         </div>
       )}
       <div className="px-4 py-3 border-b border-slate-700/50">

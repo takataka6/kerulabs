@@ -6,6 +6,10 @@ import { memo, useCallback, useEffect, useRef } from "react";
 import type { Team } from "@domain/entities/Team";
 import type { useOpponents } from "@presentation/hooks/field";
 import type { TranslationFn } from "../types";
+import {
+  RIGHT_RAIL_POPUP_ANCHOR_CLASS,
+  RIGHT_RAIL_POPUP_CLOSE_BUTTON_CLASS,
+} from "../rightRailPopupLayout";
 import { OpponentSquadSelector } from "./OpponentSquadSelector";
 
 interface OpponentSquadSelectorPopupProps {
@@ -59,7 +63,7 @@ export const OpponentSquadSelectorPopup = memo(
       <div
         ref={popupRef}
         data-testid="opponent-squad-selector-popup"
-        className="absolute top-2 right-14 z-40 w-[320px] max-w-[calc(100vw-1rem)] sm:top-3 sm:right-[164px] xl:right-[176px]"
+        className={RIGHT_RAIL_POPUP_ANCHOR_CLASS}
       >
         <OpponentSquadSelector
           opponentsHook={opponentsHook}
@@ -67,6 +71,7 @@ export const OpponentSquadSelectorPopup = memo(
           selectedTeamId={selectedTeamId}
           t={t}
           className="w-full"
+          headerTitle={t("tactics.opponents")}
           headerActions={
             <>
               {hasOpponents && (
@@ -80,7 +85,7 @@ export const OpponentSquadSelectorPopup = memo(
               )}
               <button
                 onClick={handleClose}
-                className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-700/60 bg-slate-900/85 text-slate-400 transition-colors hover:border-slate-500 hover:text-white"
+                className={RIGHT_RAIL_POPUP_CLOSE_BUTTON_CLASS}
                 aria-label={t("a11y.closeModal")}
               >
                 <span aria-hidden="true">✕</span>

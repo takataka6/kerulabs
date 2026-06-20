@@ -183,7 +183,11 @@ export function useBackgroundSettings() {
         setSceneBackground({ version: 1, mode: "image" });
         return;
       }
-      setSceneBackground(DEFAULT_SCENE_BACKGROUND);
+      setSceneBackground({
+        version: 1,
+        mode: "gradient",
+        gradient: getDefaultGradient(),
+      });
     },
     [],
   );

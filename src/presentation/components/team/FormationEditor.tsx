@@ -8,6 +8,13 @@ import { Tactic } from "@domain/entities/Tactic";
 import type { Formation } from "@domain/entities/Formation";
 import { useLanguage } from "@presentation/contexts/LanguageContext";
 import {
+  RIGHT_RAIL_POPUP_CLOSE_BUTTON_CLASS,
+  RIGHT_RAIL_POPUP_HEADER_ACTIONS_CLASS,
+  RIGHT_RAIL_POPUP_HEADER_CLASS,
+  RIGHT_RAIL_POPUP_HEADER_TITLE_CLASS,
+  RIGHT_RAIL_NESTED_POPUP_ANCHOR_CLASS,
+} from "@presentation/components/tactics-viewer/rightRailPopupLayout";
+import {
   ensureFormationDefaultForGameMode,
   getFormationOptions,
   getFormationOptionsWithDefault,
@@ -78,24 +85,23 @@ export const FormationEditor = memo(function FormationEditor({
   return (
     <div
       data-testid="formation-editor-popup"
-      className="absolute top-2 right-14 z-40 flex max-h-[min(70vh,560px)] w-[320px] max-w-[calc(100vw-1rem)] flex-col overflow-hidden rounded-[24px] border border-slate-600/40 bg-[linear-gradient(180deg,rgba(15,23,42,0.96)_0%,rgba(2,6,23,0.94)_100%)] shadow-[0_18px_40px_rgba(2,6,23,0.32),0_4px_12px_rgba(2,6,23,0.16)] ring-1 ring-white/5 backdrop-blur-xl sm:top-3 sm:right-[164px] xl:right-[176px]"
+      className={`${RIGHT_RAIL_NESTED_POPUP_ANCHOR_CLASS} flex max-h-[min(70vh,560px)] flex-col overflow-hidden rounded-[24px] border border-slate-600/40 bg-[linear-gradient(180deg,rgba(15,23,42,0.96)_0%,rgba(2,6,23,0.94)_100%)] shadow-[0_18px_40px_rgba(2,6,23,0.32),0_4px_12px_rgba(2,6,23,0.16)] ring-1 ring-white/5 backdrop-blur-xl`}
     >
-      <div className="flex shrink-0 items-center justify-end gap-2 border-b border-slate-700/50 px-4 py-3">
-        <button
-          onClick={onClose}
-          aria-label={t("a11y.closePanel")}
-          className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-700/60 bg-slate-900/85 text-slate-400 transition-colors hover:border-slate-500 hover:text-white"
-        >
-          <span aria-hidden="true">✕</span>
-        </button>
-      </div>
-
-      <div className="shrink-0 border-b border-slate-700/50 px-4 py-3">
+      <div className={RIGHT_RAIL_POPUP_HEADER_CLASS}>
         <div
           id="formation-editor-title"
-          className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-300/90"
+          className={RIGHT_RAIL_POPUP_HEADER_TITLE_CLASS}
         >
           {t("tactics.editFormations.title")}
+        </div>
+        <div className={RIGHT_RAIL_POPUP_HEADER_ACTIONS_CLASS}>
+          <button
+            onClick={onClose}
+            aria-label={t("a11y.closePanel")}
+            className={RIGHT_RAIL_POPUP_CLOSE_BUTTON_CLASS}
+          >
+            <span aria-hidden="true">✕</span>
+          </button>
         </div>
       </div>
 
