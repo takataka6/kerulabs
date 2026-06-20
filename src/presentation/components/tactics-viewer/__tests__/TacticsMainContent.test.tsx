@@ -514,6 +514,7 @@ describe("TacticsMainContent", () => {
     };
     mockTeamContext.formationMgmt.gameModeFormations = [
       { id: { value: "4-3-3" }, name: "4-3-3" } as never,
+      { id: { value: "3-5-2" }, name: "3-5-2" } as never,
     ];
 
     render(<TacticsMainContent />);
@@ -524,6 +525,7 @@ describe("TacticsMainContent", () => {
     expect(capturedOpponentFormationSelectProps.teamName).toBe("Opponent Team");
     expect(capturedOpponentFormationSelectProps.formations).toEqual([
       { id: { value: "4-3-3" }, name: "4-3-3" },
+      { id: { value: "3-5-2" }, name: "3-5-2" },
     ]);
   });
 
@@ -624,6 +626,51 @@ describe("TacticsMainContent", () => {
       { id: { value: "p1" } },
       { id: { value: "p2" } },
     ]);
+  });
+
+  it("相手スカッドがあっても登録外フォーメーション選択時は直接配置せずスカッドビルダーへ進む", () => {
+    const placeSquadDirectly = vi.fn();
+    const setOpponentFormationId = vi.fn();
+    const setShowOpponentFormationSelect = vi.fn();
+    const setShowOpponentSquadBuilder = vi.fn();
+    mockExecutionContext.opponentsHook.showOpponentFormationSelect = true;
+    (
+      mockExecutionContext.opponentsHook as Record<string, unknown>
+    ).opponentTeam = {
+      name: "Opponent Team",
+      availableFormations: ["4-3-3"],
+      players: [{ id: { value: "p1" } }, { id: { value: "p2" } }],
+      selectedSquad: ["p1", "p2"],
+    };
+    (
+      mockExecutionContext.opponentsHook as Record<string, unknown>
+    ).placeSquadDirectly = placeSquadDirectly;
+    (
+      mockExecutionContext.opponentsHook as Record<string, unknown>
+    ).setOpponentFormationId = setOpponentFormationId;
+    (
+      mockExecutionContext.opponentsHook as Record<string, unknown>
+    ).setShowOpponentFormationSelect = setShowOpponentFormationSelect;
+    (
+      mockExecutionContext.opponentsHook as Record<string, unknown>
+    ).setShowOpponentSquadBuilder = setShowOpponentSquadBuilder;
+    mockTeamContext.formationMgmt.gameModeFormations = [
+      { id: { value: "4-3-3" }, name: "4-3-3" } as never,
+      { id: { value: "3-5-2" }, name: "3-5-2" } as never,
+    ];
+
+    render(<TacticsMainContent />);
+
+    (
+      capturedOpponentFormationSelectProps.onSelect as (
+        formationId: string,
+      ) => void
+    )("3-5-2");
+
+    expect(placeSquadDirectly).not.toHaveBeenCalled();
+    expect(setOpponentFormationId).toHaveBeenCalledWith("3-5-2");
+    expect(setShowOpponentFormationSelect).toHaveBeenCalledWith(false);
+    expect(setShowOpponentSquadBuilder).toHaveBeenCalledWith(true);
   });
 
   it("戦術実行中はフィールド横のロックボタンを表示しない", () => {
