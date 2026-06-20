@@ -7,6 +7,21 @@
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-06-20
+
+### Added
+
+- **マーカー形状オプションを追加**: 戦術ビューアーで選手マーカーの形状を切り替えられるようにし、表現の使い分けができるようにしました。
+
+### Changed
+
+- **シーン背景グラデーションを復元**: 背景設定まわりを調整し、戦術ビューアーで意図したグラデーション表示を再び有効にしました。
+- **右サイド popup レイアウトを整理**: 右レール内の popup 配置とシェルを見直し、背景設定や相手選手設定などの見た目と振る舞いを揃えました。
+
+### Fixed
+
+- **戦術ヘッダーのチーム旗表示を修正**: ヘッダー内のホーム / アウェイの旗表示が正しく揃うように修正しました。
+
 ## [0.10.0] - 2026-06-16
 
 ### Added
@@ -279,7 +294,8 @@
 - **Husky + lint-staged**: コミット時の自動リント・フォーマット
 - **GitHub Actions CI**: 型チェック・リント・テストの自動実行
 
-[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/takataka6/kerulabs/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/takataka6/kerulabs/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/takataka6/kerulabs/compare/v0.9.4...v0.10.0
 [0.9.4]: https://github.com/takataka6/kerulabs/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/takataka6/kerulabs/compare/v0.9.2...v0.9.3
