@@ -269,7 +269,9 @@ export const Scene = memo(function Scene({
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    return new CanvasTexture(canvas);
+    const texture = new CanvasTexture(canvas);
+    texture.colorSpace = SRGBColorSpace;
+    return texture;
   }, [sceneBackground]);
 
   const { scene } = useThree();

@@ -128,6 +128,11 @@ export function TacticsMainContent() {
   useEffect(() => {
     if (!sketch.sketchMode) return;
 
+    if (ui.sidebarOpen) {
+      ui.setSidebarAnimating(true);
+      ui.setSidebarOpen(false);
+    }
+
     const handleButtonClick = (event: MouseEvent) => {
       const target = event.target;
       if (!(target instanceof Element)) return;
@@ -149,7 +154,7 @@ export function TacticsMainContent() {
     return () => {
       document.removeEventListener("click", handleButtonClick, true);
     };
-  }, [sketch]);
+  }, [sketch, ui]);
 
   return (
     <main
@@ -306,10 +311,10 @@ export function TacticsMainContent() {
           connLines={connLines}
           sketchMode={sketch.sketchMode}
           onToggleSketchMode={() => {
-            const willEnterSketch = !sketch.sketchMode;
             sketch.toggleSketchMode();
-            if (willEnterSketch && ui.sidebarOpen) {
-              ui.toggleSidebar();
+            if (!sketch.sketchMode && ui.sidebarOpen) {
+              ui.setSidebarAnimating(true);
+              ui.setSidebarOpen(false);
             }
           }}
           t={t}
@@ -544,22 +549,24 @@ export function TacticsMainContent() {
       )}
 
       {/* 監督表示 */}
-      <ManagerDisplay
-        selectedTeam={selectedTeam}
-        teamColor={colorsData.df}
-        editingManager={managerEditor.editingManager}
-        managerInput={managerEditor.managerInput}
-        managerCard={cardMgmt.managerCard}
-        captureMode={ui.captureMode}
-        onStartEditing={() =>
-          managerEditor.startEditing(selectedTeam.manager || "")
-        }
-        onManagerInputChange={managerEditor.setManagerInput}
-        onSaveManager={handleSaveManager}
-        onCancelEditing={managerEditor.cancelEditing}
-        onCycleManagerCard={handleCycleManagerCard}
-        t={t}
-      />
+      {!ui.captureMode && !sketch.sketchMode && !ui.sidebarOpen && (
+        <ManagerDisplay
+          selectedTeam={selectedTeam}
+          teamColor={colorsData.df}
+          editingManager={managerEditor.editingManager}
+          managerInput={managerEditor.managerInput}
+          managerCard={cardMgmt.managerCard}
+          captureMode={ui.captureMode}
+          onStartEditing={() =>
+            managerEditor.startEditing(selectedTeam.manager || "")
+          }
+          onManagerInputChange={managerEditor.setManagerInput}
+          onSaveManager={handleSaveManager}
+          onCancelEditing={managerEditor.cancelEditing}
+          onCycleManagerCard={handleCycleManagerCard}
+          t={t}
+        />
+      )}
 
       {/* ビューコントロール */}
       {!ui.captureMode &&

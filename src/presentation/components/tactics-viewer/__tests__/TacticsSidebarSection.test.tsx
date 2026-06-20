@@ -125,6 +125,9 @@ function createMockExecutionContext() {
       setSelectedPresetId: vi.fn(),
       start: vi.fn(),
     },
+    sketch: {
+      sketchMode: false,
+    },
     tacticsLoading: false,
   };
 }
@@ -177,6 +180,13 @@ describe("TacticsSidebarSection", () => {
 
     const btn = container.querySelector(".sidebar-toggle");
     expect(btn).toHaveStyle({ display: "none" });
+  });
+
+  it("スケッチモード中はサイドバートグルボタンを表示しない", () => {
+    mockExecutionContext.sketch.sketchMode = true;
+    render(<TacticsSidebarSection />);
+
+    expect(screen.queryByRole("button", { name: /a11y\./ })).toBeNull();
   });
 
   // ── Callback delegation tests ─────────────────────────
@@ -372,6 +382,16 @@ describe("TacticsSidebarSection", () => {
       expect(overlay).toBeInTheDocument();
       fireEvent.click(overlay!);
       expect(mockUIContext.ui.toggleSidebar).toHaveBeenCalled();
+    });
+
+    it("スケッチモード中は SidebarPanel に閉じた状態を渡す", () => {
+      mockExecutionContext.sketch.sketchMode = true;
+      render(<TacticsSidebarSection />);
+
+      const layout = capturedSidebarPanelProps.layout as {
+        sidebarOpen: boolean;
+      };
+      expect(layout.sidebarOpen).toBe(false);
     });
   });
 });
