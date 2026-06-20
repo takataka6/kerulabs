@@ -275,12 +275,14 @@ function createMockExecutionContext() {
       connectionLines: [],
       lineDrawingMode: false,
       handleConnectionLineRemove: noop,
+      resetLineDrawingState: noop,
     },
     playerView: {
       playerViewEnabled: false,
       selectedPlayerIndex: null,
       selectedOpponentViewId: null,
       exitPlayerView: noop,
+      togglePlayerView: noop,
     },
     multiSelect: {
       selectedPlayerIndices: new Set<number>(),
@@ -775,6 +777,40 @@ describe("TacticsMainContent", () => {
         capturedRightControlsProps.onToggleSketchMode as () => void;
       toggle();
       expect(mockExecutionContext.sketch.toggleSketchMode).toHaveBeenCalled();
+    });
+
+    it("onTogglePlayerView exits draw lines before enabling player view", () => {
+      const resetLineDrawingState = vi.fn();
+      const togglePlayerView = vi.fn();
+      mockExecutionContext.connLines.lineDrawingMode = true;
+      mockExecutionContext.connLines.resetLineDrawingState =
+        resetLineDrawingState;
+      mockExecutionContext.playerView.togglePlayerView = togglePlayerView;
+      render(<TacticsMainContent />);
+
+      const toggle =
+        capturedRightControlsProps.onTogglePlayerView as () => void;
+      toggle();
+
+      expect(resetLineDrawingState).toHaveBeenCalled();
+      expect(togglePlayerView).toHaveBeenCalled();
+    });
+
+    it("onTogglePlayerView does not touch draw lines when leaving player view", () => {
+      const resetLineDrawingState = vi.fn();
+      const togglePlayerView = vi.fn();
+      mockExecutionContext.playerView.playerViewEnabled = true;
+      mockExecutionContext.connLines.resetLineDrawingState =
+        resetLineDrawingState;
+      mockExecutionContext.playerView.togglePlayerView = togglePlayerView;
+      render(<TacticsMainContent />);
+
+      const toggle =
+        capturedRightControlsProps.onTogglePlayerView as () => void;
+      toggle();
+
+      expect(resetLineDrawingState).not.toHaveBeenCalled();
+      expect(togglePlayerView).toHaveBeenCalled();
     });
 
     it("onTogglePlayerHidden toggles hidden player indices via context", () => {

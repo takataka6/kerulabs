@@ -154,6 +154,19 @@ describe("TacticsSidebarSection", () => {
     ).toBeInTheDocument();
   });
 
+  it("サイドバーが閉じている場合はトグルボタンを監督表示より上に配置する", () => {
+    mockUIContext.ui.sidebarOpen = false;
+    render(<TacticsSidebarSection />);
+
+    expect(
+      screen.getByRole("button", { name: "a11y.openSidebar" }),
+    ).toHaveClass(
+      "bottom-[calc(env(safe-area-inset-bottom,0px)+5.25rem)]",
+      "sm:bottom-[calc(env(safe-area-inset-bottom,0px)+6rem)]",
+      "xl:bottom-[calc(env(safe-area-inset-bottom,0px)+6.75rem)]",
+    );
+  });
+
   it("トグルボタンクリックで toggleSidebar が呼ばれる", () => {
     render(<TacticsSidebarSection />);
 
