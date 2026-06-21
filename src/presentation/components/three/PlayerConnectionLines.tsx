@@ -2,14 +2,9 @@
  * @module PlayerConnectionLines
  * @description 選手間の接続ラインを3Dシーン上にレンダリングするコンポーネント。ライン描画・クリック削除・ペンディングラインプレビューを表示する。
  */
-import { memo, useRef, useCallback, useEffect, useMemo } from "react";
+import { memo, useRef, useCallback, useMemo } from "react";
 import { useFrame, type ThreeEvent } from "@react-three/fiber";
-import {
-  AdditiveBlending,
-  BufferAttribute,
-  type BufferGeometry,
-  type Mesh,
-} from "three";
+import { AdditiveBlending, type Mesh } from "three";
 import {
   computeLineAngle,
   computeMidpoint,
@@ -80,6 +75,15 @@ export const PlayerConnectionLines = memo(function PlayerConnectionLines({
   );
 });
 
+const VISIBLE_LINE_WIDTH = 0.045;
+const VISIBLE_LINE_HEIGHT = 0.018;
+const VISIBLE_LINE_Y = 0.16;
+const MIN_LINE_LENGTH = 0.001;
+const HIT_LINE_WIDTH = 0.36;
+const HIT_LINE_HEIGHT = 0.12;
+const MIN_HIT_LENGTH = 0.1;
+const LINE_RENDER_ORDER = 40;
+
 const DrawnLine = memo(function DrawnLine({
   start,
   end,
@@ -93,19 +97,8 @@ const DrawnLine = memo(function DrawnLine({
   isPending?: boolean;
   onRemove?: () => void;
 }) {
-  const lineRef = useRef<BufferGeometry>(null);
+  const visibleLineRef = useRef<Mesh>(null);
   const hitRef = useRef<Mesh>(null);
-  const posArray = useRef(new Float32Array([0, 0.06, 0, 0, 0.06, 0]));
-
-  // bufferAttribute の初期設定（render 中の ref アクセスを回避）
-  useEffect(() => {
-    if (lineRef.current) {
-      lineRef.current.setAttribute(
-        "position",
-        new BufferAttribute(posArray.current, 3),
-      );
-    }
-  }, []);
 
   // 幾何計算をメモ化（座標値が変わらなければ再計算しない）
   // start/end はオブジェクト参照が毎フレーム変わるため、個別プロパティで比較（意図的な最適化）
@@ -125,25 +118,40 @@ const DrawnLine = memo(function DrawnLine({
   /* eslint-enable react-hooks/exhaustive-deps */
 
   useFrame(() => {
-    // ライン頂点を毎フレーム更新
-    const arr = posArray.current;
-    arr[0] = start.x;
-    arr[2] = start.z;
-    arr[3] = end.x;
-    arr[5] = end.z;
+    const currentMidpoint = computeMidpoint(start, end);
+    const currentAngle = computeLineAngle(start, end);
+    const currentLength = Math.max(
+      computeLineLength(start, end),
+      MIN_LINE_LENGTH,
+    );
 
-    if (lineRef.current) {
-      const attr = lineRef.current.getAttribute("position") as BufferAttribute;
-      if (attr) {
-        attr.needsUpdate = true;
-      }
+    if (visibleLineRef.current) {
+      visibleLineRef.current.position.set(
+        currentMidpoint.x,
+        VISIBLE_LINE_Y,
+        currentMidpoint.z,
+      );
+      visibleLineRef.current.rotation.set(0, currentAngle, 0);
+      visibleLineRef.current.scale.set(
+        VISIBLE_LINE_WIDTH,
+        VISIBLE_LINE_HEIGHT,
+        currentLength,
+      );
     }
 
     // 右クリック削除用ヒットエリアの位置・回転を更新
     if (hitRef.current) {
-      hitRef.current.position.x = midpoint.x;
-      hitRef.current.position.z = midpoint.z;
-      hitRef.current.rotation.set(-Math.PI / 2, 0, -angle);
+      hitRef.current.position.set(
+        currentMidpoint.x,
+        VISIBLE_LINE_Y,
+        currentMidpoint.z,
+      );
+      hitRef.current.rotation.set(0, currentAngle, 0);
+      hitRef.current.scale.set(
+        HIT_LINE_WIDTH,
+        HIT_LINE_HEIGHT,
+        Math.max(currentLength, MIN_HIT_LENGTH),
+      );
     }
   });
 
@@ -166,28 +174,43 @@ const DrawnLine = memo(function DrawnLine({
 
   return (
     <group>
-      <line>
-        <bufferGeometry ref={lineRef} />
-        <lineBasicMaterial
+      <mesh
+        ref={visibleLineRef}
+        position={[midpoint.x, VISIBLE_LINE_Y, midpoint.z]}
+        rotation={[0, angle, 0]}
+        scale={[
+          VISIBLE_LINE_WIDTH,
+          VISIBLE_LINE_HEIGHT,
+          Math.max(lineLength, MIN_LINE_LENGTH),
+        ]}
+        frustumCulled={false}
+        renderOrder={LINE_RENDER_ORDER}
+      >
+        <boxGeometry args={[1, 1, 1]} />
+        <meshBasicMaterial
           color={color}
           transparent
-          opacity={isPending ? 0.4 : 0.7}
+          opacity={isPending ? 0.45 : 0.72}
+          depthTest={false}
           depthWrite={false}
           blending={AdditiveBlending}
-          linewidth={1}
+          toneMapped={false}
         />
-      </line>
+      </mesh>
 
       {/* 右クリック削除用の透明ヒットエリア（確定済みラインのみ） */}
       {!isPending && onRemove && lineLength > 0.1 && (
         <mesh
           ref={hitRef}
-          position={[midpoint.x, 0.07, midpoint.z]}
-          rotation={[-Math.PI / 2, 0, -angle]}
+          position={[midpoint.x, VISIBLE_LINE_Y, midpoint.z]}
+          rotation={[0, angle, 0]}
+          scale={[HIT_LINE_WIDTH, HIT_LINE_HEIGHT, Math.max(lineLength, 0.1)]}
+          frustumCulled={false}
+          renderOrder={LINE_RENDER_ORDER}
           onDoubleClick={handleDoubleClick}
           onContextMenu={handleContextMenu}
         >
-          <planeGeometry args={[0.3, Math.max(lineLength, 0.1)]} />
+          <boxGeometry args={[1, 1, 1]} />
           <meshBasicMaterial transparent opacity={0} depthWrite={false} />
         </mesh>
       )}

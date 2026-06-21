@@ -4,10 +4,13 @@
  */
 import { useRef, useCallback, useState, useEffect, memo } from "react";
 import { Canvas } from "@react-three/fiber";
-import type { Camera } from "three";
+import { Plane, Raycaster, Vector2, Vector3, type Camera } from "three";
 import { Scene } from "../three/Scene";
 import { getLogger } from "@shared/logger";
-import { projectWorldToScreen } from "@presentation/utils/threeCalculations";
+import {
+  clampToFieldBounds,
+  projectWorldToScreen,
+} from "@presentation/utils/threeCalculations";
 import type { SelectableItem } from "@presentation/hooks/ui";
 import type { TranslationKey } from "@shared/i18n/translations";
 import type { Language } from "@presentation/contexts/LanguageContext";
@@ -156,6 +159,10 @@ export const TacticsCanvas = memo(function TacticsCanvas(
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cameraRef = useRef<Camera | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const pointerRaycasterRef = useRef(new Raycaster());
+  const pointerPlaneRef = useRef(new Plane(new Vector3(0, 1, 0), 0));
+  const pointerNdcRef = useRef(new Vector2());
+  const pointerIntersectionRef = useRef(new Vector3());
 
   const [isShiftHeld, setIsShiftHeld] = useState(false);
   const [rectDrag, setRectDrag] = useState<{
@@ -362,6 +369,43 @@ export const TacticsCanvas = memo(function TacticsCanvas(
     [resolveRectSelection],
   );
 
+  const handleCanvasPointerMove = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!lineTrackingActive) return;
+
+      const camera = cameraRef.current;
+      const wrapper = wrapperRef.current;
+      if (!camera || !wrapper) return;
+
+      const rect = wrapper.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+
+      pointerNdcRef.current.set(
+        ((e.clientX - rect.left) / rect.width) * 2 - 1,
+        -((e.clientY - rect.top) / rect.height) * 2 + 1,
+      );
+
+      pointerRaycasterRef.current.setFromCamera(pointerNdcRef.current, camera);
+      if (
+        pointerRaycasterRef.current.ray.intersectPlane(
+          pointerPlaneRef.current,
+          pointerIntersectionRef.current,
+        )
+      ) {
+        onLinePointerMove(
+          clampToFieldBounds(
+            {
+              x: pointerIntersectionRef.current.x,
+              z: pointerIntersectionRef.current.z,
+            },
+            pitchConfig.fieldBounds,
+          ),
+        );
+      }
+    },
+    [lineTrackingActive, onLinePointerMove, pitchConfig.fieldBounds],
+  );
+
   return (
     <div
       ref={wrapperRef}
@@ -369,6 +413,7 @@ export const TacticsCanvas = memo(function TacticsCanvas(
       role="img"
       aria-label={t("a11y.tacticsCanvas")}
       className="absolute inset-0 outline-none select-none"
+      onPointerMove={handleCanvasPointerMove}
     >
       <Canvas
         ref={canvasRef}
